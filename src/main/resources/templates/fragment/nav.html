@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body class="c-app">
+    <!-- SIDEBAR -->
+    <div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show"
+         th:fragment="sidebar"
+         id="sidebar">
+        <div class="c-sidebar-brand d-lg-down-none">
+            <svg class="c-sidebar-brand-full" width="118" height="46" alt="CoreUI Logo">
+                <use th:href="@{'/assets/brand/coreui.svg#full'}"}></use>
+            </svg>
+            <svg class="c-sidebar-brand-minimized" width="46" height="46" alt="CoreUI Logo">
+                <use th:href="@{'/assets/brand/coreui.svg#signet'}"></use>
+            </svg>
+        </div>
+        <ul class="c-sidebar-nav">
+            <li class="c-sidebar-nav-item mt-3"><a class="c-sidebar-nav-link" th:href="@{'/'}">
+                <svg class="c-sidebar-nav-icon">
+                    <use th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-home'}"></use>
+                </svg>
+                Home</a></li>
+
+            <!-- Dashboard -->
+            <li class="c-sidebar-nav-title">Dashboard</li>
+            <li class="c-sidebar-nav-item">
+                <a class="c-sidebar-nav-link" th:href="@{'/dashboard/account'}">Account</a>
+            </li>
+            <li class="c-sidebar-nav-item">
+                <a class="c-sidebar-nav-link" th:href="@{'/dashboard/category'}">Category</a>
+            </li>
+            <li class="c-sidebar-nav-item">
+                <a class="c-sidebar-nav-link" th:href="@{'/dashboard/post'}">Post</a>
+            </li>
+
+        </ul>
+
+        <!--
+            TEMPLATE WITH DROPDOWN
+        -->
+        <th:block th:remove="all">
+            <li class="c-sidebar-nav-title">Authentication</li>
+            <li class="c-sidebar-nav-item c-sidebar-nav-dropdown"><a
+              class="c-sidebar-nav-link c-sidebar-nav-dropdown-toggle" href="#">
+                <svg class="c-sidebar-nav-icon">
+                    <use th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-puzzle'}"></use>
+                </svg>
+                Student</a>
+                <ul class="c-sidebar-nav-dropdown-items">
+                    <li class="c-sidebar-nav-item">
+                        <a class="c-sidebar-nav-link c-sidebar-nav-link-success"
+                        th:href="@{'/student/create'}"> CREATE NEW STUDENT</a>
+                    </li>
+                    <li class="c-sidebar-nav-item"><a class="c-sidebar-nav-link"
+                                                      th:href="@{'/student'}"><span
+                      class="c-sidebar-nav-icon"></span> List of Student</a></li>
+                </ul>
+            </li>
+        </ul>
+        </th:block>
+        <!-- END TEMPLATE -->
+
+        <button class="c-sidebar-minimizer c-class-toggler" type="button" data-target="_parent"
+                data-class="c-sidebar-minimized"></button>
+    </div>
+
+
+    <th:block th:fragment="elit-sidebar">
+        <div class="site-mobile-menu site-navbar-target">
+            <div class="site-mobile-menu-header">
+                <div class="site-mobile-menu-close mt-3">
+                    <span class="icon-close2 js-menu-toggle"></span>
+                </div>
+            </div>
+            <div class="site-mobile-menu-body"></div>
+        </div>
+
+        <header class="header-bar d-flex d-lg-block align-items-center site-navbar-target" data-aos="fade-right">
+            <div class="site-logo">
+                <a th:href="@{'/'}">Review Your Girl Friend</a>
+            </div>
+
+            <div class="d-inline-block d-lg-none ml-md-0 ml-auto py-3" style="position: relative; top: 3px;"><a th:href="@{'/'}" class="site-menu-toggle js-menu-toggle text-white"><span class="icon-menu h3"></span></a></div>
+
+            <div class="main-menu">
+                <ul class="js-clone-nav">
+                    <li><a th:href="@{'/'}" class="nav-link">Home</a></li>
+                    <li><a th:href="@{'/'}" class="nav-link">Photos</a></li>
+                    <li class="active"><a th:href="@{'/'}" class="nav-link">Blog</a></li>
+                </ul>
+                <ul class="social js-clone-nav">
+                    <li><a th:href="@{'/'}"><span class="icon-facebook"></span></a></li>
+                    <li><a th:href="@{'/'}"><span class="icon-twitter"></span></a></li>
+                    <li><a th:href="@{'/'}"><span class="icon-instagram"></span></a></li>
+                </ul>
+            </div>
+        </header>
+    </th:block>
+</body>
+</html>

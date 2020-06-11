@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragment/head :: html-head}"/>
+<body class="c-app">
+<th:block th:replace="~{fragment/nav :: sidebar}"></th:block>
+
+<!--
+    WRAPPER
+-->
+<div class="c-wrapper c-fixed-components" th:replace="~{fragment/body :: mainbody(~{:: #page-body}, ~{:: #body-nav})}">
+
+    <ul class="c-header-nav d-md-down-none" id="body-nav">
+        <li class="c-header-nav-item px-3"><a class="c-header-nav-link" th:href="@{'/dashboard/post'}">Dashboard</a>
+        </li>
+        <li class="c-header-nav-item px-3"><a class="c-header-nav-link" th:href="@{'/dashboard/post/create'}">Create</a></li>
+        </li>
+    </ul>
+    <!--
+        BODY
+    -->
+    <div class="c-body" id="page-body">
+        <main class="c-main">
+            <div class="container-fluid">
+                <div class="fade-in">
+
+                    <!--    NOTIFICATION ALERT  -->
+                    <th:block
+                        th:replace="~{fragment/layout :: crud_notification}"
+                    />
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">Posts</div>
+                                <div class="card-body">
+                                    <table
+                                        class="table table-responsive-sm table-hover table-outline mb-0">
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th class="text-center table-th">
+                                                <svg class="c-icon">
+                                                    <use
+                                                        th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-people'}"></use>
+                                                </svg>
+                                            </th>
+                                            <th class="text-center table-th">Title</th>
+                                            <th class="table-th">Description</th>
+                                            <th class="text-center table-th">Author</th>
+                                            <th class="table-th">Created Date</th>
+                                            <th class="text-center table-th">Updated Date</th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td class="text-center">1</td>
+                                            <td class="text-center">
+                                                <a href="#">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias, explicabo!</a>
+                                            </td>
+                                            <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid beatae deleniti dignissimos dolores, doloribus ducimus enim expedita facere maxime nulla quisquam repudiandae tempora tenetur unde?</td>
+                                            <td class="text-center">Trung Thinh</td>
+                                            <td>22/03/2000</td>
+                                            <td class="text-center">22/03/2000</td>
+                                            <td class="text-center">
+                                                <button class="btn btn-warning text-white">Update</button>
+                                            </td>
+                                            <td class="text-center">
+                                                <button class="btn btn-danger text-white">Delete</button>
+                                            </td>
+                                        </tr>
+<!--                                        <tr th:each="acc : ${accounts}">-->
+<!--                                            <td class="text-center">-->
+<!--                                                <span class="text-muted" th:text="'#' + ${acc.id}"></span>-->
+<!--                                            </td>-->
+<!--                                            <td>-->
+<!--                                                <div class="text-center" th:text="${acc.cv?.fullName}">FullName</div>-->
+<!--                                            </td>-->
+<!--                                            <td>-->
+<!--                                                <div th:text="${acc.username}">Username</div>-->
+<!--                                            </td>-->
+<!--                                            <td class="text-center">-->
+<!--                                                <div th:text="${acc.major?.name} ?: 'No Major'">Major</div>-->
+<!--                                            </td>-->
+<!--                                            <td class="text-center">-->
+<!--                                                <div th:text="${acc.cv?.gender}">Gender</div>-->
+<!--                                            </td>-->
+<!--                                            <td>-->
+<!--                                                <div th:text="${#temporals.format(acc.createdDate, 'dd/MM/yyyy')}">Created Date</div>-->
+<!--                                            </td>-->
+<!--                                            <td class="text-center">-->
+<!--                                                <a th:href="@{|/student/${acc.id}/detail|}" class="btn btn-info text-white">Detail Info</a>-->
+<!--                                            </td>-->
+<!--                                            <td class="text-center">-->
+<!--                                                <a th:href="@{|/student/${acc.id}/update|}" class="btn btn-pill btn-warning text-white">Update</a>-->
+<!--                                            </td>-->
+<!--                                            <td class="text-center">-->
+<!--                                                <a class="btn btn-square btn-danger text-white btn-del"-->
+<!--                                                    th:obj-id="${acc.id}"-->
+<!--                                                    th:obj-name="${acc.username}"-->
+<!--                                                    obj-type="student"-->
+<!--                                                    th:obj-del-url="@{|/student/${acc.id}/delete|}"-->
+<!--                                                    data-toggle="modal" data-target="#del-modal"-->
+<!--                                                >Delete</a>-->
+<!--                                            </td>-->
+<!--                                        </tr>-->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.col-->
+                    </div>
+                    <!-- /.row-->
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<!--
+    END BODY
+-->
+
+
+<!-- Modal -->
+<th:block th:replace="~{fragment/layout :: del_modal}"></th:block>
+
+<th:block th:replace="~{fragment/foot :: scripts}"></th:block>
+<th:block th:replace="~{fragment/layout :: del_modal_script}"></th:block>
+</body>
+</html>

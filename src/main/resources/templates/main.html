@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragment/head :: elit-head}"></head>
+<body data-spy="scroll" data-target=".site-navbar-target" data-offset="200">
+
+
+<div class="site-wrap">
+
+  <th:block th:replace="~{fragment/nav :: elit-sidebar}"></th:block>
+
+  <main class="main-content">
+
+    <div class="container-fluid">
+
+      <section class="row align-items-stretch photos" id="section-photos">
+        <div class="col-12">
+          <div class="row align-items-stretch">
+
+            <div class="col-6 col-md-6 col-lg-4" data-aos="fade-up"
+                 th:data-aos-delay="${T(Double).valueOf(T(java.lang.Math).random() * 700 + 100).intValue()}"  >
+              <a th:href="@{'/elit/images/img_4.jpg'}" class="d-block photo-item"
+                 data-fancybox="gallery"
+                 data-obj-name="Jolie Nguyễn"
+                 data-obj-age="22"
+                 data-obj-url="http://google.com"
+              >
+                <img th:src="@{'/elit/images/img_4.jpg'}" alt="Image" class="img-fluid">
+                <div class="photo-text-more">
+                  <h1 alt="gfriend's name">Jolie Nguyễn</h1>
+                  <p alt="gfriend's age'">22 tuổi</p>
+                </div>
+              </a>
+            </div> <!-- #item-photo -->
+
+          </div>
+        </div>
+      </section> <!-- #section-photos -->
+
+
+      <section class="site-section" id="section-blog">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="row">
+                <h2 class="heading text-uppercase text-white" data-aos="fade-up">Blog</h2>
+
+                <div class="col-md-12 mb-4" data-aos="fade-up">
+                  <div class="d-md-flex d-block blog-entry align-items-start">
+                    <div class="mr-0 mr-md-5 mb-3 img-wrap"><a th:href="@{'/'}"><img
+                      th:src="@{'/elit/images/blog_1.jpg'}" alt="Image" class="img-fluid"></a></div>
+                    <div>
+                      <h2 class="mt-0 mb-2"><a th:href="@{'/'}">My New Photography Has
+                        Been Featured in Forbes</a></h2>
+                      <div class="meta mb-3">Posted by Ben Jones on <a th:href="@{'/'}">Jan 18,
+                        2019</a></div>
+                      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officiis aliquid
+                        doloremque qui, saepe alias eum?</p>
+                    </div>
+                  </div>
+                </div> <!-- #blog item -->
+
+                <div class="col-12 text-center">
+                  <div class="custom-pagination">
+                    <span>1</span>
+                    <a th:href="@{'/'}">2</a>
+                    <a th:href="@{'/'}">3</a>
+                    <span>...</span>
+                    <a th:href="@{'/'}">7</a>
+                  </div>
+                </div> <!-- #pagination -->
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <div class="row justify-content-center">
+        <div class="col-md-12 text-center py-5">
+          <p>
+            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            Copyright &copy;<script>document.write(new Date().getFullYear());</script>
+            All rights reserved | This template is made with <i class="icon-heart text-danger"
+                                                                aria-hidden="true"></i> by <a
+            th:href="@{'/https://colorlib.com'}" target="_blank">Colorlib</a>
+            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div> <!-- .site-wrap -->
+
+<th:block th:replace="~{fragment/foot :: elit-script(~{::script})}">
+  <script>
+    $('[data-fancybox]').fancybox({
+      caption : function( instance, item ) {
+        var name = $(this).data("obj-name");
+        var age = $(this).data("obj-age");
+        var url = $(this).data("obj-url");
+        if(name === null || age === null || url === null)
+          return "Sorry for this ! Caption can\'t be shown";
+
+        var caption =
+            "<p>Name : <span class='caption-name'>" + name + "</span></p>" +
+            "<p>Age : <span class='caption-age'>" + age + "</span></p>" +
+            "<p>Link : <a class='caption-url' href='" + url + "'>Checkout more</a></p>";
+
+        return caption;
+      }
+    });
+  </script>
+</th:block>
+</body>
+</html>

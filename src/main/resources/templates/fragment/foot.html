@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body class="c-app">
+
+<th:block th:fragment="scripts">
+    <!-- Optional JavaScript -->
+    <!-- Popper.js first, then CoreUI JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.min.js"
+            integrity="sha384-L2pyEeut/H3mtgCBaUNw7KWzp5n9&#43;4pDQiExs933/5QfaTh8YStYFFkOzSoXjlTb"
+            crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@coreui/coreui@3.0.0-rc.0/dist/js/coreui.min.js"></script>
+</th:block>
+
+<th:block th:fragment="elit-script(additionScript)">
+    <script th:src="@{'/elit/js/jquery-3.3.1.min.js'}"></script>
+<!--    <script th:src="@{'/elit/js/jquery-migrate-3.0.1.min.js'}"></script>-->
+<!--    <script th:src="@{'/elit/js/jquery.easing.1.3.js'}"></script>-->
+<!--    <script th:src="@{'/elit/js/jquery-ui.js'}"></script>-->
+    <script th:src="@{'/elit/js/popper.min.js'}"></script>
+    <script th:src="@{'/elit/js/bootstrap.min.js'}"></script>
+<!--    <script th:src="@{'/elit/js/owl.carousel.min.js'}"></script>-->
+<!--    <script th:src="@{'/elit/js/jquery.stellar.min.js'}"></script>-->
+<!--    <script th:src="@{'/elit/js/jquery.countdown.min.js'}"></script>-->
+<!--    <script th:src="@{'/elit/js/jquery.magnific-popup.min.js'}"></script>-->
+<!--    <script th:src="@{'/elit/js/bootstrap-datepicker.min.js'}"></script>-->
+    <script th:src="@{'/elit/js/aos.js'}"></script>
+
+
+    <script th:src="@{'/elit/js/jquery.fancybox.min.js'}"></script>
+
+    <script th:src="@{'/elit/js/main.js'}"></script>
+    <th:block th:insert="${additionScript}"></th:block>
+</th:block>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragment/head :: html-head}"/>
+<body class="c-app">
+
+<!--
+    WRAPPER
+-->
+<div class="c-wrapper c-fixed-components" th:replace="~{fragment/body :: mainbody(~{:: #page-body}, _)}">
+    <!--
+        BODY
+    -->
+    <div class="c-body" id="page-body">
+        <main class="c-main">
+            <div class="container-fluid">
+                <div class="fade-in">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">Accounts</div>
+                                <div class="card-body">
+<!--                                    <h5 class="card-title">ID : <span th:text="${acc.id}" th:remove="tag"/></h5>-->
+<!--                                    <h5 class="card-title">Username : <span th:text="${acc.username}" th:remove="tag"/></h5>-->
+<!--                                    <p class="card-text">Major : <span th:text="${acc.major} ? ${acc.major.name} : 'No Major'" th:remove="tag"/></p>-->
+<!--                                    <p class="card-text text-muted">Created Date : <span th:text="${acc.createdDate}" th:remove="tag"/></p>-->
+<!--                                    <br>-->
+<!--                                    <th:block th:if="${acc.cv != null}">-->
+<!--                                        <p class="card-text">Full Name : <span th:text="${acc.cv.fullName}" th:remove="tag"/></p>-->
+<!--                                        <p class="card-text">Date of Birth : <span th:text="${acc.cv.dateOfBirth}" th:remove="tag"/></p>-->
+<!--                                        <p class="card-text">Address : <span th:text="${acc.cv.address}" th:remove="tag"/></p>-->
+<!--                                        <p class="card-text">Phone Number : <span th:text="${acc.cv.phoneNumber}" th:remove="tag"/></p>-->
+<!--                                        <p class="card-text">Email : <span th:text="${acc.cv.email}" th:remove="tag"/></p>-->
+<!--                                    </th:block>-->
+
+
+                                    <!--                                    <table-->
+<!--                                        class="table table-responsive-sm table-hover mb-0">-->
+<!--                                        <tr>-->
+<!--                                            <td></td>-->
+<!--                                        </tr>-->
+<!--                                    </table>-->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.col-->
+                    </div>
+                    <!-- /.row-->
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<!--
+    END BODY
+-->
+
+<th:block th:replace="~{fragment/foot :: scripts}"></th:block>
+</body>
+</html>
