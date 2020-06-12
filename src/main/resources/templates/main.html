@@ -17,17 +17,19 @@
           <div class="row align-items-stretch">
 
             <div class="col-6 col-md-6 col-lg-4" data-aos="fade-up"
+                 th:each="post : ${posts}"
+                 th:with="thumbnailUri = (${@environment.getProperty('thumbnail.upload.uri')} + ${post.thumbnail})"
                  th:data-aos-delay="${T(Double).valueOf(T(java.lang.Math).random() * 700 + 100).intValue()}"  >
-              <a th:href="@{'/elit/images/img_4.jpg'}" class="d-block photo-item"
+              <a th:href="${thumbnailUri}" class="d-block photo-item"
                  data-fancybox="gallery"
-                 data-obj-name="Jolie Nguyễn"
-                 data-obj-age="22"
-                 data-obj-url="http://google.com"
+                 th:data-obj-name="${post.title}"
+                 th:data-obj-age="${post.description}"
+                 th:data-obj-url="|/post/${post.id}|"
               >
-                <img th:src="@{'/elit/images/img_4.jpg'}" alt="Image" class="img-fluid">
+                <img th:src="${thumbnailUri}" alt="Image" class="img-fluid">
                 <div class="photo-text-more">
-                  <h1 alt="gfriend's name">Jolie Nguyễn</h1>
-                  <p alt="gfriend's age'">22 tuổi</p>
+                  <h1 alt="gfriend's name" th:text="${post.title}">Name</h1>
+                  <p alt="gfriend's age'" th:text="${post.description}">Age</p>
                 </div>
               </a>
             </div> <!-- #item-photo -->
@@ -45,19 +47,25 @@
                 <h2 class="heading text-uppercase text-white" data-aos="fade-up">Blog</h2>
 
                 <div class="col-md-12 mb-4" data-aos="fade-up">
-                  <div class="d-md-flex d-block blog-entry align-items-start">
-                    <div class="mr-0 mr-md-5 mb-3 img-wrap"><a th:href="@{'/'}"><img
-                      th:src="@{'/elit/images/blog_1.jpg'}" alt="Image" class="img-fluid"></a></div>
+
+                  <div class="d-md-flex d-block blog-entry align-items-start"
+                    th:each="post : ${posts}"
+                  >
+                    <div class="mr-0 mr-md-5 mb-3 img-wrap"><a th:href="|/post/${post.id}|"><img
+                      th:src="${@environment.getProperty('thumbnail.upload.uri')} + ${post.thumbnail}" alt="Image" class="img-fluid"></a></div>
                     <div>
-                      <h2 class="mt-0 mb-2"><a th:href="@{'/'}">My New Photography Has
-                        Been Featured in Forbes</a></h2>
-                      <div class="meta mb-3">Posted by Ben Jones on <a th:href="@{'/'}">Jan 18,
-                        2019</a></div>
-                      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officiis aliquid
-                        doloremque qui, saepe alias eum?</p>
+                      <h2 class="mt-0 mb-2">
+                        <a th:href="|/post/${post.id}|"
+                            th:text="${post.title}"
+                        />
+                      </h2>
+                      <div class="meta mb-3">Posted by <span th:text="${post.author?.email} ?: 'Unknown'"/> on
+                        <a th:href="@{'/'}" th:text="${post.createdDate}">Date</a></div>
+                      <p th:text="${post.description}">Description</p>
                     </div>
-                  </div>
-                </div> <!-- #blog item -->
+                  </div> <!--#blog item-->
+
+                </div> <!-- #blog item container -->
 
                 <div class="col-12 text-center">
                   <div class="custom-pagination">

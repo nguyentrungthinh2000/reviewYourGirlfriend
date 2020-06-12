@@ -12,7 +12,7 @@
     <groupId>com.rygf</groupId>
     <artifactId>review-your-girlfriend</artifactId>
     <version>Beta-0.0</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>review-your-girlfriend</name>
     <description>Review Your Girlfriend</description>
 
@@ -28,6 +28,15 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
@@ -45,6 +54,64 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <!--Validation-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!--Upload File-->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.9</version>
+        </dependency>
+
+        <!--CKFinder & CKEditor-->
+        <dependency>
+            <groupId>com.finder</groupId>
+            <artifactId>fileeditor</artifactId>
+            <version>2.6.3</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/CKFinderPlugin-FileEditor-2.6.3.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.finder</groupId>
+            <artifactId>imgresize</artifactId>
+            <version>2.6.3</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/CKFinderPlugin-ImageResize-2.6.3.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.finder</groupId>
+            <artifactId>watermark</artifactId>
+            <version>2.6.3</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/CKFinderPlugin-Watermark-2.6.3.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.finder</groupId>
+            <artifactId>ckfinder</artifactId>
+            <version>2.6.3</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/CKFinder-2.6.3.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.8</version>
         </dependency>
     </dependencies>
 

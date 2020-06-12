@@ -32,5 +32,23 @@
     <th:block th:insert="${additionScript}"></th:block>
 </th:block>
 
+<th:block th:fragment="ckeditor-script">
+    <script th:src="@{'/ckeditor/ckeditor.js'}"></script>
+    <script th:src="@{'/ckfinder/ckfinder.js'}"></script>
+    <script>
+        CKEDITOR
+        .replace(
+          'text_editor',
+          {
+              filebrowserBrowseUrl : '/ckfinder/ckfinder.html',
+              filebrowserImageBrowseUrl : '/ckfinder/ckfinder.html?type=Images',
+              filebrowserFlashBrowseUrl : '/ckfinder/ckfinder.html?type=Flash',
+              filebrowserUploadUrl : '/ckfinder/core/connector/java/connector.java?command=QuickUpload&type=Files',
+              filebrowserImageUploadUrl : '/ckfinder/core/connector/java/connector.java?command=QuickUpload&type=Images',
+              filebrowserFlashUploadUrl : '/ckfinder/core/connector/java/connector.java?command=QuickUpload&type=Flash'
+          });
+    </script>
+</th:block>
+
 </body>
 </html>

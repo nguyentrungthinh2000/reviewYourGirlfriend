@@ -29,135 +29,64 @@
                             <div class="card">
                                 <div class="card-body">
                                     <!--  BEGIN FORM-->
-                                    <form th:action="@{'/student/submit'}" method="post"
-                                        th:object="${student}" th:remove="all">
-                                        <!--<h1 th:text="${form_title} ?: _">Form Title</h1>
-                                        <p th:text="${form_desc} ?: _" class="text-muted">Form Description</p>-->
-                                        <!-- ID -->
-                                        <input type="hidden" th:field="*{id}">
-                                        
-                                        <!-- Full name-->
-                                        <div class="input-group mb-3">
-                                            <div class="input-group-prepend"><span class="input-group-text">
-                                                      <svg class="c-icon">
-                                                        <use th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-user'}"></use>
-                                                      </svg></span></div>
-                                            <input class="form-control" type="text" th:field="*{cv.fullName}"
-                                                   th:errorclass="is-invalid"
-                                                   placeholder="Full Name">
-                                            <th:block th:if="${#fields.hasErrors('cv.fullName')}">
-                                                <div class="valid-feedback" style="display: block; color: red;"
-                                                     th:each="err : ${#fields.errors('cv.fullName')}" th:text="${err}"/>
-                                            </th:block>
+                                    <form th:action="@{'/dashboard/post/submit'}" method="post"
+                                          enctype="multipart/form-data"
+                                          th:object="${post}">
+                                      <!-- ID -->
+                                      <input type="hidden" th:field="*{id}">
+
+                                      <!-- Thumbnail-->
+                                      <div class="form-group">
+                                        <label>Thumbnail</label>
+                                        <input type="file" class="form-control"
+                                               th:field="*{thumbnail}"
+                                               th:errorclass="is-invalid">
+                                        <th:block th:if="${#fields.hasErrors('thumbnail')}">
+                                          <div class="valid-feedback" style="display: block; color: red;"
+                                               th:each="err : ${#fields.errors('thumbnail')}" th:text="${err}"/>
+                                        </th:block>
+                                      </div>
+
+                                        <!-- Title-->
+                                        <div class="form-group">
+                                          <label>Title</label>
+                                          <input type="text" class="form-control"
+                                                    th:field="*{title}"
+                                                    th:errorclass="is-invalid"
+                                                    placeholder="Title">
+                                          <th:block th:if="${#fields.hasErrors('title')}">
+                                            <div class="valid-feedback" style="display: block; color: red;"
+                                                 th:each="err : ${#fields.errors('title')}" th:text="${err}"/>
+                                          </th:block>
                                         </div>
 
-                                        <!-- Gender -->
-                                        <div class="input-group mb-3">
-                                            <div class="input-group-prepend"><span class="input-group-text">
-                                                      <svg class="c-icon">
-                                                        <use th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-user'}"></use>
-                                                      </svg></span></div>
-                                            <select class="form-control" th:field="*{cv.gender}">
-                                                <option th:each="gen : ${GENDERS}"
-                                                        th:value="${gen}"
-                                                        th:text="${gen}"
-                                                />
-                                            </select>
-                                        </div>
+                                      <!-- Description-->
+                                      <div class="form-group">
+                                        <label>Description</label>
+                                        <textarea class="form-control" th:field="*{description}"
+                                                  cols="5" rows="3"
+                                                  th:errorclass="is-invalid"
+                                                  placeholder="Description"></textarea>
+                                        <th:block th:if="${#fields.hasErrors('description')}">
+                                          <div class="valid-feedback" style="display: block; color: red;"
+                                               th:each="err : ${#fields.errors('description')}" th:text="${err}"/>
+                                        </th:block>
+                                      </div>
 
-                                        <!-- Address-->
-                                        <div class="input-group mb-3">
-                                            <div class="input-group-prepend"><span class="input-group-text">
-                                                      <svg class="c-icon">
-                                                        <use th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-user'}"></use>
-                                                      </svg></span></div>
-                                            <input class="form-control" type="text" th:field="*{cv.address}"
-                                                   th:errorclass="is-invalid"
-                                                   placeholder="Address">
-                                            <small class="form-text text-muted w-100">
-                                                Optional
-                                            </small>
+                                      <!-- Content -->
+                                      <div class="form-group">
+                                        <label>Content</label>
+                                        <textarea class="form-control" th:field="*{content}"
+                                                  id="text_editor"
+                                                  cols="5" rows="3"
+                                                  th:errorclass="is-invalid"
+                                                  placeholder="Content"></textarea>
+                                        <th:block th:if="${#fields.hasErrors('content')}">
+                                          <div class="valid-feedback" style="display: block; color: red;"
+                                               th:each="err : ${#fields.errors('content')}" th:text="${err}"/>
+                                        </th:block>
+                                      </div>
 
-                                            <th:block th:if="${#fields.hasErrors('cv.address')}">
-                                                <div class="valid-feedback" style="display: block; color: red;"
-                                                     th:each="err : ${#fields.errors('cv.address')}" th:text="${err}"/>
-                                            </th:block>
-                                        </div>
-
-                                        <!-- Phone Number-->
-                                        <div class="input-group mb-3">
-                                            <div class="input-group-prepend"><span class="input-group-text">
-                                                      <svg class="c-icon">
-                                                        <use th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-user'}"></use>
-                                                      </svg></span></div>
-                                            <input class="form-control" type="text" th:field="*{cv.phoneNumber}"
-                                                   th:errorclass="is-invalid"
-                                                   placeholder="Phone Number">
-                                            <small class="form-text text-muted w-100">
-                                                Optional
-                                            </small>
-
-                                            <th:block th:if="${#fields.hasErrors('cv.phoneNumber')}">
-                                                <div class="valid-feedback" style="display: block; color: red;"
-                                                     th:each="err : ${#fields.errors('cv.phoneNumber')}" th:text="${err}"/>
-                                            </th:block>
-                                        </div>
-
-                                        <!-- Email-->
-                                        <div class="input-group mb-3">
-                                            <div class="input-group-prepend"><span class="input-group-text">
-                                                      <svg class="c-icon">
-                                                        <use th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-user'}"></use>
-                                                      </svg></span></div>
-                                            <input class="form-control" type="text" th:field="*{cv.email}"
-                                                   th:errorclass="is-invalid"
-                                                   placeholder="Email">
-                                            <small class="form-text text-muted w-100">
-                                                Optional
-                                            </small>
-
-                                            <th:block th:if="${#fields.hasErrors('cv.email')}">
-                                                <div class="valid-feedback" style="display: block; color: red;"
-                                                     th:each="err : ${#fields.errors('cv.email')}" th:text="${err}"/>
-                                            </th:block>
-                                        </div>
-
-                                        <!-- Date of Birth-->
-                                        <div class="input-group mb-3">
-                                            <div class="input-group-prepend"><span class="input-group-text">
-                                                      <svg class="c-icon">
-                                                        <use th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-user'}"></use>
-                                                      </svg></span></div>
-                                            <input class="form-control" type="date" th:field="*{cv.dateOfBirth}"
-                                                   th:errorclass="is-invalid"
-                                                   placeholder="Date of Birth">
-                                            <small class="form-text text-muted w-100">
-                                                Optional
-                                            </small>
-
-                                            <th:block th:if="${#fields.hasErrors('cv.dateOfBirth')}">
-                                                <div class="valid-feedback" style="display: block; color: red;"
-                                                     th:each="err : ${#fields.errors('cv.dateOfBirth')}" th:text="${err}"/>
-                                            </th:block>
-                                        </div>
-
-                                        <hr>
-
-                                        <!-- Major -->
-                                        <div class="input-group mb-3">
-                                            <div class="input-group-prepend"><span class="input-group-text">
-                                                      <svg class="c-icon">
-                                                        <use th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-user'}"></use>
-                                                      </svg></span></div>
-                                            <select th:field="*{major}">
-                                                <option value="" selected>Not Choose</option>
-                                                <option th:text="${major.name}"
-                                                        th:value="${major.id}"
-                                                        th:each="major : ${majors}"
-                                                        th:selected="${major.id} == *{major}"
-                                                />
-                                            </select>
-                                        </div>
                                         <div class="row">
                                             <div class="col text-left">
                                                 <button class="btn btn-success px-4 mr-3" type="submit">Submit</button>
@@ -181,5 +110,6 @@
     END BODY
 -->
 <th:block th:replace="~{fragment/foot :: scripts}"></th:block>
+<th:block th:replace="~{fragment/foot :: ckeditor-script}"></th:block>
 </body>
 </html>

@@ -54,6 +54,34 @@
         </script>
     </th:block>
 
+    <!-- Form Input -->
+    <div class="input-group mb-3" th:remove="all">
+        <div class="input-group-prepend"><span class="input-group-text">
+                                                      <svg class="c-icon">
+                                                        <use th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-user'}"></use>
+                                                      </svg></span></div>
+        <input class="form-control" type="text" th:field="*{cv.fullName}"
+               th:errorclass="is-invalid"
+               placeholder="Full Name">
+        <th:block th:if="${#fields.hasErrors('cv.fullName')}">
+            <div class="valid-feedback" style="display: block; color: red;"
+                 th:each="err : ${#fields.errors('cv.fullName')}" th:text="${err}"/>
+        </th:block>
+    </div>
+
+    <!--Form Select Option-->
+    <div class="input-group mb-3" th:remove="all">
+        <div class="input-group-prepend"><span class="input-group-text">
+                                                      <svg class="c-icon">
+                                                        <use th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-user'}"></use>
+                                                      </svg></span></div>
+        <select class="form-control" th:field="*{cv.gender}">
+            <option th:each="gen : ${GENDERS}"
+                    th:value="${gen}"
+                    th:text="${gen}"
+            />
+        </select>
+    </div>
 
 </body>
 </html>
