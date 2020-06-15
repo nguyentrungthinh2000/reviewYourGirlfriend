@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:fragment="html-head">
+<head th:fragment="html-head(el)">
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,13 +20,19 @@
             font-size: 15px!important;
             vertical-align: middle!important;
         }
+
+        .form-control[type='file'] {
+            height: auto!important;
+        }
     </style>
+    <th:block th:replace="${el}"/>
 </head>
 
 <head th:fragment="elit-head">
     <title>Review Your GFriend</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" type="image/ico" th:href="@{'/assets/img/favicon.ico'}"/>
 
     <link
       th:href="@{'https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700,900|Oswald:400,700'}"

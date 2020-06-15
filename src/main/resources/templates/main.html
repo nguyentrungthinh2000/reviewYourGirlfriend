@@ -6,30 +6,32 @@
 
 <div class="site-wrap">
 
-  <th:block th:replace="~{fragment/nav :: elit-sidebar}"></th:block>
+  <th:block th:replace="~{fragment/nav :: elit-nav-sidebar}"></th:block>
 
   <main class="main-content">
 
     <div class="container-fluid">
 
-      <section class="row align-items-stretch photos" id="section-photos">
+      <section class="row align-items-stretch photos"
+               th:if="${#lists.size(posts)} != 0"
+               id="section-photos">
         <div class="col-12">
           <div class="row align-items-stretch">
 
             <div class="col-6 col-md-6 col-lg-4" data-aos="fade-up"
-                 th:each="post : ${posts}"
-                 th:with="thumbnailUri = (${@environment.getProperty('thumbnail.upload.uri')} + ${post.thumbnail})"
+                 th:each="subject : ${subjects}"
+                 th:with="thumbUri = #{thumbnail.upload.uri(${subject.thumbnail})}"
                  th:data-aos-delay="${T(Double).valueOf(T(java.lang.Math).random() * 700 + 100).intValue()}"  >
-              <a th:href="${thumbnailUri}" class="d-block photo-item"
+              <a th:href="${thumbUri}" class="d-block photo-item"
                  data-fancybox="gallery"
-                 th:data-obj-name="${post.title}"
-                 th:data-obj-age="${post.description}"
-                 th:data-obj-url="|/post/${post.id}|"
+                 th:data-obj-title="${subject.getFormatTitle(4)}"
+                 th:data-obj-about="${subject.getFormatAbout(23)}"
+                 th:data-obj-url="|/subject/${subject.id}|"
               >
-                <img th:src="${thumbnailUri}" alt="Image" class="img-fluid">
+                <img th:src="${thumbUri}" alt="Image" class="mg-fluid">
                 <div class="photo-text-more">
-                  <h1 alt="gfriend's name" th:text="${post.title}">Name</h1>
-                  <p alt="gfriend's age'" th:text="${post.description}">Age</p>
+                  <h1 alt="gfriend's title" th:text="${subject.getFormatTitle(14)}">Name</h1>
+                  <p alt="gfriend's about'" th:text="${subject.getFormatAbout(40)}">Age</p>
                 </div>
               </a>
             </div> <!-- #item-photo -->
@@ -45,14 +47,18 @@
             <div class="col-md-8">
               <div class="row">
                 <h2 class="heading text-uppercase text-white" data-aos="fade-up">Blog</h2>
-
-                <div class="col-md-12 mb-4" data-aos="fade-up">
+                <p class="lead w-100" th:if="${#lists.size(posts)} == 0">
+                  There is no post !
+                </p>
+                <div class="col-md-12 mb-4"
+                     th:if="${#lists.size(posts)} != 0"
+                     data-aos="fade-up">
 
                   <div class="d-md-flex d-block blog-entry align-items-start"
                     th:each="post : ${posts}"
                   >
                     <div class="mr-0 mr-md-5 mb-3 img-wrap"><a th:href="|/post/${post.id}|"><img
-                      th:src="${@environment.getProperty('thumbnail.upload.uri')} + ${post.thumbnail}" alt="Image" class="img-fluid"></a></div>
+                      th:src="#{thumbnail.upload.uri(${post.thumbnail})}" alt="Image" class="img-fluid"></a></div>
                     <div>
                       <h2 class="mt-0 mb-2">
                         <a th:href="|/post/${post.id}|"
@@ -61,7 +67,7 @@
                       </h2>
                       <div class="meta mb-3">Posted by <span th:text="${post.author?.email} ?: 'Unknown'"/> on
                         <a th:href="@{'/'}" th:text="${post.createdDate}">Date</a></div>
-                      <p th:text="${post.description}">Description</p>
+                      <p th:text="${post.getFormatDescription(23)}">Description</p>
                     </div>
                   </div> <!--#blog item-->
 
@@ -69,11 +75,28 @@
 
                 <div class="col-12 text-center">
                   <div class="custom-pagination">
-                    <span>1</span>
-                    <a th:href="@{'/'}">2</a>
-                    <a th:href="@{'/'}">3</a>
-                    <span>...</span>
-                    <a th:href="@{'/'}">7</a>
+                    <a th:href="@{'/1'}" th:if="${curPage} != 1">First</a>
+                    <a th:href="@{|/${curPage - 1}|}"
+                       th:if="${curPage - 1} > 0"
+                    ><i class="icon-arrow-left" aria-hidden="true"></i></a>
+                    <th:block th:each="seq : ${#numbers.sequence(-2, 2, 1)}">
+                      <span th:text="${curPage + seq}"
+                            th:if="(${curPage + seq} > 0)
+                            and (${curPage + seq} <= ${totalPages})
+                            and (${curPage + seq} == ${curPage})"
+                      />
+
+
+                      <a th:text="${curPage + seq}"
+                         th:href="@{|/${curPage + seq}|}"
+                         th:if="(${curPage + seq} > 0)
+                         and (${curPage + seq} <= ${totalPages})
+                         and (${curPage + seq} != ${curPage})"/>
+                    </th:block>
+                    <a th:href="@{|/${curPage + 1}|}"
+                       th:if="${curPage + 1} <= ${totalPages}"
+                    ><i class="icon-arrow-right" aria-hidden="true"></i></a>
+                    <a th:href="@{'/${totalPages}'}" th:if="${curPage} != ${totalPages}">Last</a>
                   </div>
                 </div> <!-- #pagination -->
 
@@ -106,15 +129,15 @@
   <script>
     $('[data-fancybox]').fancybox({
       caption : function( instance, item ) {
-        var name = $(this).data("obj-name");
-        var age = $(this).data("obj-age");
+        var title = $(this).data("obj-title");
+        var about = $(this).data("obj-about");
         var url = $(this).data("obj-url");
-        if(name === null || age === null || url === null)
+        if(title === null || about === null || url === null)
           return "Sorry for this ! Caption can\'t be shown";
 
         var caption =
-            "<p>Name : <span class='caption-name'>" + name + "</span></p>" +
-            "<p>Age : <span class='caption-age'>" + age + "</span></p>" +
+            "<p>Name : <span class='caption-title'>" + title + "</span></p>" +
+            "<p>Age : <span class='caption-about'>" + about + "</span></p>" +
             "<p>Link : <a class='caption-url' href='" + url + "'>Checkout more</a></p>";
 
         return caption;

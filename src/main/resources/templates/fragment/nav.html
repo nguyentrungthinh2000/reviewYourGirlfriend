@@ -23,10 +23,7 @@
             <!-- Dashboard -->
             <li class="c-sidebar-nav-title">Dashboard</li>
             <li class="c-sidebar-nav-item">
-                <a class="c-sidebar-nav-link" th:href="@{'/dashboard/account'}">Account</a>
-            </li>
-            <li class="c-sidebar-nav-item">
-                <a class="c-sidebar-nav-link" th:href="@{'/dashboard/category'}">Category</a>
+                <a class="c-sidebar-nav-link" th:href="@{'/dashboard/subject'}">Subject</a>
             </li>
             <li class="c-sidebar-nav-item">
                 <a class="c-sidebar-nav-link" th:href="@{'/dashboard/post'}">Post</a>
@@ -64,7 +61,7 @@
     </div>
 
 
-    <th:block th:fragment="elit-sidebar">
+    <th:block th:fragment="elit-nav-sidebar">
         <div class="site-mobile-menu site-navbar-target">
             <div class="site-mobile-menu-header">
                 <div class="site-mobile-menu-close mt-3">
@@ -79,13 +76,15 @@
                 <a th:href="@{'/'}">Review Your Girl Friend</a>
             </div>
 
-            <div class="d-inline-block d-lg-none ml-md-0 ml-auto py-3" style="position: relative; top: 3px;"><a th:href="@{'/'}" class="site-menu-toggle js-menu-toggle text-white"><span class="icon-menu h3"></span></a></div>
+            <div class="d-inline-block d-lg-none ml-md-0 ml-auto py-3" style="position: relative; top: 3px;"><a href="#" class="site-menu-toggle js-menu-toggle text-white"><span class="icon-menu h3"></span></a></div>
 
             <div class="main-menu">
                 <ul class="js-clone-nav">
                     <li><a th:href="@{'/'}" class="nav-link">Home</a></li>
-                    <li><a th:href="@{'/'}" class="nav-link">Photos</a></li>
-                    <li class="active"><a th:href="@{'/'}" class="nav-link">Blog</a></li>
+                    <li><a href="#section-photos" class="nav-link">Photos</a></li>
+                    <li class="active"><a href="#section-blog" class="nav-link">Blog</a></li>
+                    <hr>
+                    <li><a th:href="@{'/dashboard'}" class="nav-link">Dashboard</a></li>
                 </ul>
                 <ul class="social js-clone-nav">
                     <li><a th:href="@{'/'}"><span class="icon-facebook"></span></a></li>
@@ -95,5 +94,27 @@
             </div>
         </header>
     </th:block>
+
+    <div class="sidebar-box" th:fragment="sidebar-search">
+        <form action="#" class="search-form">
+            <div class="form-group">
+                <span class="icon fa fa-search"></span>
+                <input type="text" class="form-control"
+                       placeholder="Type a keyword and hit enter">
+            </div>
+        </form>
+    </div>
+
+    <div class="sidebar-box" th:fragment="sidebar-subjects">
+        <div class="categories">
+            <h3>Subjects</h3>
+            <li th:each="subject : ${subjects}">
+                <a th:href="|/subject/${subject.id}|">
+                    [[${subject.title}]] <span>([[${subject.posts.size()}]])</span>
+                </a>
+            </li>
+        </div>
+    </div>
+
 </body>
 </html>

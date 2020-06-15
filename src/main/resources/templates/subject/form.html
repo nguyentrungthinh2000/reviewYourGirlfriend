@@ -21,9 +21,9 @@
 -->
 <div class="c-wrapper c-fixed-components" th:replace="~{fragment/body :: mainbody(~{:: #page-body}, ~{:: #body-nav})}">
   <ul class="c-header-nav d-md-down-none" id="body-nav">
-    <li class="c-header-nav-item px-3"><a class="c-header-nav-link" th:href="@{'/dashboard/post'}">Dashboard</a>
+    <li class="c-header-nav-item px-3"><a class="c-header-nav-link" th:href="@{'/dashboard/subject'}">Dashboard</a>
     </li>
-    <li class="c-header-nav-item px-3"><a class="c-header-nav-link" th:href="@{'/dashboard/post/create'}">Create</a></li>
+    <li class="c-header-nav-item px-3"><a class="c-header-nav-link" th:href="@{'/dashboard/subject/create'}">Create</a></li>
     </li>
   </ul>
 
@@ -40,9 +40,9 @@
                             <div class="card">
                                 <div class="card-body">
                                     <!--  BEGIN FORM-->
-                                    <form th:action="@{'/dashboard/post/submit'}" method="post"
+                                    <form th:action="@{'/dashboard/subject/submit'}" method="post"
                                           enctype="multipart/form-data"
-                                          th:object="${post}">
+                                          th:object="${subject}">
                                       <!-- ID -->
                                       <input type="hidden" th:field="*{id}">
 
@@ -58,7 +58,7 @@
                                         </th:block>
                                       </div>
 
-                                      <img id="form-thumbnail" th:src="#{thumbnail.upload.uri(${post.thumbnailUri})}" th:if="${post.thumbnailUri} != null">
+                                      <img id="form-thumbnail" th:src="#{thumbnail.upload.uri(${subject.thumbnailUri})}" th:if="${subject.thumbnailUri} != null">
 
                                         <!-- Title-->
                                         <div class="form-group">
@@ -75,44 +75,14 @@
 
                                       <!-- Description-->
                                       <div class="form-group">
-                                        <label>Description</label>
-                                        <textarea class="form-control" th:field="*{description}"
+                                        <label>About</label>
+                                        <textarea class="form-control" th:field="*{about}"
                                                   cols="5" rows="3"
                                                   th:errorclass="is-invalid"
-                                                  placeholder="Description"></textarea>
-                                        <th:block th:if="${#fields.hasErrors('description')}">
+                                                  placeholder="About"></textarea>
+                                        <th:block th:if="${#fields.hasErrors('about')}">
                                           <div class="valid-feedback" style="display: block; color: red;"
-                                               th:each="err : ${#fields.errors('description')}" th:text="${err}"/>
-                                        </th:block>
-                                      </div>
-
-                                      <!-- Content -->
-                                      <div class="form-group">
-                                        <label>Content</label>
-                                        <textarea class="form-control" th:field="*{content}"
-                                                  id="text_editor"
-                                                  cols="5" rows="3"
-                                                  th:errorclass="is-invalid"
-                                                  placeholder="Content"></textarea>
-                                        <th:block th:if="${#fields.hasErrors('content')}">
-                                          <div class="valid-feedback" style="display: block; color: red;"
-                                               th:each="err : ${#fields.errors('content')}" th:text="${err}"/>
-                                        </th:block>
-                                      </div>
-
-                                      <div class="form-group">
-                                        <label>Subject</label>
-                                        <select th:field="*{subject}">
-                                          <option value="">No Subject</option>
-                                          <option th:each="subject : ${subjects}"
-                                              th:value="${subject.id}"
-                                              th:text="${subject.title}"
-                                          />
-                                        </select>
-
-                                        <th:block th:if="${#fields.hasErrors('subject')}">
-                                          <div class="valid-feedback" style="display: block; color: red;"
-                                               th:each="err : ${#fields.errors('subject')}" th:text="${err}"/>
+                                               th:each="err : ${#fields.errors('about')}" th:text="${err}"/>
                                         </th:block>
                                       </div>
 

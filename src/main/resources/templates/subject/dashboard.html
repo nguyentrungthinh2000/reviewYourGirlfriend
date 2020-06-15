@@ -10,9 +10,9 @@
 <div class="c-wrapper c-fixed-components" th:replace="~{fragment/body :: mainbody(~{:: #page-body}, ~{:: #body-nav})}">
 
     <ul class="c-header-nav d-md-down-none" id="body-nav">
-        <li class="c-header-nav-item px-3"><a class="c-header-nav-link" th:href="@{'/dashboard/post'}">Dashboard</a>
+        <li class="c-header-nav-item px-3"><a class="c-header-nav-link" th:href="@{'/dashboard/subject'}">Dashboard</a>
         </li>
-        <li class="c-header-nav-item px-3"><a class="c-header-nav-link" th:href="@{'/dashboard/post/create'}">Create</a></li>
+        <li class="c-header-nav-item px-3"><a class="c-header-nav-link" th:href="@{'/dashboard/subject/create'}">Create</a></li>
         </li>
     </ul>
     <!--
@@ -31,13 +31,13 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="card">
-                                <div class="card-header">Posts</div>
+                                <div class="card-header">Subjects</div>
                                 <div class="card-body">
-                                    <div class="alert alert-light" role="alert" th:if="${#lists.size(posts)} == 0">
-                                        There is no post !
+                                    <div class="alert alert-light" role="alert" th:if="${#lists.size(subjects)} == 0">
+                                        There is no subject !
                                     </div>
                                     <table
-                                        th:if="${#lists.size(posts)} != 0"
+                                        th:if="${#lists.size(subjects)} != 0"
                                         class="table table-responsive-sm table-hover table-outline mb-0">
                                         <thead class="thead-light">
                                         <tr>
@@ -48,9 +48,7 @@
                                                 </svg>
                                             </th>
                                             <th class="text-center table-th">Title</th>
-                                            <th class="table-th">Description</th>
-                                            <th class="table-th">Subject</th>
-                                            <th class="text-center table-th">Author</th>
+                                            <th class="table-th">About</th>
                                             <th class="table-th">Created Date</th>
                                             <th class="text-center table-th">Updated Date</th>
                                             <th></th>
@@ -58,39 +56,31 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr th:each="post : ${posts}">
+                                        <tr th:each="subject : ${subjects}">
                                             <td class="text-center">
-                                                <span class="text-muted" th:text="'#' + ${post.id}"></span>
-                                            </td>
-                                            <td class="text-center">
-                                                <a th:href="#{post.detail.uri(${post.id})}"
-                                                    th:text="${post.title}"
-                                                >Title</a>
-                                            </td>
-                                            <td>
-                                                <div th:text="${post.getFormatDescription(9)}">Description</div>
-                                            </td>
-                                            <td>
-                                                <div th:text="${post.author?.email ?: 'Unknown'}">Author</div>
-                                            </td>
-                                            <td>
-                                                <div th:text="${post.subject?.title ?: 'Unknown'}">Subject</div>
-                                            </td>
-                                            <td>
-                                                <div th:text="${#temporals.format(post.createdDate, 'dd/MM/yyyy')}">Created Date</div>
-                                            </td>
-                                            <td>
-                                                <div th:text="${#temporals.format(post.updatedDate, 'dd/MM/yyyy')}">Updated Date</div>
+                                                <span class="text-muted" th:text="'#' + ${subject.id}"></span>
                                             </td>
                                             <td class="text-center">
-                                                <a th:href="@{|/dashboard/post/${post.id}/update|}" class="btn btn-pill btn-warning text-white">Update</a>
+                                                <div th:text="${subject.title}">Title</div>
+                                            </td>
+                                            <td>
+                                                <div th:text="${subject.about}">About</div>
+                                            </td>
+                                            <td>
+                                                <div th:text="${#temporals.format(subject.createdDate, 'dd/MM/yyyy')}">Created Date</div>
+                                            </td>
+                                            <td>
+                                                <div th:text="${#temporals.format(subject.updatedDate, 'dd/MM/yyyy')}">Updated Date</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <a th:href="@{|/dashboard/subject/${subject.id}/update|}" class="btn btn-pill btn-warning text-white">Update</a>
                                             </td>
                                             <td class="text-center">
                                                 <a class="btn btn-square btn-danger text-white btn-del"
-                                                    th:obj-id="${post.id}"
-                                                    th:obj-name="${post.title}"
-                                                    obj-type="post"
-                                                    th:obj-del-url="|/dashboard/post/${post.id}/delete|"
+                                                    th:obj-id="${subject.id}"
+                                                    th:obj-name="${subject.title}"
+                                                    obj-type="subject"
+                                                    th:obj-del-url="|/dashboard/subject/${subject.id}/delete|"
                                                     data-toggle="modal" data-target="#del-modal"
                                                 >Delete</a>
                                             </td>

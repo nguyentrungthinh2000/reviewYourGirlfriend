@@ -5,24 +5,24 @@ import com.rygf.dto.PostDTO;
 import com.rygf.entity.Post;
 import com.rygf.exception.DuplicateEntityException;
 import com.rygf.exception.EntityNotFoundException;
-import com.rygf.exception.ImageException;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.servlet.ServletContext;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Transactional
@@ -37,6 +37,9 @@ public class PostService implements IPostService {
     
     @Value("${image.upload.maxSize}")
     int uploadMaxSize;
+    
+    @Value("${post.page.size}")
+    private int pageSize;
     
     @Autowired
     private PostRepository postRepository;
@@ -55,13 +58,16 @@ public class PostService implements IPostService {
             temp.setDescription(postDTO.getDescription());
             temp.setContent(postDTO.getContent());
             temp.setAuthor(postDTO.getAuthor());
-            temp.setThumbnail(postDTO.getFinalDesFileName());
+            temp.setSubject(postDTO.getSubject());
+            if(postDTO.getFinalDesFileName() != null)
+                temp.setThumbnail(postDTO.getFinalDesFileName());
         } else { // CREATE NEW POST
             temp = new Post();
             temp.setTitle(postDTO.getTitle());
             temp.setDescription(postDTO.getDescription());
             temp.setContent(postDTO.getContent());
             temp.setAuthor(postDTO.getAuthor());
+            temp.setSubject(postDTO.getSubject());
             temp.setThumbnail(postDTO.getFinalDesFileName());
         }
         
@@ -82,7 +88,12 @@ public class PostService implements IPostService {
     
     @Override
     public List<Post> findAll() {
-        return postRepository.findAll();
+        ArrayList<Post> posts = new ArrayList<>();
+        postRepository.findAll().forEach(post -> {
+            posts.add(post);
+        });
+        
+        return posts;
     }
     
     @Override
@@ -90,50 +101,61 @@ public class PostService implements IPostService {
         Optional<Post> opt = postRepository.findById(id);
         opt.orElseThrow(() -> new EntityNotFoundException("Post with id : " + id + " is not exists !"));
     
-        postRepository.delete(opt.get());
+        Post post = opt.get();
+        deleteExistThumbnail(id);
+        postRepository.delete(post);
     }
     
     /*
     *  NOT CRUD
     * */
-    public String uploadFile(MultipartFile source) throws ImageException {
-        imageFileValidCheck(source);
-    
-        File destinationFile;
-        String destinationFileName;
-        do {
-            String sourceFileNameExtension = FilenameUtils.getExtension(source.getOriginalFilename()).toLowerCase();
-            destinationFileName = RandomStringUtils.randomAlphanumeric(32) + "." + sourceFileNameExtension;
-            var desPath = servletContext.getRealPath("") + uploadPath.concat(destinationFileName);
-            log.info("path : {}", desPath);
-            destinationFile = new File(desPath);
-        } while (destinationFile.exists());
-        destinationFile.getParentFile().mkdirs();
-    
-        try {
-            source.transferTo(destinationFile);
-        } catch (IOException e) {
-            log.warn("File can't be upload {}", e.getMessage());
-        }
-    
-        return destinationFileName;
+    public PostDTO findDto(Long id) {
+        Optional<Post> opt = postRepository.findById(id);
+        opt.orElseThrow(() -> new EntityNotFoundException("Post with id : " + id + " is not exists !"));
+        PostDTO temp = new PostDTO();
+        Post post = opt.get();
+        temp.setId(post.getId());
+        temp.setTitle(post.getTitle());
+        temp.setDescription(post.getDescription());
+        temp.setContent(post.getContent());
+        temp.setThumbnailUri(post.getThumbnail());
+        temp.setSubject(post.getSubject());
+        return temp;
     }
     
-    private boolean imageFileValidCheck(MultipartFile source) throws ImageException {
-        // file null check
-        if (source == null || source.isEmpty())
-            throw new ImageException("ERR_UPLOAD_IMAGE_NULL");
+    public void deleteExistThumbnail(Long postId) {
+        Optional<Post> opt = postRepository.findById(postId);
+        opt.orElseThrow(() -> new EntityNotFoundException("Post with id : " + postId + " is not exists !"));
         
-        // file extension check
-        Pattern p = Pattern.compile("\\.(jpg|jpeg|png|JPG|JPEG|PNG)$", Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher(source.getOriginalFilename());
-        if (!m.find())
-            throw new ImageException("ERR_UPLOAD_IMAGE_EXT");
-        
-        // file size check (5Mb under..)
-        if (source.getSize() > uploadMaxSize)
-            throw new ImageException("ERR_UPLOAD_IMAGE_SIZE");
-        
-        return true;
+        Post post = opt.get();
+        String filePath = servletContext.getRealPath("") + uploadPath.concat(post.getThumbnail());
+        try {
+            Files.deleteIfExists(Paths.get(filePath));
+        } catch(IOException e) {
+            log.warn("IOException : {}", e.getMessage());
+        }
+    }
+    
+    public Page<Post> findAllPaginated(int curPage, String orderBy, String orderDir) {
+        Sort orders;
+        Pageable pageable;
+        pageable = PageRequest.of(curPage - 1, pageSize);
+        if(orderBy != null) {
+            orders = Sort.by(orderBy);
+            if(orderDir != null) {
+                switch (orderDir) {
+                    case "asc":
+                        orders = orders.ascending();
+                        break;
+                    case "desc":
+                        orders = orders.descending();
+                        break;
+                    default:
+                        orders = orders.ascending();
+                }
+            }
+            pageable = PageRequest.of(curPage, pageSize, orders);
+        }
+        return postRepository.findAll(pageable);
     }
 }

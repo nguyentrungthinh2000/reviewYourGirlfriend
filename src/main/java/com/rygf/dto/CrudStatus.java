@@ -20,8 +20,8 @@ public class CrudStatus {
     public enum STATUS {
         CREATE_SUCCESS("Created successfully <3 !", "success"),
         CREATE_UNSUCCESS("Created unsuccessfully :((", "danger"),
-        UPDATE_SUCCESS("Created successfully <3 !", "success"),
-        UPDATE_UNSUCCESS("Created unsuccessfully :((", "danger"),
+        UPDATE_SUCCESS("Updated successfully <3 !", "success"),
+        UPDATE_UNSUCCESS("Updated unsuccessfully :((", "danger"),
         DELETE_SUCCESS("Delete successfully <3 !", "success"),
         DELETE_UNSUCCESS("Delete unsuccessfully :((", "danger");
     

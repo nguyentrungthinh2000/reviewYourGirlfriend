@@ -87,7 +87,7 @@ jQuery(document).ready(function($) {
 	    }
 		});
 	};
-	// siteMenuClone();
+	siteMenuClone();
 
 
 	var sitePlusMinus = function() {
@@ -215,7 +215,7 @@ jQuery(document).ready(function($) {
 	    scrollProperty: 'scroll'
 	  });
 	};
-	// siteStellar();
+	siteStellar();
 
 	var siteCountDown = function() {
 

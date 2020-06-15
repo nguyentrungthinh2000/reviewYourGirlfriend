@@ -2,13 +2,14 @@ package com.rygf.entity;
 
 import com.rygf.common.Formatter;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashSet;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -26,22 +27,22 @@ import org.hibernate.annotations.UpdateTimestamp;
 @EqualsAndHashCode(of = "id")
 //...
 @Entity
-public class Post {
+public class Subject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     @Column(nullable = false)
-    private String thumbnail;
-    
-    @Column(nullable = false, unique = true)
     private String title;
     
-    @Column(nullable = false, columnDefinition = "text")
-    private String description;
+    @Column(nullable = false)
+    private String about;
     
-    @Column(nullable = false, columnDefinition = "text")
-    private String content;
+    @Column(nullable = false)
+    private String thumbnail;
+    
+    @OneToMany(mappedBy = "subject")
+    private Collection<Post> posts = new HashSet<>();
     
     @CreationTimestamp
     private LocalDate createdDate;
@@ -49,20 +50,12 @@ public class Post {
     @UpdateTimestamp
     private LocalDate updatedDate;
     
-    @ManyToOne
-    private Subject subject;
-    
-    @OneToOne
-    private User author;
-    
     public String getFormatTitle(int maxWord) {
         return Formatter.formatString(this.title, maxWord);
     }
     
-    public String getFormatDescription(int maxWord) {
-        return Formatter.formatString(this.description, maxWord);
+    public String getFormatAbout(int maxWord) {
+        return Formatter.formatString(this.about, maxWord);
     }
-    
-    
     
 }

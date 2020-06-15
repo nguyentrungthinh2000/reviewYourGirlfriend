@@ -26,14 +26,14 @@ public class WebConfig implements WebMvcConfigurer {
     public LocaleResolver localeResolver() {
         return new SessionLocaleResolver();
     }
-    
+
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {
         LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
         lci.setParamName("lang");
         return lci;
     }
-    
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
@@ -42,7 +42,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("i18n/messages");
+        messageSource.setBasenames("messages/messages", "messages/uri");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }

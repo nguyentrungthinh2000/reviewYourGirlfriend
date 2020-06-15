@@ -10,16 +10,13 @@
   <main class="main-content">
 
     <section class="site-section-hero bg-image"
-             th:style="|background-image: url(#{thumbnail.upload.uri(${post.thumbnail})});|"
+             th:style="|background-image: url(#{thumbnail.upload.uri(${subject.thumbnail})});|"
              data-stellar-background-ratio="0.5" id="section-home">
       <div class="row justify-content-center align-items-center">
         <div class="col-md-7 text-center">
-          <h1 class="text-white heading text-uppercase" data-aos="fade-up" th:text="${post.title}">Title</h1>
+          <h1 class="text-white heading text-uppercase" data-aos="fade-up" th:text="${subject.title}">Title</h1>
           <p class="lead text-white mb-5" data-aos="fade-up" data-aos-delay="100">
-            <span th:text="${post.createdDate}">Date</span>
-            <span th:if="${post.author} != null">
-              &bullet; <em>by</em> <span th:text="${post.author?.email}">Author</span>
-            </span>
+            <span th:text="${subject.about}">About</span>
           </p>
         </div>
       </div>
@@ -27,30 +24,35 @@
 
 
     <div class="container-fluid">
-
-
       <div class="site-section blog-content-container">
         <div class="container">
           <div class="row">
             <div class="col-md-8 blog-content pr-lg-5">
-              <p class="lead blog-content-description"
-                 th:text="${post.description}">Description</p>
+              <h2 class="heading text-uppercase text-white" data-aos="fade-up">Blog</h2>
+              <p class="lead w-100" th:if="${#lists.size(subject.posts)} == 0">
+                There is no post !
+              </p>
 
-              <th:block th:utext="${post.content}">
-                Content
-              </th:block>
+              <div class="jumbotron"
+                   th:style="|background-image: url(#{thumbnail.upload.uri(${post.thumbnail})});|"
+                   th:each="post : ${subject.posts}">
+                <div class="jumbotron-container">
+                  <h1 class="display-4" th:text="${post.getFormatTitle(10)}"/>
+                  <p class="lead">
+                    <span th:text="${post.createdDate}">Date</span>
+                    <span th:if="${post.author} != null">
+                      &bullet; <em>by</em></span>
+                    <span th:text="${post.author?.email}">Author</span>
+                  </p>
+                  <hr class="my-4">
+                  <p th:text="${T(com.rygf.common.Formatter).formatString(post.description, 35)}"/>
+                  <a class="btn btn-primary btn-lg" th:href="#{post.detail.uri(${post.id})}" role="button">Read more</a>
+                </div>
+              </div>
 
               <div class="pt-5">
-                <p>
-                  Subject :
-                  <a th:href="|/subject/${post.subject?.id}|"
-                      th:text="${post.subject?.title}"
-                  />
-                  Hashtag :
-                  <a th:href="'/subject/' + ${T(com.rygf.common.Formatter).convertStrToUrl(post.subject?.title)}"
-                     th:text="${T(com.rygf.common.Formatter).convertStrToHashtag(post.subject?.title)}"
-                  />
-                </p>
+                <p>Categories: <a th:href="@{'/'}">Design</a>, <a th:href="@{'/'}">Events</a> Tags:
+                  <a th:href="@{'/'}">#html</a>, <a th:href="@{'/'}">#trends</a></p>
               </div>
 
 
@@ -101,10 +103,56 @@
                           <p><a th:href="@{'/'}" class="reply">Reply</a></p>
                         </div>
 
+
+                        <ul class="children">
+                          <li class="comment">
+                            <div class="vcard bio">
+                              <img th:src="@{'/elit/images/person_1.jpg'}" alt="Image">
+                            </div>
+                            <div class="comment-body">
+                              <h3>Jean Doe</h3>
+                              <div class="meta">January 9, 2018 at 2:21pm</div>
+                              <p>A small river named Duden flows by their place and supplies it with
+                                the necessary regelialia. It is a paradisematic country, in which
+                                roasted parts of sentences fly into your mouth.</p>
+                              <p><a th:href="@{'/'}" class="reply">Reply</a></p>
+                            </div>
+
+                            <ul class="children">
+                              <li class="comment">
+                                <div class="vcard bio">
+                                  <img th:src="@{'/elit/images/person_4.jpg'}" alt="Image">
+                                </div>
+                                <div class="comment-body">
+                                  <h3>Ben Afflick</h3>
+                                  <div class="meta">January 9, 2018 at 2:21pm</div>
+                                  <p>Even the all-powerful Pointing has no control about the blind
+                                    texts it is an almost unorthographic life One day however a
+                                    small line of blind text by the name of Lorem Ipsum decided to
+                                    leave for the far World of Grammar.</p>
+                                  <p><a th:href="@{'/'}" class="reply">Reply</a></p>
+                                </div>
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
                       </li>
                     </ul>
                   </li>
 
+                  <li class="comment">
+                    <div class="vcard bio">
+                      <img th:src="@{'/elit/images/person_1.jpg'}" alt="Image">
+                    </div>
+                    <div class="comment-body">
+                      <h3>Jean Doe</h3>
+                      <div class="meta">January 9, 2018 at 2:21pm</div>
+                      <p>Even the all-powerful Pointing has no control about the blind texts it is
+                        an almost unorthographic life One day however a small line of blind text by
+                        the name of Lorem Ipsum decided to leave for the far World of Grammar.</p>
+                      <p><a th:href="@{'/'}" class="reply">Reply</a></p>
+                    </div>
+                  </li>
                 </ul>
                 <!-- END comment-list -->
 
@@ -150,6 +198,14 @@
                   almost unorthographic life One day however a small line of blind text by the name
                   of Lorem Ipsum decided to leave for the far World of Grammar.</p>
                 <p><a th:href="@{'/'}" class="btn btn-primary btn-md text-white">Read More</a></p>
+              </div>
+
+              <div class="sidebar-box">
+                <h3 class="text-white">Paragraph</h3>
+                <p>When she reached the first hills of the Italic Mountains, she had a last view
+                  back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet
+                  Village and the subline of her own road, the Line Lane. Pityful a rethoric
+                  question ran over her cheek, then she continued her way.</p>
               </div>
             </div>
           </div>
