@@ -7,6 +7,7 @@ import com.rygf.service.SubjectService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @AllArgsConstructor
 @Slf4j
+//...
 @Controller
 public class HomeController {
     
@@ -40,12 +42,14 @@ public class HomeController {
         model.addAttribute("posts", postsPaginated.getContent());
         model.addAttribute("curPage", curPage);
         model.addAttribute("totalPages", postsPaginated.getTotalPages());
+        model.addAttribute("totalItems", postsPaginated.getTotalElements());
         model.addAttribute("orderBy", orderBy);
         model.addAttribute("orderDir", orderDir);
         return "main";
     }
     
     
+    @PreAuthorize("hasAuthority('POST_READ')")
     @GetMapping("/post/{id}")
     public String showPostDetail(@PathVariable("id") Long id, Model model) {
         Post post = postService.find(id);

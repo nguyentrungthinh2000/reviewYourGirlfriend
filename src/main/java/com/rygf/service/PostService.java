@@ -1,8 +1,10 @@
 package com.rygf.service;
 
 import com.rygf.dao.PostRepository;
+import com.rygf.dao.UserRepository;
 import com.rygf.dto.PostDTO;
 import com.rygf.entity.Post;
+import com.rygf.entity.User;
 import com.rygf.exception.DuplicateEntityException;
 import com.rygf.exception.EntityNotFoundException;
 import java.io.IOException;
@@ -21,28 +23,32 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
+//...
 @Transactional
 @Service
 public class PostService implements IPostService {
     
     @Autowired
     private ServletContext servletContext;
+    @Autowired
+    private PostRepository postRepository;
+    @Autowired
+    private UserRepository userRepository;
     
     @Value("${thumbnail.upload.path}")
     private String uploadPath;
     
     @Value("${image.upload.maxSize}")
-    int uploadMaxSize;
+    private int uploadMaxSize;
     
     @Value("${post.page.size}")
     private int pageSize;
-    
-    @Autowired
-    private PostRepository postRepository;
     
     @Override
     public void createOrUpdate(PostDTO postDTO) {
@@ -57,10 +63,11 @@ public class PostService implements IPostService {
             temp.setTitle(postDTO.getTitle());
             temp.setDescription(postDTO.getDescription());
             temp.setContent(postDTO.getContent());
-            temp.setAuthor(postDTO.getAuthor());
             temp.setSubject(postDTO.getSubject());
-            if(postDTO.getFinalDesFileName() != null)
+            if(postDTO.getFinalDesFileName() != null) {
+                deleteExistThumbnail(postDTO.getId());
                 temp.setThumbnail(postDTO.getFinalDesFileName());
+            }
         } else { // CREATE NEW POST
             temp = new Post();
             temp.setTitle(postDTO.getTitle());
@@ -69,6 +76,11 @@ public class PostService implements IPostService {
             temp.setAuthor(postDTO.getAuthor());
             temp.setSubject(postDTO.getSubject());
             temp.setThumbnail(postDTO.getFinalDesFileName());
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Optional<User> optUser = userRepository.findByEmail(auth.getName());
+            optUser.orElseThrow(() -> new EntityNotFoundException("User with email : " + auth.getName() + " is not exists !"));
+    
+            temp.setAuthor(optUser.get());
         }
         
         try {

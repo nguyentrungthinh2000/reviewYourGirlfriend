@@ -215,7 +215,7 @@ jQuery(document).ready(function($) {
 	    scrollProperty: 'scroll'
 	  });
 	};
-	siteStellar();
+	// siteStellar();
 
 	var siteCountDown = function() {
 

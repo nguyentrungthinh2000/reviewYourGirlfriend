@@ -14,8 +14,8 @@
 
     <ul class="c-header-nav d-md-down-none" id="body-nav">
         <li class="c-header-nav-item px-3"
-            sec:authorize="hasAuthority('POST_CREATE')"
-        ><a class="c-header-nav-link btn btn-success text-white" th:href="@{'/dashboard/post/create'}">Create</a></li>
+            sec:authorize="hasAuthority('ROLE_CREATE')"
+        ><a class="c-header-nav-link btn btn-success text-white" th:href="@{'/dashboard/role/create'}">Create</a></li>
         </li>
     </ul>
     <!--
@@ -34,13 +34,13 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="card">
-                                <div class="card-header">Posts</div>
+                                <div class="card-header">Roles</div>
                                 <div class="card-body">
-                                    <div class="alert alert-light" role="alert" th:if="${#lists.size(posts)} == 0">
-                                        There is no post !
+                                    <div class="alert alert-light" role="alert" th:if="${#lists.size(roles)} == 0">
+                                        There is no role !
                                     </div>
                                     <table
-                                        th:if="${#lists.size(posts)} != 0"
+                                        th:if="${#lists.size(roles)} != 0"
                                         class="table table-responsive-sm table-hover table-outline mb-0">
                                         <thead class="thead-light">
                                         <tr>
@@ -50,53 +50,38 @@
                                                         th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-people'}"></use>
                                                 </svg>
                                             </th>
-                                            <th class="text-center table-th">Title</th>
-                                            <th class="table-th">Description</th>
-                                            <th class="table-th">Author</th>
-                                            <th class="text-center table-th">Subject</th>
+                                            <th class="text-center table-th">Name</th>
+                                            <th class="table-th">Privileges</th>
                                             <th class="table-th">Created Date</th>
-                                            <th class="text-center table-th">Updated Date</th>
-                                            <th sec:authorize="hasAuthority('POST_UPDATE')"></th>
-                                            <th sec:authorize="hasAuthority('POST_DELETE')"></th>
+                                            <th sec:authorize="hasAuthority('ROLE_UPDATE')"></th>
+                                            <th sec:authorize="hasAuthority('ROLE_DELETE')"></th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr th:each="post : ${posts}">
+                                        <tr th:each="role : ${roles}">
                                             <td class="text-center">
-                                                <span class="text-muted" th:text="'#' + ${post.id}"></span>
+                                                <span class="text-muted" th:text="'#' + ${role.id}"></span>
                                             </td>
                                             <td class="text-center">
-                                                <a th:href="#{post.detail.uri(${post.id})}"
-                                                    th:text="${post.title}"
-                                                >Title</a>
+                                                <div th:text="${role.name}">Email</div>
                                             </td>
                                             <td>
-                                                <div th:text="${post.getFormatDescription(9)}">Description</div>
+                                                <th:block th:each="pri : ${role.privileges}">
+                                                    <span th:text="${pri.name()}"/><br>
+                                                </th:block>
                                             </td>
                                             <td>
-                                                <div th:text="${post.author?.email ?: 'Unknown'}">Author</div>
+                                                <div th:text="${#temporals.format(role.createdDate, 'dd/MM/yyyy')}">Created Date</div>
                                             </td>
-                                            <td>
-                                                <a  th:if="${post.subject} != null"
-                                                    th:text="${post.subject?.title}"
-                                                    th:href="|/subject/${post.subject?.id}|">Subject</a>
-                                                <span th:unless="${post.subject} != null">Unknown</span>
+                                            <td class="text-center" sec:authorize="hasAuthority('ROLE_UPDATE')">
+                                                <a th:href="@{|/dashboard/role/${role.id}/update|}" class="btn btn-pill btn-warning text-white">Update</a>
                                             </td>
-                                            <td>
-                                                <div th:text="${#temporals.format(post.createdDate, 'dd/MM/yyyy')}">Created Date</div>
-                                            </td>
-                                            <td>
-                                                <div th:text="${#temporals.format(post.updatedDate, 'dd/MM/yyyy')}">Updated Date</div>
-                                            </td>
-                                            <td class="text-center" sec:authorize="hasAuthority('POST_UPDATE')">
-                                                <a th:href="@{|/dashboard/post/${post.id}/update|}" class="btn btn-pill btn-warning text-white">Update</a>
-                                            </td>
-                                            <td class="text-center" sec:authorize="hasAuthority('POST_DELETE')">
+                                            <td class="text-center" sec:authorize="hasAuthority('ROLE_DELETE')">
                                                 <a class="btn btn-square btn-danger text-white btn-del"
-                                                    th:obj-id="${post.id}"
-                                                    th:obj-name="${post.title}"
-                                                    obj-type="post"
-                                                    th:obj-del-url="|/dashboard/post/${post.id}/delete|"
+                                                    th:obj-id="${role.id}"
+                                                    th:obj-name="${role.name}"
+                                                    obj-type="role"
+                                                    th:obj-del-url="|/dashboard/role/${role.id}/delete|"
                                                     data-toggle="modal" data-target="#del-modal"
                                                 >Delete</a>
                                             </td>

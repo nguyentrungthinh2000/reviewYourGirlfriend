@@ -48,8 +48,10 @@ public class SubjectService implements ISubjectService {
             temp = opt.get();
             temp.setTitle(subjectDTO.getTitle());
             temp.setAbout(subjectDTO.getAbout());
-            if(subjectDTO.getFinalDesFileName() != null)
+            if(subjectDTO.getFinalDesFileName() != null) {
+                deleteExistThumbnail(subjectDTO.getId());
                 temp.setThumbnail(subjectDTO.getFinalDesFileName());
+            }
         } else { // CREATE NEW SUBJECT
             temp = new Subject();
             temp.setTitle(subjectDTO.getTitle());
@@ -91,7 +93,7 @@ public class SubjectService implements ISubjectService {
         opt.orElseThrow(() -> new EntityNotFoundException("Subject with id : " + id + " is not exists !"));
 
         Subject subject = opt.get();
-//        deleteExistThumbnail(id);
+        deleteExistThumbnail(id);
         subjectRepository.delete(subject);
     }
     

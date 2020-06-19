@@ -9,8 +9,9 @@ import com.rygf.exception.ImageException;
 import com.rygf.service.SubjectService;
 import java.util.List;
 import javax.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,15 +23,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+@AllArgsConstructor
+@Slf4j
+//...
 @RequestMapping("/dashboard/subject")
 @Controller
-@Slf4j
 public class SubjectController {
     
-    @Autowired
     private SubjectService subjectService;
-    
-    @Autowired
     private ImageUploader imageUploader;
     
     @ModelAttribute("crudStatus")
@@ -38,6 +38,7 @@ public class SubjectController {
         return new CrudStatus();
     }
     
+    @PreAuthorize("hasAuthority('SUBJECT_READ')")
     @GetMapping
     public String showSubjectDashboard(Model model) {
         List<Subject> subjects = subjectService.findAll();
@@ -46,11 +47,13 @@ public class SubjectController {
         return "subject/dashboard";
     }
     
+    @PreAuthorize("hasAuthority('SUBJECT_CREATE')")
     @GetMapping("/create")
     public String showSubjectForm(@ModelAttribute("subject") SubjectDTO subjectDTO) {
         return "subject/form";
     }
-
+    
+    @PreAuthorize("hasAnyAuthority('SUBJECT_CREATE', 'SUBJECT_UPDATE')")
     @PostMapping("/submit")
     public String processForm(@Valid @ModelAttribute("subject")SubjectDTO subjectDTO,
         BindingResult rs,
@@ -86,6 +89,7 @@ public class SubjectController {
         return "redirect:/dashboard/subject";
     }
     
+    @PreAuthorize("hasAuthority('SUBJECT_UPDATE')")
     @GetMapping("/{id}/update")
     public String showUpdatePage(@PathVariable("id")Long id,
             Model model
@@ -94,7 +98,8 @@ public class SubjectController {
         model.addAttribute("subject", subject);
         return "subject/form";
     }
-
+    
+    @PreAuthorize("hasAuthority('SUBJECT_DELETE')")
     @GetMapping("/{id}/delete")
     public String processDelete(@PathVariable("id")Long id, RedirectAttributes ra) {
         subjectService.delete(id);

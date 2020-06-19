@@ -1,5 +1,7 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
 <head th:replace="~{fragment/head :: html-head(~{:: style})}">
   <style>
     #form-thumbnail {
@@ -23,8 +25,6 @@
   <ul class="c-header-nav d-md-down-none" id="body-nav">
     <li class="c-header-nav-item px-3"><a class="c-header-nav-link" th:href="@{'/dashboard/post'}">Dashboard</a>
     </li>
-    <li class="c-header-nav-item px-3"><a class="c-header-nav-link" th:href="@{'/dashboard/post/create'}">Create</a></li>
-    </li>
   </ul>
 
   <!--
@@ -36,10 +36,11 @@
                 <div class="fade-in">
 
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-xl-8 mr-lg-auto col-md-10 col-xs-12">
                             <div class="card">
                                 <div class="card-body">
                                     <!--  BEGIN FORM-->
+                                    <!--th:action="@{'/dashboard/post/submit?' + ${_csrf.parameterName}+'='+${_csrf.token}}"-->
                                     <form th:action="@{'/dashboard/post/submit'}" method="post"
                                           enctype="multipart/form-data"
                                           th:object="${post}">
@@ -58,7 +59,8 @@
                                         </th:block>
                                       </div>
 
-                                      <img id="form-thumbnail" th:src="#{thumbnail.upload.uri(${post.thumbnailUri})}" th:if="${post.thumbnailUri} != null">
+                                      <img id="form-thumbnail" th:src="#{thumbnail.upload.uri(${post.thumbnailUri})}"
+                                           th:data-src="${post.thumbnailUri}">
 
                                         <!-- Title-->
                                         <div class="form-group">
@@ -138,7 +140,32 @@
 <!--
     END BODY
 -->
-<th:block th:replace="~{fragment/foot :: scripts}"></th:block>
+<th:block th:replace="~{fragment/foot :: scripts(~{::script})}">
+  <script th:src="@{'/elit/js/jquery-3.3.1.min.js'}"></script>
+  <script>
+    var thumb = $("#form-thumbnail");
+    $(document).ready(function () {
+      if(thumb.attr("data-src") == null) {
+        thumb.hide();
+      }
+
+      $("input[name='thumbnail']").change(function() {
+        changeImageFile(this);
+      });
+    });
+
+    function changeImageFile(fileInput) {
+      file = fileInput.files[0];
+
+      reader = new FileReader();
+      reader.onload = function(e) {
+        thumb.attr("src", e.target.result);
+      }
+      reader.readAsDataURL(file);
+      thumb.show();
+    }
+  </script>
+</th:block>
 <th:block th:replace="~{fragment/foot :: ckeditor-script}"></th:block>
 </body>
 </html>

@@ -1,8 +1,5 @@
 <!doctype html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragment/head :: html-head(_)}"/>
 <body class="c-app">
 <th:block th:replace="~{fragment/nav :: sidebar}"></th:block>
@@ -13,9 +10,9 @@
 <div class="c-wrapper c-fixed-components" th:replace="~{fragment/body :: mainbody(~{:: #page-body}, ~{:: #body-nav})}">
 
     <ul class="c-header-nav d-md-down-none" id="body-nav">
-        <li class="c-header-nav-item px-3"
-            sec:authorize="hasAuthority('SUBJECT_CREATE')"
-        ><a class="c-header-nav-link btn btn-success text-white" th:href="@{'/dashboard/subject/create'}">Create</a></li>
+        <li class="c-header-nav-item px-3"><a class="c-header-nav-link" th:href="@{'/dashboard/privilege'}">Dashboard</a>
+        </li>
+        <li class="c-header-nav-item px-3"><a class="c-header-nav-link" th:href="@{'/dashboard/privilege/create'}">Create</a></li>
         </li>
     </ul>
     <!--
@@ -34,13 +31,13 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="card">
-                                <div class="card-header">Subjects</div>
+                                <div class="card-header">Privileges</div>
                                 <div class="card-body">
-                                    <div class="alert alert-light" role="alert" th:if="${#lists.size(subjects)} == 0">
-                                        There is no subject !
+                                    <div class="alert alert-light" privilege="alert" th:if="${#lists.size(privileges)} == 0">
+                                        There is no privilege !
                                     </div>
                                     <table
-                                        th:if="${#lists.size(subjects)} != 0"
+                                        th:if="${#lists.size(privileges)} != 0"
                                         class="table table-responsive-sm table-hover table-outline mb-0">
                                         <thead class="thead-light">
                                         <tr>
@@ -50,40 +47,32 @@
                                                         th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-people'}"></use>
                                                 </svg>
                                             </th>
-                                            <th class="text-center table-th">Title</th>
-                                            <th class="table-th">About</th>
+                                            <th class="text-center table-th">Name</th>
                                             <th class="table-th">Created Date</th>
-                                            <th class="text-center table-th">Updated Date</th>
-                                            <th sec:authorize="hasAuthority('SUBJECT_UPDATE')"></th>
-                                            <th sec:authorize="hasAuthority('SUBJECT_DELETE')"></th>
+                                            <th></th>
+                                            <th></th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr th:each="subject : ${subjects}">
+                                        <tr th:each="privilege : ${privileges}">
                                             <td class="text-center">
-                                                <span class="text-muted" th:text="'#' + ${subject.id}"></span>
+                                                <span class="text-muted" th:text="'#' + ${privilege.id}"></span>
                                             </td>
                                             <td class="text-center">
-                                                <div th:text="${subject.title}">Title</div>
+                                                <div th:text="${privilege.name}">Email</div>
                                             </td>
                                             <td>
-                                                <div th:text="${subject.about}">About</div>
+                                                <div th:text="${#temporals.format(privilege.createdDate, 'dd/MM/yyyy')}">Created Date</div>
                                             </td>
-                                            <td>
-                                                <div th:text="${#temporals.format(subject.createdDate, 'dd/MM/yyyy')}">Created Date</div>
+                                            <td class="text-center">
+                                                <a th:href="@{|/dashboard/privilege/${privilege.id}/update|}" class="btn btn-pill btn-warning text-white">Update</a>
                                             </td>
-                                            <td>
-                                                <div th:text="${#temporals.format(subject.updatedDate, 'dd/MM/yyyy')}">Updated Date</div>
-                                            </td>
-                                            <td class="text-center" sec:authorize="hasAuthority('SUBJECT_UPDATE')">
-                                                <a th:href="@{|/dashboard/subject/${subject.id}/update|}" class="btn btn-pill btn-warning text-white">Update</a>
-                                            </td>
-                                            <td class="text-center" sec:authorize="hasAuthority('SUBJECT_DELETE')">
+                                            <td class="text-center">
                                                 <a class="btn btn-square btn-danger text-white btn-del"
-                                                    th:obj-id="${subject.id}"
-                                                    th:obj-name="${subject.title}"
-                                                    obj-type="subject"
-                                                    th:obj-del-url="|/dashboard/subject/${subject.id}/delete|"
+                                                    th:obj-id="${privilege.id}"
+                                                    th:obj-name="${privilege.name}"
+                                                    obj-type="privilege"
+                                                    th:obj-del-url="|/dashboard/privilege/${privilege.id}/delete|"
                                                     data-toggle="modal" data-target="#del-modal"
                                                 >Delete</a>
                                             </td>

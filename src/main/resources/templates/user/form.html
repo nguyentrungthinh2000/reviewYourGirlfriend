@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragment/head :: html-head(_)}"/>
+<body class="c-app">
+<th:block th:replace="~{fragment/nav :: sidebar}"></th:block>
+
+<!--
+    WRAPPER
+-->
+<div class="c-wrapper c-fixed-components"
+     th:replace="~{fragment/body :: mainbody(~{:: #page-body}, ~{:: #body-nav})}">
+  <ul class="c-header-nav d-md-down-none" id="body-nav">
+    <li class="c-header-nav-item px-3"><a class="c-header-nav-link"
+                                          th:href="@{'/dashboard/user/create'}">Create</a></li>
+    </li>
+  </ul>
+
+  <!--
+        BODY
+    -->
+  <div class="c-body" id="page-body">
+    <main class="c-main">
+      <div class="container-fluid">
+        <div class="fade-in">
+
+          <div class="row">
+            <div class="col-xl-8 mr-lg-auto col-md-10 col-xs-12">
+              <div class="card">
+                <div class="card-body">
+                  <!--  BEGIN FORM-->
+                  <form th:action="@{'/dashboard/user/submit'}" method="post"
+                        th:object="${user}">
+                    <!-- ID -->
+                    <input type="hidden" th:field="*{id}">
+
+                    <!-- Email -->
+                    <div class="form-group" th:if="${user.email} == null">
+                      <label>Email</label>
+                      <input type="email" class="form-control"
+                             th:field="*{email}"
+                             th:errorclass="is-invalid"
+                             placeholder="Email">
+                      <th:block th:if="${#fields.hasErrors('email')}">
+                        <div class="valid-feedback" style="display: block; color: red;"
+                             th:each="err : ${#fields.errors('email')}" th:text="${err}"/>
+                      </th:block>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                      <label>Password</label>
+                      <input type="password" class="form-control"
+                             th:field="*{password}"
+                             th:errorclass="is-invalid"
+                             placeholder="Password">
+                      <th:block th:if="${#fields.hasErrors('password')}">
+                        <div class="valid-feedback" style="display: block; color: red;"
+                             th:each="err : ${#fields.errors('password')}" th:text="${err}"/>
+                      </th:block>
+                    </div>
+
+                    <!-- Enable -->
+                    <div class="form-group">
+                      <label>User Status</label>
+                      <select th:field="*{enabled}">
+                        <option value="true">Enable</option>
+                        <option value="false">Disable</option>
+                      </select>
+                    </div>
+
+                    <!-- Role -->
+                    <div class="form-group">
+                      <label>Role</label>
+                      <select th:field="*{role}">
+                        <option value="">No Role</option>
+                        <option th:each="role : ${roles}"
+                                th:value="${role.id}"
+                                th:text="${role.name }"
+                        />
+                      </select>
+
+                      <th:block th:if="${#fields.hasErrors('role')}">
+                        <div class="valid-feedback" style="display: block; color: red;"
+                             th:each="err : ${#fields.errors('role')}" th:text="${err}"/>
+                      </th:block>
+                    </div>
+
+                    <div class="row">
+                      <div class="col text-left">
+                        <button class="btn btn-success px-4 mr-3" type="submit">Submit</button>
+                      </div>
+                    </div>
+                  </form>
+
+                  <!--  END FORM-->
+                </div>
+              </div>
+            </div>
+            <!-- /.col-->
+          </div>
+          <!-- /.row-->
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<!--
+    END BODY
+-->
+<th:block th:replace="~{fragment/foot :: scripts(_)}">
+</th:block>
+</body>
+</html>

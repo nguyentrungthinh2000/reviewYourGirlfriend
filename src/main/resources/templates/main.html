@@ -40,7 +40,6 @@
         </div>
       </section> <!-- #section-photos -->
 
-
       <section class="site-section" id="section-blog">
         <div class="container">
           <div class="row justify-content-center">
@@ -54,7 +53,7 @@
                      th:if="${#lists.size(posts)} != 0"
                      data-aos="fade-up">
 
-                  <div class="d-md-flex d-block blog-entry align-items-start"
+                  <div class="d-md-flex d-block blog-entry align-items-start mb-lg-0 mb-5"
                     th:each="post : ${posts}"
                   >
                     <div class="mr-0 mr-md-5 mb-3 img-wrap"><a th:href="|/post/${post.id}|"><img
@@ -74,7 +73,7 @@
                 </div> <!-- #blog item container -->
 
                 <div class="col-12 text-center">
-                  <div class="custom-pagination">
+                  <div class="custom-pagination" th:if="${totalItems} != 0">
                     <a th:href="@{'/1'}" th:if="${curPage} != 1">First</a>
                     <a th:href="@{|/${curPage - 1}|}"
                        th:if="${curPage - 1} > 0"
@@ -96,7 +95,7 @@
                     <a th:href="@{|/${curPage + 1}|}"
                        th:if="${curPage + 1} <= ${totalPages}"
                     ><i class="icon-arrow-right" aria-hidden="true"></i></a>
-                    <a th:href="@{'/${totalPages}'}" th:if="${curPage} != ${totalPages}">Last</a>
+                    <a th:href="@{|/${totalPages}|}" th:if="${curPage} != ${totalPages}">Last</a>
                   </div>
                 </div> <!-- #pagination -->
 
@@ -127,6 +126,14 @@
 
 <th:block th:replace="~{fragment/foot :: elit-script(~{::script})}">
   <script>
+    $(document).ready(function() {
+      $(".nav-link").removeClass("active");
+      $(".nav-link").click(function() {
+        $(".nav-link").removeClass("active");
+        $(this).addClass("active");
+      });
+    });
+
     $('[data-fancybox]').fancybox({
       caption : function( instance, item ) {
         var title = $(this).data("obj-title");
@@ -136,9 +143,9 @@
           return "Sorry for this ! Caption can\'t be shown";
 
         var caption =
-            "<p>Name : <span class='caption-title'>" + title + "</span></p>" +
-            "<p>Age : <span class='caption-about'>" + about + "</span></p>" +
-            "<p>Link : <a class='caption-url' href='" + url + "'>Checkout more</a></p>";
+            "<p>Name : <span id='caption-title'>" + title + "</span></p>" +
+            "<p>About : <span id='caption-about'>" + about + "</span></p>" +
+            "<p><a id='caption-url' href='" + url + "'>Checkout more</a></p>";
 
         return caption;
       }

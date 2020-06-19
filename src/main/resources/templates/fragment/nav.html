@@ -1,34 +1,39 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+>
 <body class="c-app">
     <!-- SIDEBAR -->
     <div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show"
          th:fragment="sidebar"
          id="sidebar">
         <div class="c-sidebar-brand d-lg-down-none">
-            <svg class="c-sidebar-brand-full" width="118" height="46" alt="CoreUI Logo">
-                <use th:href="@{'/assets/brand/coreui.svg#full'}"}></use>
-            </svg>
-            <svg class="c-sidebar-brand-minimized" width="46" height="46" alt="CoreUI Logo">
-                <use th:href="@{'/assets/brand/coreui.svg#signet'}"></use>
-            </svg>
+            <a th:href="@{'/'}">
+                <img class="c-sidebar-brand-full" width="118" height="46"
+                     th:src="@{'/assets/img/brand.jpg'}">
+
+                <img class="c-sidebar-brand-minimized" width="46" height="46"
+                     th:src="@{'/assets/img/brand.jpg'}">
+            </a>
         </div>
         <ul class="c-sidebar-nav">
-            <li class="c-sidebar-nav-item mt-3"><a class="c-sidebar-nav-link" th:href="@{'/'}">
-                <svg class="c-sidebar-nav-icon">
-                    <use th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-home'}"></use>
-                </svg>
-                Home</a></li>
-
             <!-- Dashboard -->
             <li class="c-sidebar-nav-title">Dashboard</li>
-            <li class="c-sidebar-nav-item">
-                <a class="c-sidebar-nav-link" th:href="@{'/dashboard/subject'}">Subject</a>
+            <li class="c-sidebar-nav-item" sec:authorize="hasAuthority('SUBJECT_READ')">
+                <a class="c-sidebar-nav-link"
+                   th:href="@{'/dashboard/subject'}">Subject</a>
             </li>
-            <li class="c-sidebar-nav-item">
+            <li class="c-sidebar-nav-item" sec:authorize="hasAuthority('POST_READ')">
                 <a class="c-sidebar-nav-link" th:href="@{'/dashboard/post'}">Post</a>
             </li>
-
+            <li class="c-sidebar-nav-title">Authentication</li>
+            <li class="c-sidebar-nav-item" sec:authorize="hasAuthority('USER_READ')">
+                <a class="c-sidebar-nav-link" th:href="@{'/dashboard/user'}">User</a>
+            </li>
+            <li class="c-sidebar-nav-item" sec:authorize="hasAuthority('ROLE_READ')">
+                <a class="c-sidebar-nav-link" th:href="@{'/dashboard/role'}">Role</a>
+            </li>
         </ul>
 
         <!--
@@ -80,16 +85,25 @@
 
             <div class="main-menu">
                 <ul class="js-clone-nav">
-                    <li><a th:href="@{'/'}" class="nav-link">Home</a></li>
-                    <li><a href="#section-photos" class="nav-link">Photos</a></li>
-                    <li class="active"><a href="#section-blog" class="nav-link">Blog</a></li>
+                    <th:block th:if="${#request.getRequestURI().toString().matches('\/\d*')}">
+                        <li><a href="#section-photos" class="nav-link">Photos</a></li>
+                        <li><a href="#section-blog" class="nav-link">Blog</a></li>
+                    </th:block>
                     <hr>
-                    <li><a th:href="@{'/dashboard'}" class="nav-link">Dashboard</a></li>
+                    <li sec:authorize="hasAnyRole('ADMIN', 'MANAGER')"><a th:href="@{'/dashboard'}" class="nav-link">Dashboard</a></li>
                 </ul>
-                <ul class="social js-clone-nav">
+                <ul class="social js-clone-nav" th:remove="all">
                     <li><a th:href="@{'/'}"><span class="icon-facebook"></span></a></li>
                     <li><a th:href="@{'/'}"><span class="icon-twitter"></span></a></li>
                     <li><a th:href="@{'/'}"><span class="icon-instagram"></span></a></li>
+                </ul>
+                <ul class="js-clone-nav" sec:authorize="isAuthenticated()">
+                    <li><b>Account</b> : [[${#authentication.name}]]</li>
+                    <li>[[${#lists.toList(#authentication.getAuthorities()).get(0)}]]</li>
+                    <li><a th:href="@{'/logout'}">Logout</a></li>
+                </ul>
+                <ul class="js-clone-nav" sec:authorize="isAnonymous()">
+                    <li><a th:href="@{'/login'}">Login</a></li>
                 </ul>
             </div>
         </header>

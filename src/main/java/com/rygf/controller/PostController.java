@@ -11,8 +11,9 @@ import com.rygf.service.PostService;
 import com.rygf.service.SubjectService;
 import java.util.List;
 import javax.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,18 +25,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+@AllArgsConstructor
+@Slf4j
+//...
 @RequestMapping("/dashboard/post")
 @Controller
-@Slf4j
 public class PostController {
     
-    @Autowired
     private PostService postService;
-    
-    @Autowired
     private SubjectService subjectService;
-    
-    @Autowired
     private ImageUploader imageUploader;
     
     @ModelAttribute("crudStatus")
@@ -48,6 +46,7 @@ public class PostController {
         return subjectService.findAll();
     }
     
+    @PreAuthorize("hasAuthority('POST_READ')")
     @GetMapping
     public String showPostDashboard(Model model) {
         List<Post> posts = postService.findAll();
@@ -56,11 +55,13 @@ public class PostController {
         return "post/dashboard";
     }
     
+    @PreAuthorize("hasAuthority('POST_CREATE')")
     @GetMapping("/create")
     public String showPostForm(@ModelAttribute("post")PostDTO postDTO) {
         return "post/form";
     }
     
+    @PreAuthorize("hasAnyAuthority('POST_CREATE', 'POST_UDPATE')")
     @PostMapping("/submit")
     public String processForm(@Valid @ModelAttribute("post")PostDTO postDTO,
         BindingResult rs,
@@ -96,6 +97,7 @@ public class PostController {
         return "redirect:/dashboard/post";
     }
     
+    @PreAuthorize("hasAuthority('POST_UPDATE')")
     @GetMapping("/{id}/update")
     public String showUpdatePage(@PathVariable("id")Long id,
             Model model
@@ -105,6 +107,7 @@ public class PostController {
         return "post/form";
     }
     
+    @PreAuthorize("hasAuthority('POST_DELETE')")
     @GetMapping("/{id}/delete")
     public String processDelete(@PathVariable("id")Long id, RedirectAttributes ra) {
         postService.delete(id);

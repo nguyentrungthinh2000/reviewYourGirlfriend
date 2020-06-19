@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.PreRemove;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -56,6 +57,11 @@ public class Subject {
     
     public String getFormatAbout(int maxWord) {
         return Formatter.formatString(this.about, maxWord);
+    }
+    
+    @PreRemove
+    public void preRemove() {
+        posts.stream().forEach(post -> post.setSubject(null));
     }
     
 }
