@@ -59,8 +59,11 @@
                                         </th:block>
                                       </div>
 
-                                      <img id="form-thumbnail" th:src="#{thumbnail.upload.uri(${post.thumbnailUri})}"
-                                           th:data-src="${post.thumbnailUri}">
+                                      <img id="form-thumbnail"
+                                           th:if="${post.thumbnailUri != null}"
+                                           th:with="thumbnailUri = #{thumbnail.upload.uri(${post.thumbnailUri})}"
+                                           th:src="@{${thumbnailUri}}"
+                                           th:data-src="@{${thumbnailUri}}">
 
                                         <!-- Title-->
                                         <div class="form-group">

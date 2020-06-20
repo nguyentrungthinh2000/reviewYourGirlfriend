@@ -12,7 +12,7 @@
     <groupId>com.rygf</groupId>
     <artifactId>review-your-girlfriend</artifactId>
     <version>Beta-0.0</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <name>review-your-girlfriend</name>
     <description>Review Your Girlfriend</description>
 
@@ -28,6 +28,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -82,7 +87,7 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.2</version>
-        </dependency>
+        </dependency>   
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -94,29 +99,25 @@
             <groupId>com.finder</groupId>
             <artifactId>fileeditor</artifactId>
             <version>2.6.3</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/CKFinderPlugin-FileEditor-2.6.3.jar</systemPath>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.finder</groupId>
             <artifactId>imgresize</artifactId>
             <version>2.6.3</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/CKFinderPlugin-ImageResize-2.6.3.jar</systemPath>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.finder</groupId>
             <artifactId>watermark</artifactId>
             <version>2.6.3</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/CKFinderPlugin-Watermark-2.6.3.jar</systemPath>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.finder</groupId>
             <artifactId>ckfinder</artifactId>
             <version>2.6.3</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/CKFinder-2.6.3.jar</systemPath>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.coobird</groupId>
@@ -126,10 +127,82 @@
     </dependencies>
 
     <build>
+        <finalName>rygf</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+                <executions>
+                    <execution>
+                        <id>install-jar-fileeditor</id>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <groupId>com.finder</groupId>
+                            <artifactId>fileeditor</artifactId>
+                            <version>2.6.3</version>
+                            <file>${basedir}/lib/CKFinderPlugin-FileEditor-2.6.3.jar</file>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install-jar-imgresize</id>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <groupId>com.finder</groupId>
+                            <artifactId>imgresize</artifactId>
+                            <version>2.6.3</version>
+                            <file>${basedir}/lib/CKFinderPlugin-ImageResize-2.6.3.jar</file>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install-jar-watermark</id>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <groupId>com.finder</groupId>
+                            <artifactId>watermark</artifactId>
+                            <version>2.6.3</version>
+                            <file>${basedir}/lib/CKFinderPlugin-Watermark-2.6.3.jar</file>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install-jar-ckfinder</id>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <groupId>com.finder</groupId>
+                            <artifactId>ckfinder</artifactId>
+                            <version>2.6.3</version>
+                            <file>${basedir}/lib/CKFinder-2.6.3.jar</file>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

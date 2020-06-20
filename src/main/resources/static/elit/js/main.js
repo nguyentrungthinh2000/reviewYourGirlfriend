@@ -154,7 +154,7 @@ jQuery(document).ready(function($) {
 	    fixedContentPos: false
 	  });
 	};
-	// siteMagnificPopup();
+	siteMagnificPopup();
 
 
 	var siteCarousel = function () {

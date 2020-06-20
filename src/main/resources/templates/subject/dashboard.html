@@ -64,7 +64,11 @@
                                                 <span class="text-muted" th:text="'#' + ${subject.id}"></span>
                                             </td>
                                             <td class="text-center">
-                                                <div th:text="${subject.title}">Title</div>
+                                                <a
+                                                  th:with="subjectUri = #{subject.detail.uri(${subject.id})}"
+                                                  th:href="@{${subjectUri}}"
+                                                  th:text="${subject.title}"
+                                                >Title</a>
                                             </td>
                                             <td>
                                                 <div th:text="${subject.about}">About</div>
