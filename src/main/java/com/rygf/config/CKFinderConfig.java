@@ -45,7 +45,7 @@ public class CKFinderConfig extends Configuration {
                     this.enabled = Boolean.valueOf(childNode.getTextContent().trim()).booleanValue();
             
                 if (childNode.getNodeName().equals("baseDir")) {
-                    this.baseDir = childNode.getTextContent().trim();
+                    this.baseDir = servletConf.getServletContext().getRealPath("") + childNode.getTextContent().trim();
                     this.baseDir = PathUtils.escape(this.baseDir);
                     this.baseDir = PathUtils.addSlashToEnd(this.baseDir);
                 }

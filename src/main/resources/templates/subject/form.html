@@ -58,8 +58,9 @@
                                       </div>
 
                                       <img id="form-thumbnail"
-                                           th:if="${subject.thumbnailUri != null}"
-                                           th:with="thumbnailUri = #{thumbnail.upload.uri(${subject.thumbnailUri})}"
+                                           th:with="thumbnailUri = (${subject.thumbnailUri != null}
+                                                                 ? #{thumbnail.upload.uri(${subject.thumbnailUri})}
+                                                                 : null)"
                                            th:src="@{${thumbnailUri}}"
                                            th:data-src="@{${thumbnailUri}}">
 

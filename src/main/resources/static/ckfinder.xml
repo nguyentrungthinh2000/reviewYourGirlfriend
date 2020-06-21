@@ -20,7 +20,7 @@
 <!--	<baseDir>img/post/</baseDir>-->
 <!--    <baseURL>http://localhost:8080/review_your_girlfriend_Beta_0_0_war/img/post</baseURL>-->
 
-	<baseDir>src/main/webapp/img/post/</baseDir>
+	<baseDir>img/post/</baseDir>
     <baseURL>/rygf_war/img/post</baseURL>
 
 
