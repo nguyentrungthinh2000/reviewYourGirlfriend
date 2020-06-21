@@ -1,6 +1,8 @@
 HELP.md
 target/
-public/**
+!src/main/webapp/
+src/main/webapp/**
+
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**

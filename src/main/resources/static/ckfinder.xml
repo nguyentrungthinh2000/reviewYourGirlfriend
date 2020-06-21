@@ -17,8 +17,6 @@
 	Configure the location of uploaded files. See the following article for more details:
 	http://docs.cksource.com/CKFinder_2.x/Developers_Guide/Java/Configuration/baseURL_and_baseDir
 	-->
-<!--	<baseDir>img/post/</baseDir>-->
-<!--    <baseURL>http://localhost:8080/review_your_girlfriend_Beta_0_0_war/img/post</baseURL>-->
 
 	<baseDir>img/post/</baseDir>
     <baseURL>/rygf_war/img/post</baseURL>
