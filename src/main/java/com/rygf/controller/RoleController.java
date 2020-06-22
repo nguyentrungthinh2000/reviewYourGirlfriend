@@ -56,7 +56,7 @@ public class RoleController {
         return "role/form";
     }
     
-    @PreAuthorize("hasAnyAuthority('POST_CREATE', 'POST_UPDATE')")
+    @PreAuthorize("hasAnyAuthority('ROLE_CREATE', 'ROLE_UPDATE')")
     @PostMapping("/submit")
     public String processForm(@Valid @ModelAttribute("role")RoleDTO roleDTO,
         BindingResult rs,
@@ -74,7 +74,7 @@ public class RoleController {
         return "redirect:/dashboard/role";
     }
     
-    @PreAuthorize("hasAuthority('POST_UPDATE')")
+    @PreAuthorize("hasAuthority('ROLE_UPDATE')")
     @GetMapping("/{id}/update")
     public String showUpdatePage(@PathVariable("id")Long id,
             Model model
@@ -84,7 +84,7 @@ public class RoleController {
         return "role/form";
     }
     
-    @PreAuthorize("hasAuthority('POST_DELETE')")
+    @PreAuthorize("hasAuthority('ROLE_DELETE')")
     @GetMapping("/{id}/delete")
     public String processDelete(@PathVariable("id")Long id, RedirectAttributes ra) {
         roleService.delete(id);

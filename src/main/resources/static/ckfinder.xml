@@ -19,7 +19,7 @@
 	-->
 
 	<baseDir>img/post/</baseDir>
-    <baseURL>/rygf_war/img/post</baseURL>
+    <baseURL>/img/post</baseURL>
 
 
 	<licenseKey></licenseKey>
