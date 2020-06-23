@@ -30,7 +30,12 @@ public class AuthController {
             return "register";
         
         userService.register(registerDTO);
-        return "redirect:/login";
+        return "redirect:/";
+    }
+    
+    @GetMapping("/login")
+    public String showLoginForm() {
+        return "login";
     }
     
 }

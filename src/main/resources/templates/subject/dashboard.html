@@ -87,7 +87,7 @@
                                                     th:obj-id="${subject.id}"
                                                     th:obj-name="${subject.title}"
                                                     obj-type="subject"
-                                                    th:obj-del-url="|/dashboard/subject/${subject.id}/delete|"
+                                                    th:obj-del-url="@{|/dashboard/subject/${subject.id}/delete|}"
                                                     data-toggle="modal" data-target="#del-modal"
                                                 >Delete</a>
                                             </td>

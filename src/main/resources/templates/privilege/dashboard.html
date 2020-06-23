@@ -72,7 +72,7 @@
                                                     th:obj-id="${privilege.id}"
                                                     th:obj-name="${privilege.name}"
                                                     obj-type="privilege"
-                                                    th:obj-del-url="|/dashboard/privilege/${privilege.id}/delete|"
+                                                    th:obj-del-url="@{|/dashboard/privilege/${privilege.id}/delete|}"
                                                     data-toggle="modal" data-target="#del-modal"
                                                 >Delete</a>
                                             </td>

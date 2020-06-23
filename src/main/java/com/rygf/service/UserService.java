@@ -12,12 +12,16 @@ import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
 @Service
 public class UserService {
+    
     
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
@@ -30,6 +34,11 @@ public class UserService {
     
         try {
             userRepository.save(temp);
+            SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                    temp.getEmail(),
+                    temp.getPassword(),
+                    new ArrayList<GrantedAuthority>()));
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
             throw new DuplicateEntityException("Duplicated User\n" + e.getMessage());
         }

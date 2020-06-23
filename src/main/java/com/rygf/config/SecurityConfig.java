@@ -70,10 +70,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().disable();
         
         http.formLogin()
+            .loginPage("/login")
+            .loginProcessingUrl("/login")
             .and()
             .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler());
         
-        http.logout()
+        http
+            .logout()
             .logoutSuccessUrl("/");
         
         http.rememberMe()

@@ -1,35 +1,149 @@
-
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymleaf.org">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <title>Please sign in</title>
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-  <link href="https://getbootstrap.com/docs/4.0/examples/signin/signin.css" rel="stylesheet" crossorigin="anonymous"/>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <meta name="description" content="">
+   <meta name="author" content="">
+   <title>Login Page</title>
+   <link rel="stylesheet" type="text/css" th:href="@{/assets/css/bootstrap.min.css}">
+   <!--===============================================================================================-->
+   <link rel="stylesheet" type="text/css" th:href="@{/assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css}">
+   <link rel="stylesheet" type="text/css" th:href="@{/assets/fonts/iconic/css/material-design-iconic-font.min.css}">
+   <!--===============================================================================================-->
+   <link rel="stylesheet" type="text/css" th:href="@{/assets/css/util.css}">
+   <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}">
+   <style>
+      label.main-error {
+         border-bottom: 1px solid lightgrey;
+         margin: -10px 0 14px 6px;
+         padding-bottom: 11px;
+         color: red;
+      }
+
+      label.main-error::before {content: "(*)"}
+
+      label.error {
+         border-top: 1px solid lightgrey;
+         margin: -10px 0 9px 23px;
+         padding-top: 11px;
+         color: red;
+      }
+
+      label.error::before {content: "(*)"}
+   </style>
+   <!--===============================================================================================-->
 </head>
 <body>
-<div class="container">
-  <form class="form-signin" method="post" action="/register"
-    th:object="${register}"
-  >
-<!--    <input-->
-<!--      type="hidden"-->
-<!--      th:name="${_csrf.parameterName}"-->
-<!--      th:value="${_csrf.token}" />-->
-    <h2 class="form-signin-heading">Please fill the form</h2>
-    <p>
-      <label>Email</label>
-      <input type="email" class="form-control" th:field="*{email}" required autofocus>
-    </p>
-    <p>
-      <label>Password</label>
-      <input type="password" class="form-control" th:field="*{password}" required>
-    </p>
 
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
-  </form>
+
+<!--<div class="container-login100" style="background-image: url('images/bg-01.jpg');">-->
+<div class="container-login100">
+   <div class="wrap-login100 p-l-55 p-r-55 p-t-80 p-b-30">
+      <form class="login100-form" id="form"
+         th:action="@{/register}" method="post"
+         th:object="${register}"
+      >
+				<span class="login100-form-title p-b-37">
+					Register
+				</span>
+
+         <th:block th:if="${#fields.hasErrors('*')}">
+            <label class="main-error"
+                 th:each="err : ${#fields.errors('*')}" th:text="${err}"/>
+         </th:block>
+
+         <div class="wrap-input100 m-b-20">
+            <input class="input100" type="text" th:field="*{email}"
+                   placeholder="email">
+            <span class="focus-input100"></span>
+         </div>
+
+         <div class="wrap-input100 m-b-25">
+            <input class="input100" type="password" th:field="*{password}"
+                   placeholder="password">
+            <span class="focus-input100"></span>
+         </div>
+
+         <div class="wrap-input100 m-b-25">
+            <input class="input100" type="password" id="re-password" name="re-password"
+                   placeholder="re-password">
+            <span class="focus-input100"></span>
+         </div>
+
+         <div class="container-login100-form-btn">
+            <button class="login100-form-btn" type="submit">
+               Register
+            </button>
+         </div>
+
+         <div class="text-center p-t-57 p-b-20">
+					<span class="txt1">
+						Or login with
+					</span>
+         </div>
+
+         <div class="flex-c p-b-10" id="sso-login">
+            <a href="#" class="login100-social-item">
+               <i class="fa fa-facebook-f"></i>
+            </a>
+
+            <a href="#" class="login100-social-item">
+               <img th:src="@{/assets/img/icon-google.png}" alt="GOOGLE">
+            </a>
+         </div>
+      </form>
+
+   </div>
 </div>
-</body></html>
+
+
+<!--===============================================================================================-->
+<script th:src="@{/assets/js/jquery-3.3.1.min.js}"></script>
+<script th:src="@{/assets/js/popper.min.js}"></script>
+<script th:src="@{/assets/js/bootstrap.min.js}"></script>
+<!--===============================================================================================-->
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"
+        type="text/javascript"></script>
+<script>
+  $(document).ready(function () {
+    $("#form").validate({
+      onfocusout: false,
+      onkeyup: false,
+      onclick: false,
+      rules: {
+        "email": {
+          required: true,
+          email:true,
+        },
+        "password": {
+          required: true,
+          // minlength: 8
+        },
+        "re-password": {
+          equalTo: "#password",
+        }
+      },
+      messages: {
+        "user": {
+          required: "Bắt buộc nhập username",
+          email: "Hãy nhập đúng cú pháp email",
+        },
+        "password": {
+          required: "Bắt buộc nhập password",
+          minlength: "Hãy nhập ít nhất 8 ký tự"
+        },
+        "re-password": {
+          equalTo: "Hai password phải giống nhau",
+        }
+      }
+    });
+    $("#sso-login *").click(function(e) {
+      alert("Sorry! This feature aren't supported for now\nPlease register and login with normal account");
+      e.stopPropagation();
+    });
+  });
+</script>
+
+</body>
+</html>
