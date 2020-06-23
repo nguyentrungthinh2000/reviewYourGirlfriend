@@ -9,7 +9,7 @@ import com.rygf.service.RoleService;
 import java.util.Arrays;
 import java.util.List;
 import javax.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -22,14 +22,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 //...
 @RequestMapping("/dashboard/role")
 @Controller
 public class RoleController {
     
-    private RoleService roleService;
+    private final RoleService roleService;
     
     @ModelAttribute("crudStatus")
     public CrudStatus getCrudStatus() {

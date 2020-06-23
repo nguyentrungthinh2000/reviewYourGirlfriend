@@ -21,13 +21,10 @@ public class ImageUploader {
     @Autowired
     private ServletContext servletContext;
     
-    @Value("${thumbnail.upload.path}")
-    private String uploadPath;
-    
     @Value("${image.upload.maxSize}")
     int uploadMaxSize;
     
-    public String uploadFile(MultipartFile source) throws ImageException {
+    public String uploadFile(MultipartFile source, String uploadPath) throws ImageException {
         imageFileValidCheck(source);
         
         File destinationFile;

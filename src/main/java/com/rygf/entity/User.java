@@ -42,6 +42,21 @@ public class User {
     @ManyToOne
     private Role role;
     
+    /* User Information */
+    
+    private String displayName;
+    
+    public String getDisplayName() {
+        return displayName != null ? displayName : email;
+    }
+    
+    private String thumbnail;
+    
+    private LocalDate birthdate;
+    
+    @Column(columnDefinition = "text")
+    private String bio;
+    
     @CreationTimestamp
     private LocalDate createdDate;
     

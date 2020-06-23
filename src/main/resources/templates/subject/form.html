@@ -59,10 +59,9 @@
 
                                       <img id="form-thumbnail"
                                            th:with="thumbnailUri = (${subject.thumbnailUri != null}
-                                                                 ? #{thumbnail.upload.uri(${subject.thumbnailUri})}
-                                                                 : null)"
-                                           th:src="@{${thumbnailUri}}"
-                                           th:data-src="@{${thumbnailUri}}">
+                                                   ? #{post_thumb.upload.uri(${subject.thumbnailUri})}
+                                                   : 'null')"
+                                           th:src="@{${thumbnailUri}}">
 
                                         <!-- Title-->
                                         <div class="form-group">
@@ -117,7 +116,7 @@
   <script>
     var thumb = $("#form-thumbnail");
     $(document).ready(function () {
-      if(thumb.attr("data-src") == null) {
+      if(thumb.attr("data-src") == "null") {
         thumb.hide();
       }
 

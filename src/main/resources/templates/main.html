@@ -20,7 +20,7 @@
 
             <div class="col-6 col-md-6 col-lg-4" data-aos="fade-up"
                  th:each="subject : ${subjects}"
-                 th:with="thumbUri = #{thumbnail.upload.uri(${subject.thumbnail})}"
+                 th:with="thumbUri = #{post_thumb.upload.uri(${subject.thumbnail})}"
                  th:data-aos-delay="${T(Double).valueOf(T(java.lang.Math).random() * 700 + 100).intValue()}"  >
               <a th:href="@{${thumbUri}}" class="d-block photo-item"
                  data-fancybox="gallery"
@@ -57,7 +57,7 @@
                     th:each="post : ${posts}"
                   >
                     <div class="mr-0 mr-md-5 mb-3 img-wrap"><a th:href="@{|/post/${post.id}|}"><img
-                      th:with="thumbUri = #{thumbnail.upload.uri(${post.thumbnail})}"
+                      th:with="thumbUri = #{post_thumb.upload.uri(${post.thumbnail})}"
                       th:src="@{${thumbUri}}" alt="Image" class="img-fluid"></a></div>
                     <div>
                       <h2 class="mt-0 mb-2">
@@ -65,7 +65,10 @@
                             th:text="${post.title}"
                         />
                       </h2>
-                      <div class="meta mb-3">Posted by <span th:text="${post.author?.email} ?: 'Unknown'"/> on
+                      <div class="meta mb-3">Posted by
+                        <a
+                           th:href="${post.author != null} ? @{|/user/${post.author.id}/post|} : '#'"
+                           th:text="${post.author?.getDisplayName()} ?: 'Unknown'"/> on
                         <a th:href="@{'/'}" th:text="${post.createdDate}">Date</a></div>
                       <p th:text="${post.getFormatDescription(23)}">Description</p>
                     </div>

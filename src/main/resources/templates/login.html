@@ -31,6 +31,15 @@
       }
 
       label.error::before {content: "(*)"}
+      label#remember-me {
+         font-family: SourceSansPro-Bold;
+         font-size: 16px;
+         color: #4b2354;
+         line-height: 3.2;
+         display: inline-block;
+         background: transparent;
+         padding: 0 20px 0 23px;
+      }
    </style>
    <!--===============================================================================================-->
 </head>
@@ -65,6 +74,9 @@
                    placeholder="password">
             <span class="focus-input100"></span>
          </div>
+
+         <label id="remember-me">Remember Me</label>
+         <input type="checkbox" name="remember-me">
 
          <div class="container-login100-form-btn">
             <button class="login100-form-btn" type="submit">

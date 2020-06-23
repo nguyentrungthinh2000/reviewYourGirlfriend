@@ -11,8 +11,9 @@ import com.rygf.service.PostService;
 import com.rygf.service.SubjectService;
 import java.util.List;
 import javax.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,16 +26,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 //...
 @RequestMapping("/dashboard/post")
 @Controller
 public class PostController {
+    private final PostService postService;
+    private final SubjectService subjectService;
+    private final ImageUploader imageUploader;
     
-    private PostService postService;
-    private SubjectService subjectService;
-    private ImageUploader imageUploader;
+    @Value("${post_thumb.upload.path}")
+    private String uploadPath;
     
     @ModelAttribute("crudStatus")
     public CrudStatus getCrudStatus() {
@@ -67,9 +70,8 @@ public class PostController {
         BindingResult rs,
         RedirectAttributes ra
     ) {
-        if(rs.hasErrors()) {
+        if(rs.hasErrors())
             return "post/form";
-        }
     
         MultipartFile source = postDTO.getThumbnail();
         try {
@@ -80,7 +82,7 @@ public class PostController {
             } else {
                 if(postDTO.getId() != null) // Xóa exists thumbnail
                     postService.deleteExistThumbnail(postDTO.getId());
-                String finalDesFileName = imageUploader.uploadFile(source);
+                String finalDesFileName = imageUploader.uploadFile(source, uploadPath);
                 postDTO.setFinalDesFileName(finalDesFileName);
             }
             

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymleaf.org">
+<head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <meta name="description" content="">
+   <meta name="author" content="">
+   <title>Login Page</title>
+   <link rel="stylesheet" type="text/css" th:href="@{/assets/css/bootstrap.min.css}">
+   <!--===============================================================================================-->
+   <link rel="stylesheet" type="text/css"
+         th:href="@{/assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css}">
+   <link rel="stylesheet" type="text/css"
+         th:href="@{/assets/fonts/iconic/css/material-design-iconic-font.min.css}">
+   <!--===============================================================================================-->
+   <link rel="stylesheet" type="text/css" th:href="@{/assets/css/util.css}">
+   <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}">
+   <style>
+      label.main-error {
+         border-bottom: 1px solid lightgrey;
+         margin: -10px 0 14px 6px;
+         padding-bottom: 11px;
+         color: red;
+      }
+
+      label.main-error::before {
+         content: "(*)"
+      }
+
+      label.error {
+         border-top: 1px solid lightgrey;
+         margin: -10px 0 9px 23px;
+         padding-top: 11px;
+         color: red;
+      }
+
+      label.error::before {
+         content: "(*)"
+      }
+
+      .wrap-login100 {
+         width: 600px;
+      }
+
+      textarea.input100 {
+         padding-top: 14px !important;
+      }
+
+      #form-thumbnail {
+         display: block;
+         width: 80%;
+         max-height: 260px;
+         object-fit: contain;
+         margin: auto;
+
+         border: 2px solid rgba(31, 31, 49, 0.4);
+         border-radius: 3px;
+         margin-bottom: 14px;
+      }
+   </style>
+   <!--===============================================================================================-->
+</head>
+<body>
+
+
+<!--<div class="container-login100" style="background-image: url('images/bg-01.jpg');">-->
+<div class="container-login100">
+   <div class="wrap-login100 p-l-55 p-r-55 p-t-80 p-b-30">
+      <form class="login100-form" id="form"
+            th:action="@{/dashboard/user/processProfile}" method="post"
+            enctype="multipart/form-data"
+            th:object="${profile}"
+      >
+				<span class="login100-form-title p-b-37">
+					Profile
+				</span>
+
+         <th:block th:if="${#fields.hasErrors('*')}">
+            <label class="main-error"
+                   th:each="err : ${#fields.errors('*')}" th:text="${err}"/>
+         </th:block>
+
+         <!--         <input class="input100" type="file" th:field="*{thumbnail}">-->
+
+         <!-- Thumbnail-->
+         <div>
+            <label for="thumbnail-input">Thumbnail</label>
+            <input type="file" class="input100"
+                   id="thumbnail-input"
+                   th:field="*{thumbnail}"
+                   th:errorclass="is-invalid">
+         </div>
+
+         <img id="form-thumbnail"
+              th:with="thumbnailUri = (${profile.thumbnailUri != null}
+                                       ? #{profile_thumb.upload.uri(${profile.thumbnailUri})}
+                                       : 'null')"
+              th:src="@{${thumbnailUri}}">
+
+         <div class="wrap-input100 m-b-20">
+            <input class="input100" type="text" th:field="*{displayName}"
+                   placeholder="Display Name">
+            <span class="focus-input100"></span>
+         </div>
+
+         <div class="wrap-input100 m-b-20">
+            <input class="input100" type="date" th:field="*{birthdate}">
+            <span class="focus-input100"></span>
+         </div>
+
+         <div class="wrap-input100 m-b-20">
+            <textarea class="input100" th:field="*{bio}"
+                      placeholder="Bio"></textarea>
+            <span class="focus-input100"></span>
+         </div>
+
+         <div class="container-login100-form-btn">
+            <button class="login100-form-btn" type="submit">
+               Submit
+            </button>
+         </div>
+      </form>
+
+   </div>
+</div>
+
+
+<!--===============================================================================================-->
+<script th:src="@{/assets/js/jquery-3.3.1.min.js}"></script>
+<script th:src="@{/assets/js/popper.min.js}"></script>
+<script th:src="@{/assets/js/bootstrap.min.js}"></script>
+<!--===============================================================================================-->
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"
+        type="text/javascript"></script>
+<script>
+  $(document).ready(function () {
+    $("#form").validate({
+      onfocusout: false,
+      onkeyup: false,
+      onclick: false,
+      rules: {
+        "email": {
+          required: true,
+          email: true,
+        }, // template
+      },
+      messages: {
+        "user": {
+          required: "Bắt buộc nhập username",
+          email: "Hãy nhập đúng cú pháp email",
+        }, // template
+      }
+    });
+
+    // Disable SSO Login
+    $("#sso-login *").click(function (e) {
+      alert(
+          "Sorry! This feature aren't supported for now\nPlease register and login with normal account");
+      e.stopPropagation();
+    });
+
+    //  Show Thumbnail Effect
+    var thumb = $("#form-thumbnail");
+    $(document).ready(function () {
+      if(thumb.attr("src") == "null") {
+        thumb.hide();
+      }
+
+      $("input[name='thumbnail']").change(function() {
+        changeImageFile(this);
+      });
+    });
+
+    function changeImageFile(fileInput) {
+      file = fileInput.files[0];
+
+      reader = new FileReader();
+      reader.onload = function(e) {
+        thumb.attr("src", e.target.result);
+      }
+      reader.readAsDataURL(file);
+      thumb.show();
+    }
+  });
+</script>
+
+</body>
+</html>

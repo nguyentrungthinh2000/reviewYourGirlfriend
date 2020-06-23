@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.ServletContext;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -28,20 +28,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@RequiredArgsConstructor
 @Slf4j
 //...
 @Transactional
 @Service
 public class PostService implements IPostService {
     
-    @Autowired
-    private ServletContext servletContext;
-    @Autowired
-    private PostRepository postRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private final ServletContext servletContext;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
     
-    @Value("${thumbnail.upload.path}")
+    @Value("${post_thumb.upload.path}")
     private String uploadPath;
     
     @Value("${image.upload.maxSize}")
@@ -98,6 +96,12 @@ public class PostService implements IPostService {
         return opt.get();
     }
     
+    public List<Post> findByUser(Long id) {
+        Optional<User> userOpt = userRepository.findById(id);
+        userOpt.orElseThrow(() -> new EntityNotFoundException("User with id : " + id + " is not exists !"));
+        return postRepository.findByUser(id);
+    }
+    
     @Override
     public List<Post> findAll() {
         ArrayList<Post> posts = new ArrayList<>();
@@ -124,15 +128,15 @@ public class PostService implements IPostService {
     public PostDTO findDto(Long id) {
         Optional<Post> opt = postRepository.findById(id);
         opt.orElseThrow(() -> new EntityNotFoundException("Post with id : " + id + " is not exists !"));
-        PostDTO temp = new PostDTO();
+        PostDTO dto = new PostDTO();
         Post post = opt.get();
-        temp.setId(post.getId());
-        temp.setTitle(post.getTitle());
-        temp.setDescription(post.getDescription());
-        temp.setContent(post.getContent());
-        temp.setThumbnailUri(post.getThumbnail());
-        temp.setSubject(post.getSubject());
-        return temp;
+        dto.setId(post.getId());
+        dto.setTitle(post.getTitle());
+        dto.setDescription(post.getDescription());
+        dto.setContent(post.getContent());
+        dto.setThumbnailUri(post.getThumbnail());
+        dto.setSubject(post.getSubject());
+        return dto;
     }
     
     public void deleteExistThumbnail(Long postId) {

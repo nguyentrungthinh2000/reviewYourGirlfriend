@@ -9,8 +9,9 @@ import com.rygf.exception.ImageException;
 import com.rygf.service.SubjectService;
 import java.util.List;
 import javax.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,15 +24,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 //...
 @RequestMapping("/dashboard/subject")
 @Controller
 public class SubjectController {
     
-    private SubjectService subjectService;
-    private ImageUploader imageUploader;
+    private final SubjectService subjectService;
+    private final ImageUploader imageUploader;
+    
+    @Value("${post_thumb.upload.path}")
+    private String uploadPath;
     
     @ModelAttribute("crudStatus")
     public CrudStatus getCrudStatus() {
@@ -72,7 +76,7 @@ public class SubjectController {
             } else {
                 if(subjectDTO.getId() != null) // Xóa exists thumbnail
                     subjectService.deleteExistThumbnail(subjectDTO.getId());
-                String finalDesFileName = imageUploader.uploadFile(source);
+                String finalDesFileName = imageUploader.uploadFile(source, uploadPath);
                 subjectDTO.setFinalDesFileName(finalDesFileName);
             }
 

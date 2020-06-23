@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.ServletContext;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -22,19 +22,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@RequiredArgsConstructor
 @Slf4j
+//..
 @Transactional
 @Service
 public class SubjectService implements ISubjectService {
     
-    @Autowired
-    private ServletContext servletContext;
+    private final SubjectRepository subjectRepository;
+    private final ServletContext servletContext;
     
-    @Value("${thumbnail.upload.path}")
+    @Value("${post_thumb.upload.path}")
     private String uploadPath;
     
-    @Autowired
-    private SubjectRepository subjectRepository;
     
     @Override
     public void createOrUpdate(SubjectDTO subjectDTO) {
@@ -104,13 +104,13 @@ public class SubjectService implements ISubjectService {
     public SubjectDTO findDto(Long id) {
         Optional<Subject> opt = subjectRepository.findById(id);
         opt.orElseThrow(() -> new EntityNotFoundException("Subject with id : " + id + " is not exists !"));
-        SubjectDTO temp = new SubjectDTO();
+        SubjectDTO dto = new SubjectDTO();
         Subject subject = opt.get();
-        temp.setId(subject.getId());
-        temp.setTitle(subject.getTitle());
-        temp.setAbout(subject.getAbout());
-        temp.setThumbnailUri(subject.getThumbnail());
-        return temp;
+        dto.setId(subject.getId());
+        dto.setTitle(subject.getTitle());
+        dto.setAbout(subject.getAbout());
+        dto.setThumbnailUri(subject.getThumbnail());
+        return dto;
     }
     
     public void deleteExistThumbnail(Long subjectId) {

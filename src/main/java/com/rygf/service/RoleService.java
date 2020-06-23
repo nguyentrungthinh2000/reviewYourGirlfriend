@@ -7,21 +7,21 @@ import com.rygf.exception.DuplicateEntityException;
 import com.rygf.exception.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 //...
 @Transactional
 @Service
 public class RoleService {
     
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
     
     public void createOrUpdate(RoleDTO roleDTO) {
         Role temp;
@@ -73,12 +73,12 @@ public class RoleService {
     public RoleDTO findDto(Long id) {
         Optional<Role> opt = roleRepository.findById(id);
         opt.orElseThrow(() -> new EntityNotFoundException("Role with id : " + id + " is not exists !"));
-        RoleDTO temp = new RoleDTO();
+        RoleDTO dto = new RoleDTO();
         Role role = opt.get();
-        temp.setId(role.getId());
-        temp.setName(role.getName());
-        temp.setPrivileges(role.getPrivileges());
-        return temp;
+        dto.setId(role.getId());
+        dto.setName(role.getName());
+        dto.setPrivileges(role.getPrivileges());
+        return dto;
     }
     
 //    public Page<Role> findAllPaginated(int curPage, String orderBy, String orderDir) {

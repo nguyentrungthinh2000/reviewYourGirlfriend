@@ -3,7 +3,8 @@ package com.rygf.controller;
 import com.rygf.dto.RegisterDTO;
 import com.rygf.service.UserService;
 import javax.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,11 +12,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Controller
 public class AuthController {
     
-    private UserService userService;
+    private final UserService userService;
     
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
@@ -36,6 +37,13 @@ public class AuthController {
     @GetMapping("/login")
     public String showLoginForm() {
         return "login";
+    }
+    
+    @GetMapping("/settings/profile")
+    @PreAuthorize("isAuthenticated()")
+    public String showChangeInfoForm(Model model) {
+        model.addAttribute("profile", userService.findProfileDto());
+        return "user/profile";
     }
     
 }

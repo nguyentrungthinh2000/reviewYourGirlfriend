@@ -9,19 +9,19 @@
   <th:block th:replace="~{fragment/nav :: elit-nav-sidebar}"></th:block>
   <main class="main-content">
 
-    <section class="site-section-hero bg-image"
-             th:with="thumbUri = #{thumbnail.upload.uri(${subject.thumbnail})}"
-             th:style="|background-image: url(@{${thumbUri}})|"
-             data-stellar-background-ratio="0.5" id="section-home">
-      <div class="row justify-content-center align-items-center">
-        <div class="col-md-7 text-center">
-          <h1 class="text-white heading text-uppercase" data-aos="fade-up" th:text="${subject.title}">Title</h1>
-          <p class="lead text-white mb-5" data-aos="fade-up" data-aos-delay="100">
-            <span th:text="${subject.about}">About</span>
-          </p>
-        </div>
-      </div>
-    </section>
+<!--    <section class="site-section-hero bg-image"-->
+<!--             th:with="thumbUri = #{post_thumb.upload.uri(${subject.thumbnail})}"-->
+<!--             th:style="|background-image: url(@{${thumbUri}})|"-->
+<!--             data-stellar-background-ratio="0.5" id="section-home">-->
+<!--      <div class="row justify-content-center align-items-center">-->
+<!--        <div class="col-md-7 text-center">-->
+<!--          <h1 class="text-white heading text-uppercase" data-aos="fade-up" th:text="${subject.title}">Title</h1>-->
+<!--          <p class="lead text-white mb-5" data-aos="fade-up" data-aos-delay="100">-->
+<!--            <span th:text="${subject.about}">About</span>-->
+<!--          </p>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </section>-->
 
 
     <div class="container-fluid">
@@ -30,21 +30,23 @@
           <div class="row">
             <div class="col-md-8 blog-content pr-lg-5">
               <h2 class="heading text-uppercase text-white" data-aos="fade-up">Blog</h2>
-              <p class="lead w-100" th:if="${#lists.size(subject.posts)} == 0">
+              <p class="lead w-100" th:if="${#lists.size(posts)} == 0">
                 There is no post !
               </p>
 
               <div class="jumbotron"
-                   th:with="thumbUri = #{thumbnail.upload.uri(${post.thumbnail})}"
+                   th:with="thumbUri = #{post_thumb.upload.uri(${post.thumbnail})}"
                    th:style="|background-image: url(@{${thumbUri}})|"
-                   th:each="post : ${subject.posts}">
+                   th:each="post : ${posts}">
                 <div class="jumbotron-container">
                   <h1 class="display-4" th:text="${post.getFormatTitle(10)}"/>
                   <p class="lead">
                     <span th:text="${post.createdDate}">Date</span>
                     <span th:if="${post.author} != null">
                       &bullet; <em>by</em></span>
-                    <span th:text="${post.author?.email}">Author</span>
+                    <a
+                       th:href="${post.author != null} ? @{|/user/${post.author.id}/post|} : '#'"
+                       th:text="${post.author?.getDisplayName()} ?: 'Unknown'"/>
                   </p>
                   <hr class="my-4">
                   <p th:text="${T(com.rygf.common.Formatter).formatString(post.description, 35)}"/>

@@ -3,28 +3,45 @@ package com.rygf.service;
 import com.rygf.dao.UserRepository;
 import com.rygf.dto.RegisterDTO;
 import com.rygf.dto.UserDTO;
+import com.rygf.dto.UserProfileDTO;
 import com.rygf.entity.User;
 import com.rygf.exception.DuplicateEntityException;
 import com.rygf.exception.EntityNotFoundException;
+import com.rygf.security.CustomUserDetails;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import lombok.AllArgsConstructor;
+import javax.servlet.ServletContext;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Slf4j
+//...
 @Service
 public class UserService {
     
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final ServletContext servletContext;
     
-    private PasswordEncoder passwordEncoder;
-    private UserRepository userRepository;
+    @Value("${profile_thumb.upload.path}")
+    private String uploadPath;
+    
+    @Value("${image.upload.maxSize}")
+    private int uploadMaxSize;
     
     public void register(RegisterDTO registerDTO) {
         User temp = new User();
@@ -103,16 +120,61 @@ public class UserService {
     public UserDTO findDto(Long id) {
         Optional<User> opt = userRepository.findById(id);
         opt.orElseThrow(() -> new EntityNotFoundException("User with id : " + id + " is not exists !"));
-        UserDTO temp = new UserDTO();
+        UserDTO dto = new UserDTO();
         User user = opt.get();
-        temp.setId(user.getId());
-        temp.setEmail(user.getEmail());
-        temp.setPassword(user.getPassword());
-        temp.setEnabled(user.isEnabled());
-        temp.setRole(user.getRole());
-        return temp;
+        dto.setId(user.getId());
+        dto.setEmail(user.getEmail());
+        dto.setPassword(user.getPassword());
+        dto.setEnabled(user.isEnabled());
+        dto.setRole(user.getRole());
+        return dto;
     }
     
+    @PreAuthorize("isAuthenticated()")
+    public UserProfileDTO findProfileDto() {
+        CustomUserDetails principal = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<User> opt = userRepository.findById(principal.getId());
+        opt.orElseThrow(() -> new EntityNotFoundException("Fail in update profile dou to not found entity!"));
+        UserProfileDTO dto = new UserProfileDTO();
+        User user = opt.get();
+    
+        dto.setThumbnailUri(user.getThumbnail());
+        dto.setDisplayName(user.getDisplayName());
+        dto.setBirthdate(user.getBirthdate());
+        dto.setBio(user.getBio());
+        return dto;
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    public void updateProfile(UserProfileDTO profile) {
+        CustomUserDetails principal = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<User> opt = userRepository.findById(principal.getId());
+        opt.orElseThrow(() -> new EntityNotFoundException("Fail in update profile dou to not found entity!"));
+    
+        User user = opt.get();
+        user.setDisplayName(profile.getDisplayName());
+        user.setBirthdate(profile.getBirthdate());
+        user.setBio(profile.getBio());
+        
+        if(profile.getFinalDesFileName() != null)
+            user.setThumbnail(profile.getFinalDesFileName());
+        userRepository.save(user);
+    }
+    
+    public void deleteExistThumbnail() {
+        CustomUserDetails principal = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = find(principal.getId());
+        if(user.getThumbnail() == null)
+            return;
+    
+        String filePath = servletContext.getRealPath("") + uploadPath.concat(user.getThumbnail());
+        try {
+            Files.deleteIfExists(Paths.get(filePath));
+        } catch(IOException e) {
+            log.warn("IOException : {}", e.getMessage());
+        }
+    }
+
 //    public Page<User> findAllPaginated(int curPage, String orderBy, String orderDir) {
 //        Sort orders;
 //        Pageable pageable;
