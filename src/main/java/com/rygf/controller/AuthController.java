@@ -1,6 +1,7 @@
 package com.rygf.controller;
 
 import com.rygf.dto.RegisterDTO;
+import com.rygf.dto.UserPasswordDTO;
 import com.rygf.service.UserService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,13 @@ public class AuthController {
     public String showChangeInfoForm(Model model) {
         model.addAttribute("profile", userService.findProfileDto());
         return "user/profile";
+    }
+    
+    @GetMapping("/settings/password")
+    @PreAuthorize("isAuthenticated()")
+    public String showChangePasswordForm(Model model) {
+        model.addAttribute("profile", new UserPasswordDTO());
+        return "user/change_password";
     }
     
 }

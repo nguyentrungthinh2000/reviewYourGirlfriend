@@ -4,10 +4,12 @@ import com.rygf.common.ImageUploader;
 import com.rygf.dto.CrudStatus;
 import com.rygf.dto.CrudStatus.STATUS;
 import com.rygf.dto.UserDTO;
+import com.rygf.dto.UserPasswordDTO;
 import com.rygf.dto.UserProfileDTO;
 import com.rygf.entity.Role;
 import com.rygf.entity.User;
 import com.rygf.exception.ImageException;
+import com.rygf.exception.UserSettingException;
 import com.rygf.service.RoleService;
 import com.rygf.service.UserService;
 import java.util.List;
@@ -103,6 +105,10 @@ public class UserController {
         return "redirect:/dashboard/user";
     }
     
+    
+    /*
+    *   Settings
+    * */
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/processProfile")
     public String showChangeInfoForm(@Valid @ModelAttribute("profile") UserProfileDTO profile,
@@ -125,6 +131,23 @@ public class UserController {
         }
     
         userService.updateProfile(profile);
+        return "redirect:/";
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/changePasswordProcess")
+    public String showChangeInfoForm(@Valid @ModelAttribute("profile") UserPasswordDTO profile,
+        BindingResult rs) {
+        if(rs.hasErrors())
+            return "user/change_password";
+        
+        try {
+            userService.changePassword(profile);
+        } catch (UserSettingException e) {
+            rs.rejectValue("oldPassword", null, e.getMessage());
+            return "user/change_password";
+        }
+        
         return "redirect:/";
     }
     

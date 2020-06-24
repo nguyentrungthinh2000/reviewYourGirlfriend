@@ -3,11 +3,14 @@ package com.rygf.service;
 import com.rygf.dao.UserRepository;
 import com.rygf.dto.RegisterDTO;
 import com.rygf.dto.UserDTO;
+import com.rygf.dto.UserPasswordDTO;
 import com.rygf.dto.UserProfileDTO;
 import com.rygf.entity.User;
 import com.rygf.exception.DuplicateEntityException;
 import com.rygf.exception.EntityNotFoundException;
+import com.rygf.exception.UserSettingException;
 import com.rygf.security.CustomUserDetails;
+import com.rygf.security.CustomUserDetailsService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -18,12 +21,17 @@ import javax.servlet.ServletContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +44,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final ServletContext servletContext;
+    private final CustomUserDetailsService userDetailsService;
+    
+    @Autowired
+    protected AuthenticationManager authenticationManager;
     
     @Value("${profile_thumb.upload.path}")
     private String uploadPath;
@@ -172,6 +184,28 @@ public class UserService {
             Files.deleteIfExists(Paths.get(filePath));
         } catch(IOException e) {
             log.warn("IOException : {}", e.getMessage());
+        }
+    }
+    
+    public void changePassword(UserPasswordDTO profile) throws UserSettingException {
+        SecurityContext context = SecurityContextHolder.getContext();
+        CustomUserDetails principal = (CustomUserDetails) context.getAuthentication().getPrincipal();
+        User user = find(principal.getId());
+        try {
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(principal.getUsername(), profile.getOldPassword()));
+            
+            // change password in db
+            user.setPassword(passwordEncoder.encode(profile.newPassword));
+            userRepository.save(user);
+            
+            // change auth token
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                userDetails, (Object) null, userDetails.getAuthorities());
+            context.setAuthentication(authToken);
+        } catch (AuthenticationException e) {
+            throw new UserSettingException("Old password is wrong !");
         }
     }
 
