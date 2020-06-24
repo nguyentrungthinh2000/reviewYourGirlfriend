@@ -86,4 +86,35 @@ public class AuthController {
         return "user/change_password";
     }
     
+    @GetMapping("/forgetPassword")
+    public String showRepasswordForm() {
+        return "forget-password";
+    }
+    
+    @PostMapping("/forgetPassword")
+    public String processSendResetPasswordToken(@RequestParam("email")String email,
+        HttpServletRequest request, Model model) {
+        userService.findByEmail(email);
+        
+        String serverURL = generateServerURL(request);
+        userService.sendResetPasswordToken(email, serverURL);
+        
+        model.addAttribute("heading", "Send Token Success");
+        model.addAttribute("content", "ResetToken has been sent to email : " + email);
+        return "account_announce";
+    }
+    
+    @GetMapping("/resetPasswordConfirm")
+    public String confirmResetPasswordToken(@RequestParam(value = "token") String token, Model model) {
+        userService.verifyResetPasswordToken(token);
+        return "reset-password";
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/resetPassword")
+    public String resetPasswordProcess(@RequestParam("password")String password) {
+        userService.resetPassword(password);
+        return "redirect:/";
+    }
+    
 }
