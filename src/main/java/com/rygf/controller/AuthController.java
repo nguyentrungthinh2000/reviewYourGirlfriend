@@ -3,6 +3,7 @@ package com.rygf.controller;
 import com.rygf.dto.RegisterDTO;
 import com.rygf.dto.UserPasswordDTO;
 import com.rygf.service.UserService;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,12 +13,21 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RequiredArgsConstructor
 @Controller
 public class AuthController {
     
     private final UserService userService;
+    
+    private static String generateServerURL(HttpServletRequest request) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("http://");
+        builder.append(request.getServerName() + ":" + request.getServerPort());
+        builder.append(request.getContextPath());
+        return builder.toString();
+    }
     
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
@@ -27,12 +37,34 @@ public class AuthController {
     
     @PostMapping("/register")
     public String processRegisterForm(@Valid @ModelAttribute("register") RegisterDTO registerDTO,
-            BindingResult rs) {
+            BindingResult rs,
+            HttpServletRequest request,
+            Model model) {
         if(rs.hasErrors())
             return "register";
+    
+        String serverURL = generateServerURL(request);
+        userService.register(registerDTO, serverURL);
         
-        userService.register(registerDTO);
-        return "redirect:/";
+        // Announce
+        model.addAttribute("heading", "Account Verification");
+        StringBuilder builder = new StringBuilder();
+        builder.append("Last step to finish & activate your account</br>");
+        builder.append("We've already send verification token</br>To email :  ");
+        builder.append("<u>");
+        builder.append(registerDTO.getEmail());
+        builder.append("</u>");
+        model.addAttribute("content", builder.toString());
+        return "account_announce";
+    }
+    
+    @GetMapping("/registrationConfirm")
+    public String confirmVerificationToken(@RequestParam(value = "token") String token, Model model) {
+        userService.verifyRegistrationToken(token);
+        
+        model.addAttribute("heading", "Account Confirmation");
+        model.addAttribute("content", "Your account has been activated!\n</br>Welcome to our family <3");
+        return "account_announce";
     }
     
     @GetMapping("/login")

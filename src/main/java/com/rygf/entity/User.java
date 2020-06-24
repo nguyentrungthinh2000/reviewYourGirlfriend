@@ -3,12 +3,14 @@ package com.rygf.entity;
 import com.rygf.common.Formatter;
 import com.rygf.common.GetLink;
 import java.time.LocalDate;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -64,6 +66,9 @@ public class User {
     
     @UpdateTimestamp
     private LocalDate updatedDate;
+    
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private VerificationToken verificationToken;
     
     public String selfLinkPosts() {
         return GetLink.getUserPostsUri(id, Formatter.convertStrToSlug(getDisplayName()));

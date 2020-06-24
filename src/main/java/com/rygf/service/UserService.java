@@ -1,13 +1,19 @@
 package com.rygf.service;
 
+import com.rygf.dao.ChangePasswordTokenRepository;
+import com.rygf.dao.RegisterTokenRepository;
 import com.rygf.dao.UserRepository;
 import com.rygf.dto.RegisterDTO;
 import com.rygf.dto.UserDTO;
 import com.rygf.dto.UserPasswordDTO;
 import com.rygf.dto.UserProfileDTO;
+import com.rygf.entity.RegisterToken;
 import com.rygf.entity.User;
+import com.rygf.event.SendRegistrationTokenEvent;
 import com.rygf.exception.DuplicateEntityException;
 import com.rygf.exception.EntityNotFoundException;
+import com.rygf.exception.InvalidTokenException;
+import com.rygf.exception.MailSendingException;
 import com.rygf.exception.UserSettingException;
 import com.rygf.security.CustomUserDetails;
 import com.rygf.security.CustomUserDetailsService;
@@ -23,7 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.mail.MailException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,10 +42,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Slf4j
 //...
+@Transactional
 @Service
 public class UserService {
     
@@ -45,6 +55,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final ServletContext servletContext;
     private final CustomUserDetailsService userDetailsService;
+    private final ApplicationEventPublisher eventPublisher;
+    private final RegisterTokenRepository registerTokenRepository;
+    private final ChangePasswordTokenRepository changePasswordTokenRepository;
     
     @Autowired
     protected AuthenticationManager authenticationManager;
@@ -55,11 +68,11 @@ public class UserService {
     @Value("${image.upload.maxSize}")
     private int uploadMaxSize;
     
-    public void register(RegisterDTO registerDTO) {
+    public void register(RegisterDTO registerDTO, String serverURL) {
         User temp = new User();
         temp.setEmail(registerDTO.getEmail());
         temp.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
-        temp.setEnabled(true); // cần fix
+        temp.setEnabled(false); // Chờ confirm mới kích hoạt
     
         try {
             userRepository.save(temp);
@@ -68,8 +81,12 @@ public class UserService {
                     temp.getEmail(),
                     temp.getPassword(),
                     new ArrayList<GrantedAuthority>()));
+    
+            eventPublisher.publishEvent(new SendRegistrationTokenEvent(this, temp, serverURL));
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
-            throw new DuplicateEntityException("Duplicated User\n" + e.getMessage());
+            throw new DuplicateEntityException("Email : " + registerDTO.getEmail() + " is already taken");
+        } catch (MailException e) {
+            throw new MailSendingException("Mail sending has been interrupted");
         }
     }
     
@@ -82,15 +99,15 @@ public class UserService {
             opt.orElseThrow(() -> new EntityNotFoundException("User with id : " + userId + " is not exists !"));
 
             temp = opt.get();
-            temp.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            if(!userDTO.getPassword().isBlank())
+                temp.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             temp.setEnabled(userDTO.isEnabled());
             temp.setRole(userDTO.getRole());
 
         } else { // CREATE NEW USER
             temp = new User();
             temp.setEmail(userDTO.getEmail());
-            if(!userDTO.getPassword().isBlank())
-                temp.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            temp.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             temp.setEnabled(userDTO.isEnabled());
             temp.setRole(userDTO.getRole());
         }
@@ -207,6 +224,22 @@ public class UserService {
         } catch (AuthenticationException e) {
             throw new UserSettingException("Old password is wrong !");
         }
+    }
+    
+    public void verifyRegistrationToken(String token) {
+        Optional<RegisterToken> opt = registerTokenRepository.findByToken(token);
+        opt.orElseThrow(() -> new InvalidTokenException("Why are you sending us invalid token ?"));
+    
+        final RegisterToken tokenEntity = opt.get();
+        User user = tokenEntity.getUser();
+    
+        if(tokenEntity.getExpirationDate().compareTo(tokenEntity.getCreatedDate()) <= 0)
+            throw new InvalidTokenException("Your token has expired !");
+    
+        registerTokenRepository.delete(tokenEntity);
+        user.setEnabled(true); // active User
+        
+        userRepository.save(user);
     }
 
 //    public Page<User> findAllPaginated(int curPage, String orderBy, String orderDir) {

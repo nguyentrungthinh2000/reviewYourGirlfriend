@@ -2,6 +2,8 @@ package com.rygf.exception.handler;
 
 import com.rygf.exception.DuplicateEntityException;
 import com.rygf.exception.EntityNotFoundException;
+import com.rygf.exception.InvalidTokenException;
+import com.rygf.exception.MailSendingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -42,6 +44,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public String handleAccessDeniedException(AccessDeniedException e, Model model) {
         model.addAttribute("code", HttpStatus.FORBIDDEN.value());
+        model.addAttribute("message", e.getMessage());
+        return "error";
+    }
+    
+    @ExceptionHandler(MailSendingException.class)
+    public String MailSendingExcHandler(MailSendingException e, Model model) {
+        model.addAttribute("code", HttpStatus.CONFLICT.value());
+        model.addAttribute("message", e.getMessage());
+        return "error";
+    }
+    
+    @ExceptionHandler(InvalidTokenException.class)
+    public String InvalidTokenExcHandler(InvalidTokenException e, Model model) {
+        model.addAttribute("code", HttpStatus.CONFLICT.value());
         model.addAttribute("message", e.getMessage());
         return "error";
     }

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Announce</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/assets/css/bootstrap.min.css}">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css"
+        th:href="@{/assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css}">
+  <link rel="stylesheet" type="text/css"
+        th:href="@{/assets/fonts/iconic/css/material-design-iconic-font.min.css}">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" th:href="@{/assets/css/util.css}">
+  <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}">
+  <style>
+    label.main-error {
+      border-bottom: 1px solid lightgrey;
+      margin: -10px 0 14px 6px;
+      padding-bottom: 11px;
+      color: red;
+    }
+
+    label.main-error::before {
+      content: "(*)"
+    }
+
+    label.error {
+      border-top: 1px solid lightgrey;
+      margin: -10px 0 9px 23px;
+      padding-top: 11px;
+      color: red;
+    }
+
+    label.error::before {
+      content: "(*)"
+    }
+
+    .wrap-login100 {
+      width: 650px!important;
+    }
+  </style>
+  <!--===============================================================================================-->
+</head>
+<body>
+
+
+<!--<div class="container-login100" style="background-image: url('images/bg-01.jpg');">-->
+<div class="container-login100">
+  <div class="wrap-login100 p-l-55 p-r-55 p-t-80 p-b-30">
+				<span class="login100-form-title mb-3" th:text="${heading}"/>
+        <p style="font-size:16px" th:utext="${content}"/>
+  </div>
+</div>
+
+
+<!--===============================================================================================-->
+<script th:src="@{/assets/js/jquery-3.3.1.min.js}"></script>
+<script th:src="@{/assets/js/popper.min.js}"></script>
+<script th:src="@{/assets/js/bootstrap.min.js}"></script>
+<!--===============================================================================================-->
+</body>
+</html>

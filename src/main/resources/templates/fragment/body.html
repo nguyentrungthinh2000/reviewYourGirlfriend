@@ -68,7 +68,9 @@
                     </a>
 
                     <a class="dropdown-item" href="#">
-                        <span th:text="${#lists.toList(#authentication.getAuthorities()).get(0)}"></span>
+                        <span th:if="${#lists.size(#authentication.getAuthorities()) != 0}">
+                            [[${#lists.toList(#authentication.getAuthorities()).get(0)}]]
+                        </span>
                     </a>
 
                     <th:block th:remove="all">

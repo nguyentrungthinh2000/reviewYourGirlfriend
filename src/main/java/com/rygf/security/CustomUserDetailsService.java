@@ -1,6 +1,7 @@
 package com.rygf.security;
 
 import com.rygf.dao.UserRepository;
+import com.rygf.entity.Role;
 import com.rygf.entity.User;
 import com.rygf.exception.EntityNotFoundException;
 import java.util.Optional;
@@ -23,7 +24,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         Optional<User> opt = userRepository.findByEmail(email);
         opt.orElseThrow(() -> new EntityNotFoundException("Email or password can be wrong !"));
     
-        opt.get().getRole().getPrivileges().size(); // fetch lazy privileges
+        Role role = opt.get().getRole();
+        if(role != null)
+            role.getPrivileges().size(); // fetch lazy privileges
         CustomUserDetails userDetails = new CustomUserDetails(opt.get());
     
         return userDetails;
