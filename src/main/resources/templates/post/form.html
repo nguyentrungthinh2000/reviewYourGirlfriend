@@ -61,7 +61,7 @@
 
                                       <img id="form-thumbnail"
                                            th:with="thumbnailUri = (${post.thumbnailUri != null}
-                                                   ? #{post_thumb.upload.uri(${post.thumbnailUri})}
+                                                   ? ${post.thumbnailUri}
                                                    : 'null')"
                                            th:src="@{${thumbnailUri}}">
 

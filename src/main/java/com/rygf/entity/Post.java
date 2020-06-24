@@ -1,6 +1,7 @@
 package com.rygf.entity;
 
 import com.rygf.common.Formatter;
+import com.rygf.common.GetLink;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -63,6 +64,23 @@ public class Post {
         return Formatter.formatString(this.description, maxWord);
     }
     
+    public String selfLinkDetail() {
+        return GetLink.getPostDetailUri(id);
+    }
     
+    public String selfLinkThumbUri() {
+        return GetLink.getPostThumbUri(thumbnail);
+    }
     
+    public String getHashTag() {
+        return Formatter.convertStrToHashtag(this.title);
+    }
+    
+    public String selfLinkUpdate() {
+        return GetLink.getDashboardPostUpdateUri(id);
+    }
+    
+    public String selfLinkDelete() {
+        return GetLink.getDashboardPostDeleteUri(id);
+    }
 }

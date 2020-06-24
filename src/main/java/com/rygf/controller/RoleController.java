@@ -25,7 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 @Slf4j
 //...
-@RequestMapping("/dashboard/role")
+@RequestMapping("/dashboard/roles")
 @Controller
 public class RoleController {
     
@@ -71,7 +71,7 @@ public class RoleController {
             ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.CREATE_SUCCESS));
         else if(roleDTO.getId() != null)
             ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.UPDATE_SUCCESS));
-        return "redirect:/dashboard/role";
+        return "redirect:/dashboard/roles";
     }
     
     @PreAuthorize("hasAuthority('ROLE_UPDATE')")
@@ -90,7 +90,7 @@ public class RoleController {
         roleService.delete(id);
 
         ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.DELETE_SUCCESS));
-        return "redirect:/dashboard/role";
+        return "redirect:/dashboard/roles";
     }
     
 }

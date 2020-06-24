@@ -1,5 +1,6 @@
 package com.rygf.entity;
 
+import com.rygf.common.GetLink;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -62,4 +63,20 @@ public class User {
     
     @UpdateTimestamp
     private LocalDate updatedDate;
+    
+    public String selfLinkPosts() {
+        return GetLink.getUserPostsUri(id);
+    }
+    
+    public String selfLinkThumbUri() {
+        return GetLink.getUserProfileThumbUri(thumbnail);
+    }
+    
+    public String selfLinkUpdate() {
+        return GetLink.getDashboardUserUpdateUri(id);
+    }
+    
+    public String selfLinkDelete() {
+        return GetLink.getDashboardUserDeleteUri(id);
+    }
 }

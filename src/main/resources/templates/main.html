@@ -20,15 +20,14 @@
 
             <div class="col-6 col-md-6 col-lg-4" data-aos="fade-up"
                  th:each="subject : ${subjects}"
-                 th:with="thumbUri = #{post_thumb.upload.uri(${subject.thumbnail})}"
                  th:data-aos-delay="${T(Double).valueOf(T(java.lang.Math).random() * 700 + 100).intValue()}"  >
-              <a th:href="@{${thumbUri}}" class="d-block photo-item"
+              <a th:href="@{${subject.selfLinkThumbUri()}}" class="d-block photo-item"
                  data-fancybox="gallery"
                  th:data-obj-title="${subject.getFormatTitle(4)}"
                  th:data-obj-about="${subject.getFormatAbout(23)}"
-                 th:data-obj-url="@{|/subject/${subject.id}|}"
+                 th:data-obj-url="@{${subject.selfLinkDetail()}}"
               >
-                <img th:src="@{${thumbUri}}" alt="Image" class="mg-fluid">
+                <img th:src="@{${subject.selfLinkThumbUri()}}" alt="Image" class="mg-fluid">
                 <div class="photo-text-more">
                   <h1 alt="gfriend's title" th:text="${subject.getFormatTitle(14)}">Name</h1>
                   <p alt="gfriend's about'" th:text="${subject.getFormatAbout(40)}">Age</p>
@@ -56,18 +55,17 @@
                   <div class="d-md-flex d-block blog-entry align-items-start mb-lg-0 mb-5"
                     th:each="post : ${posts}"
                   >
-                    <div class="mr-0 mr-md-5 mb-3 img-wrap"><a th:href="@{|/post/${post.id}|}"><img
-                      th:with="thumbUri = #{post_thumb.upload.uri(${post.thumbnail})}"
-                      th:src="@{${thumbUri}}" alt="Image" class="img-fluid"></a></div>
+                    <div class="mr-0 mr-md-5 mb-3 img-wrap"><a th:href="@{${post.selfLinkDetail()}}"><img
+                      th:src="@{${post.selfLinkThumbUri()}}" alt="Image" class="img-fluid"></a></div>
                     <div>
                       <h2 class="mt-0 mb-2">
-                        <a th:href="@{|/post/${post.id}|}"
+                        <a th:href="@{${post.selfLinkDetail()}}"
                             th:text="${post.title}"
                         />
                       </h2>
                       <div class="meta mb-3">Posted by
                         <a
-                           th:href="${post.author != null} ? @{|/user/${post.author.id}/post|} : '#'"
+                           th:href="${post.author != null} ? @{${post.author.selfLinkPosts()}} : '#'"
                            th:text="${post.author?.getDisplayName()} ?: 'Unknown'"/> on
                         <a th:href="@{'/'}" th:text="${post.createdDate}">Date</a></div>
                       <p th:text="${post.getFormatDescription(23)}">Description</p>

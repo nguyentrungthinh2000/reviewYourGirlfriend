@@ -32,7 +32,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 @Slf4j
 //...
-@RequestMapping("/dashboard/user")
+@RequestMapping("/dashboard/users")
 @Controller
 public class UserController {
     
@@ -83,7 +83,7 @@ public class UserController {
             ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.CREATE_SUCCESS));
         else if(userDTO.getId() != null)
             ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.UPDATE_SUCCESS));
-        return "redirect:/dashboard/user";
+        return "redirect:/dashboard/users";
     }
     
     @PreAuthorize("hasAuthority('USER_UPDATE')")
@@ -102,7 +102,7 @@ public class UserController {
         userService.delete(id);
 
         ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.DELETE_SUCCESS));
-        return "redirect:/dashboard/user";
+        return "redirect:/dashboard/users";
     }
     
     

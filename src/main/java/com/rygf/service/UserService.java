@@ -150,7 +150,7 @@ public class UserService {
         UserProfileDTO dto = new UserProfileDTO();
         User user = opt.get();
     
-        dto.setThumbnailUri(user.getThumbnail());
+        dto.setThumbnailUri(user.selfLinkThumbUri());
         dto.setDisplayName(user.getDisplayName());
         dto.setBirthdate(user.getBirthdate());
         dto.setBio(user.getBio());

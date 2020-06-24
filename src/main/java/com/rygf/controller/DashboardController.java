@@ -10,7 +10,7 @@ public class DashboardController {
     
     @GetMapping
     public String showDashboardPage() {
-        return "redirect:/dashboard/post";
+        return "redirect:/dashboard/posts";
     }
     
 }

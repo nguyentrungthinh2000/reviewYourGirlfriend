@@ -9,7 +9,7 @@
          th:fragment="sidebar"
          id="sidebar">
         <div class="c-sidebar-brand">
-            <a th:href="@{'/'}">
+            <a th:href="@{${T(com.rygf.common.GetLink).HOMEPAGE_URI}}">
                 <img class="c-sidebar-brand-full" width="118" height="46"
                      th:src="@{'/assets/img/brand.jpg'}">
             </a>
@@ -19,17 +19,17 @@
             <li class="c-sidebar-nav-title">Dashboard</li>
             <li class="c-sidebar-nav-item" sec:authorize="hasAuthority('SUBJECT_READ')">
                 <a class="c-sidebar-nav-link"
-                   th:href="@{'/dashboard/subject'}">Subject</a>
+                   th:href="@{${T(com.rygf.common.GetLink).DASHBOARD_SUBJECT_READ_URI}}">Subject</a>
             </li>
             <li class="c-sidebar-nav-item" sec:authorize="hasAuthority('POST_READ')">
-                <a class="c-sidebar-nav-link" th:href="@{'/dashboard/post'}">Post</a>
+                <a class="c-sidebar-nav-link" th:href="@{${T(com.rygf.common.GetLink).DASHBOARD_POST_READ_URI}}">Post</a>
             </li>
             <li class="c-sidebar-nav-title">Authentication</li>
             <li class="c-sidebar-nav-item" sec:authorize="hasAuthority('USER_READ')">
-                <a class="c-sidebar-nav-link" th:href="@{'/dashboard/user'}">User</a>
+                <a class="c-sidebar-nav-link" th:href="@{${T(com.rygf.common.GetLink).DASHBOARD_USER_READ_URI}}">User</a>
             </li>
             <li class="c-sidebar-nav-item" sec:authorize="hasAuthority('ROLE_READ')">
-                <a class="c-sidebar-nav-link" th:href="@{'/dashboard/role'}">Role</a>
+                <a class="c-sidebar-nav-link" th:href="@{${T(com.rygf.common.GetLink).DASHBOARD_ROLE_READ_URI}}">Role</a>
             </li>
         </ul>
 
@@ -37,24 +37,23 @@
             TEMPLATE WITH DROPDOWN
         -->
         <th:block th:remove="all">
-            <li class="c-sidebar-nav-title">Authentication</li>
-            <li class="c-sidebar-nav-item c-sidebar-nav-dropdown"><a
-              class="c-sidebar-nav-link c-sidebar-nav-dropdown-toggle" href="#">
-                <svg class="c-sidebar-nav-icon">
-                    <use th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-puzzle'}"></use>
-                </svg>
-                Student</a>
-                <ul class="c-sidebar-nav-dropdown-items">
-                    <li class="c-sidebar-nav-item">
-                        <a class="c-sidebar-nav-link c-sidebar-nav-link-success"
-                        th:href="@{'/student/create'}"> CREATE NEW STUDENT</a>
-                    </li>
-                    <li class="c-sidebar-nav-item"><a class="c-sidebar-nav-link"
-                                                      th:href="@{'/student'}"><span
-                      class="c-sidebar-nav-icon"></span> List of Student</a></li>
-                </ul>
-            </li>
-        </ul>
+<!--            <li class="c-sidebar-nav-title">Authentication</li>-->
+<!--            <li class="c-sidebar-nav-item c-sidebar-nav-dropdown"><a-->
+<!--              class="c-sidebar-nav-link c-sidebar-nav-dropdown-toggle" href="#">-->
+<!--                <svg class="c-sidebar-nav-icon">-->
+<!--                    <use th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-puzzle'}"></use>-->
+<!--                </svg>-->
+<!--                Student</a>-->
+<!--                <ul class="c-sidebar-nav-dropdown-items">-->
+<!--                    <li class="c-sidebar-nav-item">-->
+<!--                        <a class="c-sidebar-nav-link c-sidebar-nav-link-success"-->
+<!--                        th:href="@{'/student/create'}"> CREATE NEW STUDENT</a>-->
+<!--                    </li>-->
+<!--                    <li class="c-sidebar-nav-item"><a class="c-sidebar-nav-link"-->
+<!--                                                      th:href="@{'/student'}"><span-->
+<!--                      class="c-sidebar-nav-icon"></span> List of Student</a></li>-->
+<!--                </ul>-->
+<!--            </li>-->
         </th:block>
         <!-- END TEMPLATE -->
 
@@ -75,7 +74,7 @@
 
         <header class="header-bar d-flex d-lg-block align-items-center site-navbar-target" data-aos="fade-right">
             <div class="site-logo">
-                <a th:href="@{'/'}">Review Your Girl Friend</a>
+                <a th:href="@{${T(com.rygf.common.GetLink).HOMEPAGE_URI}}">Review Your Girl Friend</a>
             </div>
 
             <div class="d-inline-block d-lg-none ml-md-0 ml-auto py-3" style="position: relative; top: 3px;"><a href="#" class="site-menu-toggle js-menu-toggle text-white"><span class="icon-menu h3"></span></a></div>
@@ -87,12 +86,14 @@
                         <li><a href="#section-blog" class="nav-link">Blog</a></li>
                     </th:block>
                     <hr>
-                    <li sec:authorize="hasAnyRole('ADMIN', 'MANAGER')"><a th:href="@{'/dashboard'}" class="nav-link">Dashboard</a></li>
+                    <li sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
+                        <a th:href="@{${T(com.rygf.common.GetLink).DASHBOARD_URI}}"
+                           class="nav-link">Dashboard</a></li>
                 </ul>
                 <ul class="social js-clone-nav" th:remove="all">
-                    <li><a th:href="@{'/'}"><span class="icon-facebook"></span></a></li>
-                    <li><a th:href="@{'/'}"><span class="icon-twitter"></span></a></li>
-                    <li><a th:href="@{'/'}"><span class="icon-instagram"></span></a></li>
+<!--                    <li><a th:href="@{'/'}"><span class="icon-facebook"></span></a></li>-->
+<!--                    <li><a th:href="@{'/'}"><span class="icon-twitter"></span></a></li>-->
+<!--                    <li><a th:href="@{'/'}"><span class="icon-instagram"></span></a></li>-->
                 </ul>
                 <ul class="js-clone-nav" sec:authorize="isAuthenticated()">
                     <li id="auth-name">[[${#authentication.name}]]</li>
@@ -102,13 +103,13 @@
                         </span>
                         <s th:unless="${#lists.size(#authentication.getAuthorities()) != 0}">No Privilege</s>
                     </li>
-                    <li><a class="nav-link" th:href="@{'/settings/profile'}">Profile</a></li>
-                    <li><a class="nav-link" th:href="@{'/settings/password'}">Password</a></li>
-                    <li><a class="nav-link" th:href="@{'/logout'}">Logout</a></li>
+                    <li><a class="nav-link" th:href="@{${T(com.rygf.common.GetLink).SETTING_PROFILE_URI}}">Profile</a></li>
+                    <li><a class="nav-link" th:href="@{${T(com.rygf.common.GetLink).SETTING_PASSWORD_URI}}">Password</a></li>
+                    <li><a class="nav-link" th:href="@{${T(com.rygf.common.GetLink).LOGOUT_URI}}">Logout</a></li>
                 </ul>
                 <ul class="js-clone-nav" sec:authorize="isAnonymous()">
-                    <li><a class="nav-link" th:href="@{'/login'}">Login</a></li>
-                    <li><a class="nav-link" th:href="@{'/register'}">Register</a></li>
+                    <li><a class="nav-link" th:href="@{${T(com.rygf.common.GetLink).LOGIN_URI}}">Login</a></li>
+                    <li><a class="nav-link" th:href="@{${T(com.rygf.common.GetLink).REGISTER_URI}}">Register</a></li>
                 </ul>
             </div>
         </header>
@@ -128,7 +129,7 @@
         <div class="categories">
             <h3>Subjects</h3>
             <li th:each="subject : ${subjects}">
-                <a th:href="|/subject/${subject.id}|">
+                <a th:href="@{${subject.selfLinkDetail()}}">
                     [[${subject.title}]] <span>([[${subject.posts.size()}]])</span>
                 </a>
             </li>

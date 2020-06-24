@@ -15,7 +15,8 @@
     <ul class="c-header-nav d-md-down-none" id="body-nav">
         <li class="c-header-nav-item px-3"
             sec:authorize="hasAuthority('SUBJECT_CREATE')"
-        ><a class="c-header-nav-link btn btn-success text-white" th:href="@{'/dashboard/subject/create'}">Create</a></li>
+        ><a class="c-header-nav-link btn btn-success text-white"
+            th:href="@{${T(com.rygf.common.GetLink).DASHBOARD_SUBJECT_CREATE_URI}}">Create</a></li>
         </li>
     </ul>
     <!--
@@ -65,8 +66,7 @@
                                             </td>
                                             <td class="text-center">
                                                 <a
-                                                  th:with="subjectUri = #{subject.detail.uri(${subject.id})}"
-                                                  th:href="@{${subjectUri}}"
+                                                  th:href="@{${subject.selfLinkDetail()}}"
                                                   th:text="${subject.title}"
                                                 >Title</a>
                                             </td>
@@ -80,14 +80,14 @@
                                                 <div th:text="${#temporals.format(subject.updatedDate, 'dd/MM/yyyy')}">Updated Date</div>
                                             </td>
                                             <td class="text-center" sec:authorize="hasAuthority('SUBJECT_UPDATE')">
-                                                <a th:href="@{|/dashboard/subject/${subject.id}/update|}" class="btn btn-pill btn-warning text-white">Update</a>
+                                                <a th:href="@{${subject.selfLinkUpdate()}}" class="btn btn-pill btn-warning text-white">Update</a>
                                             </td>
                                             <td class="text-center" sec:authorize="hasAuthority('SUBJECT_DELETE')">
                                                 <a class="btn btn-square btn-danger text-white btn-del"
                                                     th:obj-id="${subject.id}"
                                                     th:obj-name="${subject.title}"
                                                     obj-type="subject"
-                                                    th:obj-del-url="@{|/dashboard/subject/${subject.id}/delete|}"
+                                                    th:obj-del-url="@{${subject.selfLinkDelete()}}"
                                                     data-toggle="modal" data-target="#del-modal"
                                                 >Delete</a>
                                             </td>

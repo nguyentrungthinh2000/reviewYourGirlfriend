@@ -92,10 +92,7 @@
          </div>
 
          <img id="form-thumbnail"
-              th:with="thumbnailUri = (${profile.thumbnailUri != null}
-                                       ? #{profile_thumb.upload.uri(${profile.thumbnailUri})}
-                                       : 'null')"
-              th:src="@{${thumbnailUri}}">
+              th:src="@{${thumbnailUri} ?: 'null'}">
 
          <div class="wrap-input100 m-b-20">
             <input class="input100" type="text" th:field="*{displayName}"

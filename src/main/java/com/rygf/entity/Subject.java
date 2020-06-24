@@ -1,6 +1,7 @@
 package com.rygf.entity;
 
 import com.rygf.common.Formatter;
+import com.rygf.common.GetLink;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
@@ -62,6 +63,22 @@ public class Subject {
     @PreRemove
     public void preRemove() {
         posts.stream().forEach(post -> post.setSubject(null));
+    }
+    
+    public String selfLinkDetail() {
+        return GetLink.getSubjectDetailUri(id);
+    }
+    
+    public String selfLinkThumbUri() {
+        return GetLink.getSubjectThumbUri(thumbnail);
+    }
+    
+    public String selfLinkUpdate() {
+        return GetLink.getDashboardSubjectUpdateUri(id);
+    }
+    
+    public String selfLinkDelete() {
+        return GetLink.getDashboardSubjectDeleteUri(id);
     }
     
 }

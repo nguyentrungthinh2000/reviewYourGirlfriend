@@ -15,7 +15,8 @@
     <ul class="c-header-nav d-md-down-none" id="body-nav">
         <li class="c-header-nav-item px-3"
             sec:authorize="hasAuthority('ROLE_CREATE')"
-        ><a class="c-header-nav-link btn btn-success text-white" th:href="@{'/dashboard/role/create'}">Create</a></li>
+        ><a class="c-header-nav-link btn btn-success text-white"
+            th:href="@{${T(com.rygf.common.GetLink).DASHBOARD_ROLE_CREATE_URI}}">Create</a></li>
         </li>
     </ul>
     <!--
@@ -74,14 +75,14 @@
                                                 <div th:text="${#temporals.format(role.createdDate, 'dd/MM/yyyy')}">Created Date</div>
                                             </td>
                                             <td class="text-center" sec:authorize="hasAuthority('ROLE_UPDATE')">
-                                                <a th:href="@{|/dashboard/role/${role.id}/update|}" class="btn btn-pill btn-warning text-white">Update</a>
+                                                <a th:href="@{${role.selfLinkUpdate()}}" class="btn btn-pill btn-warning text-white">Update</a>
                                             </td>
                                             <td class="text-center" sec:authorize="hasAuthority('ROLE_DELETE')">
                                                 <a class="btn btn-square btn-danger text-white btn-del"
                                                     th:obj-id="${role.id}"
                                                     th:obj-name="${role.name}"
                                                     obj-type="role"
-                                                    th:obj-del-url="@{|/dashboard/role/${role.id}/delete|}"
+                                                    th:obj-del-url="@{${role.selfLinkDelete()}}"
                                                     data-toggle="modal" data-target="#del-modal"
                                                 >Delete</a>
                                             </td>

@@ -1,6 +1,7 @@
 package com.rygf.entity;
 
 
+import com.rygf.common.GetLink;
 import com.rygf.security.permission.PRIVILEGE;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -64,5 +65,13 @@ public class Role {
     protected void preRemove() {
         users.stream().forEach(u -> u.setRole(null));
 //        privileges.stream().forEach(pri -> pri.getRoles().remove(this));
+    }
+    
+    public String selfLinkUpdate() {
+        return GetLink.getDashboardRoleUpdateUri(id);
+    }
+    
+    public String selfLinkDelete() {
+        return GetLink.getDashboardRoleDeleteUri(id);
     }
 }

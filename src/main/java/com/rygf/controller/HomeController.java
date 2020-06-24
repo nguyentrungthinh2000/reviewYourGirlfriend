@@ -51,21 +51,21 @@ public class HomeController {
     
     
     @PreAuthorize("hasAuthority('POST_READ')")
-    @GetMapping("/post/{id}")
+    @GetMapping("/posts/{id}")
     public String showPostDetail(@PathVariable("id") Long id, Model model) {
         Post post = postService.find(id);
         model.addAttribute("post", post);
         return "post/single";
     }
     
-    @GetMapping("/user/{id}/post")
+    @GetMapping("/users/{id}/posts")
     public String showUserPost(@PathVariable("id") Long id, Model model) {
         List<Post> posts = postService.findByUser(id);
         model.addAttribute("posts", posts);
         return "user/display_post";
     }
     
-    @GetMapping("/subject/{id}")
+    @GetMapping("/subjects/{id}")
     public String showSubjectDetail(@PathVariable("id") Long id, Model model) {
         Subject subject = subjectService.find(id);
         model.addAttribute("subject", subject);

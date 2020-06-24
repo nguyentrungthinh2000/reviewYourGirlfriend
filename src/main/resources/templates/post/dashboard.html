@@ -10,113 +10,119 @@
 <!--
     WRAPPER
 -->
-<div class="c-wrapper c-fixed-components" th:replace="~{fragment/body :: mainbody(~{:: #page-body}, ~{:: #body-nav})}">
+<div class="c-wrapper c-fixed-components"
+     th:replace="~{fragment/body :: mainbody(~{:: #page-body}, ~{:: #body-nav})}">
 
-    <ul class="c-header-nav d-md-down-none" id="body-nav">
-        <li class="c-header-nav-item px-3"
-            sec:authorize="hasAuthority('POST_CREATE')"
-        ><a class="c-header-nav-link btn btn-success text-white" th:href="@{'/dashboard/post/create'}">Create</a></li>
-        </li>
-    </ul>
-    <!--
-        BODY
-    -->
-    <div class="c-body" id="page-body">
-        <main class="c-main">
-            <div class="container-fluid">
-                <div class="fade-in">
+  <ul class="c-header-nav d-md-down-none" id="body-nav">
+    <li class="c-header-nav-item px-3"
+        sec:authorize="hasAuthority('POST_CREATE')"
+    ><a class="c-header-nav-link btn btn-success text-white"
+        th:href="@{${T(com.rygf.common.GetLink).DASHBOARD_POST_CREATE_URI}}">Create</a>
+    </li>
+    </li>
+  </ul>
+  <!--
+      BODY
+  -->
+  <div class="c-body" id="page-body">
+    <main class="c-main">
+      <div class="container-fluid">
+        <div class="fade-in">
 
-                    <!--    NOTIFICATION ALERT  -->
-                    <th:block
-                        th:replace="~{fragment/layout :: crud_notification}"
-                    />
+          <!--    NOTIFICATION ALERT  -->
+          <th:block
+            th:replace="~{fragment/layout :: crud_notification}"
+          />
 
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header">Posts</div>
-                                <div class="card-body">
-                                    <div class="alert alert-light" role="alert" th:if="${#lists.size(posts)} == 0">
-                                        There is no post !
-                                    </div>
-                                    <table
-                                        th:if="${#lists.size(posts)} != 0"
-                                        class="table table-responsive-sm table-hover table-outline mb-0">
-                                        <thead class="thead-light">
-                                        <tr>
-                                            <th class="text-center table-th">
-                                                <svg class="c-icon">
-                                                    <use
-                                                        th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-people'}"></use>
-                                                </svg>
-                                            </th>
-                                            <th class="text-center table-th">Title</th>
-                                            <th class="table-th">Description</th>
-                                            <th class="table-th">Author</th>
-                                            <th class="text-center table-th">Subject</th>
-                                            <th class="table-th">Created Date</th>
-                                            <th class="text-center table-th">Updated Date</th>
-                                            <th sec:authorize="hasAuthority('POST_UPDATE')"></th>
-                                            <th sec:authorize="hasAuthority('POST_DELETE')"></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr th:each="post : ${posts}">
-                                            <td class="text-center">
-                                                <span class="text-muted" th:text="'#' + ${post.id}"></span>
-                                            </td>
-                                            <td class="text-center">
-                                                <a
-                                                    th:with="postUri = #{post.detail.uri(${post.id})}"
-                                                    th:href="@{${postUri}}"
-                                                    th:text="${post.title}"
-                                                >Title</a>
-                                            </td>
-                                            <td>
-                                                <div th:text="${post.getFormatDescription(9)}">Description</div>
-                                            </td>
-                                            <td>
-                                                <div th:text="${post.author?.email ?: 'Unknown'}">Author</div>
-                                            </td>
-                                            <td>
-                                                <a  th:if="${post.subject} != null"
-                                                    th:text="${post.subject?.title}"
-                                                    th:with="subjectUri = #{subject.detail.uri(${post.subject?.id})}"
-                                                    th:href="@{${subjectUri}}"
-                                                >Subject</a>
-                                                <span th:unless="${post.subject} != null">Unknown</span>
-                                            </td>
-                                            <td>
-                                                <div th:text="${#temporals.format(post.createdDate, 'dd/MM/yyyy')}">Created Date</div>
-                                            </td>
-                                            <td>
-                                                <div th:text="${#temporals.format(post.updatedDate, 'dd/MM/yyyy')}">Updated Date</div>
-                                            </td>
-                                            <td class="text-center" sec:authorize="hasAuthority('POST_UPDATE')">
-                                                <a th:href="@{|/dashboard/post/${post.id}/update|}" class="btn btn-pill btn-warning text-white">Update</a>
-                                            </td>
-                                            <td class="text-center" sec:authorize="hasAuthority('POST_DELETE')">
-                                                <a class="btn btn-square btn-danger text-white btn-del"
-                                                    th:obj-id="${post.id}"
-                                                    th:obj-name="${post.title}"
-                                                    obj-type="post"
-                                                    th:obj-del-url="@{|/dashboard/post/${post.id}/delete|}"
-                                                    data-toggle="modal" data-target="#del-modal"
-                                                >Delete</a>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header">Posts</div>
+                <div class="card-body">
+                  <div class="alert alert-light" role="alert" th:if="${#lists.size(posts)} == 0">
+                    There is no post !
+                  </div>
+                  <table
+                    th:if="${#lists.size(posts)} != 0"
+                    class="table table-responsive-sm table-hover table-outline mb-0">
+                    <thead class="thead-light">
+                    <tr>
+                      <th class="text-center table-th">
+                        <svg class="c-icon">
+                          <use
+                            th:href="@{'/vendors/@coreui/icons/svg/free.svg#cil-people'}"></use>
+                        </svg>
+                      </th>
+                      <th class="text-center table-th">Title</th>
+                      <th class="table-th">Description</th>
+                      <th class="table-th">Author</th>
+                      <th class="text-center table-th">Subject</th>
+                      <th class="table-th">Created Date</th>
+                      <th class="text-center table-th">Updated Date</th>
+                      <th sec:authorize="hasAuthority('POST_UPDATE')"></th>
+                      <th sec:authorize="hasAuthority('POST_DELETE')"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="post : ${posts}">
+                      <td class="text-center">
+                        <span class="text-muted" th:text="'#' + ${post.id}"></span>
+                      </td>
+                      <td class="text-center">
+                        <a
+                          th:href="@{${post.selfLinkDetail()}}"
+                          th:text="${post.title}"
+                        >Title</a>
+                      </td>
+                      <td>
+                        <div th:text="${post.getFormatDescription(9)}">Description</div>
+                      </td>
+                      <td>
+                        <div th:text="${post.author?.email ?: 'Unknown'}">Author</div>
+                      </td>
+                      <td>
+                        <a th:if="${post.subject} != null"
+                           th:text="${post.subject?.title}"
+                           th:href="@{${post.subject.selfLinkDetail()}}"
+                        >Subject</a>
+                        <span th:unless="${post.subject} != null">Unknown</span>
+                      </td>
+                      <td>
+                        <div th:text="${#temporals.format(post.createdDate, 'dd/MM/yyyy')}">Created
+                          Date
                         </div>
-                        <!-- /.col-->
-                    </div>
-                    <!-- /.row-->
+                      </td>
+                      <td>
+                        <div th:text="${#temporals.format(post.updatedDate, 'dd/MM/yyyy')}">Updated
+                          Date
+                        </div>
+                      </td>
+                      <td class="text-center" sec:authorize="hasAuthority('POST_UPDATE')">
+                        <a th:href="@{${post.selfLinkUpdate()}}"
+                           class="btn btn-pill btn-warning text-white">Update</a>
+                      </td>
+                      <td class="text-center" sec:authorize="hasAuthority('POST_DELETE')">
+                        <a class="btn btn-square btn-danger text-white btn-del"
+                           th:obj-id="${post.id}"
+                           th:obj-name="${post.title}"
+                           obj-type="post"
+                           th:obj-del-url="@{${post.selfLinkDelete()}}"
+                           data-toggle="modal" data-target="#del-modal"
+                        >Delete</a>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
                 </div>
+              </div>
             </div>
-        </main>
-    </div>
+            <!-- /.col-->
+          </div>
+          <!-- /.row-->
+        </div>
+      </div>
+    </main>
+  </div>
 </div>
 <!--
     END BODY

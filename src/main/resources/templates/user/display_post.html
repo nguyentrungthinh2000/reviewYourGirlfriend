@@ -10,8 +10,7 @@
   <main class="main-content">
 
 <!--    <section class="site-section-hero bg-image"-->
-<!--             th:with="thumbUri = #{post_thumb.upload.uri(${subject.thumbnail})}"-->
-<!--             th:style="|background-image: url(@{${thumbUri}})|"-->
+<!--             th:style="|background-image: url(@{${subject.selfLinkThumbUri()}})|"-->
 <!--             data-stellar-background-ratio="0.5" id="section-home">-->
 <!--      <div class="row justify-content-center align-items-center">-->
 <!--        <div class="col-md-7 text-center">-->
@@ -35,8 +34,7 @@
               </p>
 
               <div class="jumbotron"
-                   th:with="thumbUri = #{post_thumb.upload.uri(${post.thumbnail})}"
-                   th:style="|background-image: url(@{${thumbUri}})|"
+                   th:style="|background-image: url(@{${post.selfLinkThumbUri()}})|"
                    th:each="post : ${posts}">
                 <div class="jumbotron-container">
                   <h1 class="display-4" th:text="${post.getFormatTitle(10)}"/>
@@ -45,14 +43,13 @@
                     <span th:if="${post.author} != null">
                       &bullet; <em>by</em></span>
                     <a
-                       th:href="${post.author != null} ? @{|/user/${post.author.id}/post|} : '#'"
+                       th:href="${post.author != null} ? @{${post.author.selfLinkPosts()}} : '#'"
                        th:text="${post.author?.getDisplayName()} ?: 'Unknown'"/>
                   </p>
                   <hr class="my-4">
-                  <p th:text="${T(com.rygf.common.Formatter).formatString(post.description, 35)}"/>
+                  <p th:text="${post.getFormatDescription(35)}"/>
                   <a class="btn btn-primary btn-lg"
-                     th:with="postUri = #{post.detail.uri(${post.id})}"
-                     th:href="@{${postUri}}" role="button">Read more</a>
+                     th:href="@{${post.selfLinkDetail()}}" role="button">Read more</a>
                 </div>
               </div>
 

@@ -27,7 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 @Slf4j
 //...
-@RequestMapping("/dashboard/subject")
+@RequestMapping("/dashboard/subjects")
 @Controller
 public class SubjectController {
     
@@ -90,7 +90,7 @@ public class SubjectController {
             ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.CREATE_SUCCESS));
         else if(subjectDTO.getId() != null)
             ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.UPDATE_SUCCESS));
-        return "redirect:/dashboard/subject";
+        return "redirect:/dashboard/subjects";
     }
     
     @PreAuthorize("hasAuthority('SUBJECT_UPDATE')")
@@ -109,7 +109,7 @@ public class SubjectController {
         subjectService.delete(id);
 
         ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.DELETE_SUCCESS));
-        return "redirect:/dashboard/subject";
+        return "redirect:/dashboard/subjects";
     }
     
 }

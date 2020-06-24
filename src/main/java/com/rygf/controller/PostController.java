@@ -29,7 +29,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 @Slf4j
 //...
-@RequestMapping("/dashboard/post")
+@RequestMapping("/dashboard/posts")
 @Controller
 public class PostController {
     private final PostService postService;
@@ -96,7 +96,7 @@ public class PostController {
             ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.CREATE_SUCCESS));
         else if(postDTO.getId() != null)
             ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.UPDATE_SUCCESS));
-        return "redirect:/dashboard/post";
+        return "redirect:/dashboard/posts";
     }
     
     @PreAuthorize("hasAuthority('POST_UPDATE')")
@@ -115,7 +115,7 @@ public class PostController {
         postService.delete(id);
         
         ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.DELETE_SUCCESS));
-        return "redirect:/dashboard/post";
+        return "redirect:/dashboard/posts";
     }
     
 }

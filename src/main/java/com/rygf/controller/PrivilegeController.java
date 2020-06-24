@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @AllArgsConstructor
 @Slf4j
 //...
-@RequestMapping("/dashboard/privilege")
+@RequestMapping("/dashboard/privileges")
 @Controller
 public class PrivilegeController {
     

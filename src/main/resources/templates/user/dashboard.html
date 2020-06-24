@@ -15,7 +15,8 @@
     <ul class="c-header-nav d-md-down-none" id="body-nav">
         <li class="c-header-nav-item px-3"
             sec:authorize="hasAuthority('USER_CREATE')"
-        ><a class="c-header-nav-link btn btn-success text-white" th:href="@{'/dashboard/user/create'}">Create</a></li>
+        ><a class="c-header-nav-link btn btn-success text-white"
+            th:href="@{${T(com.rygf.common.GetLink).DASHBOARD_USER_CREATE_URI}}">Create</a></li>
         </li>
     </ul>
     <!--
@@ -76,14 +77,14 @@
                                                 <div th:text="${#temporals.format(user.createdDate, 'dd/MM/yyyy')}">Created Date</div>
                                             </td>
                                             <td class="text-center" sec:authorize="hasAuthority('USER_UPDATE')">
-                                                <a th:href="@{|/dashboard/user/${user.id}/update|}" class="btn btn-pill btn-warning text-white">Update</a>
+                                                <a th:href="@{${user.selfLinkUpdate()}}" class="btn btn-pill btn-warning text-white">Update</a>
                                             </td>
                                             <td class="text-center" sec:authorize="hasAuthority('USER_DELETE')">
                                                 <a class="btn btn-square btn-danger text-white btn-del"
                                                     th:obj-id="${user.id}"
                                                     th:obj-name="${user.email}"
                                                     obj-type="user"
-                                                    th:obj-del-url="@{|/dashboard/user/${user.id}/delete|}"
+                                                    th:obj-del-url="@{${user.selfLinkDelete()}}"
                                                     data-toggle="modal" data-target="#del-modal"
                                                 >Delete</a>
                                             </td>
