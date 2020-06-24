@@ -51,22 +51,25 @@ public class HomeController {
     
     
     @PreAuthorize("hasAuthority('POST_READ')")
-    @GetMapping("/posts/{id}")
-    public String showPostDetail(@PathVariable("id") Long id, Model model) {
+    @GetMapping("/posts/{id}-{slug}")
+    public String showPostDetail(@PathVariable("id") Long id, Model model,
+            @PathVariable(value = "slug", required = false) String slug) {
         Post post = postService.find(id);
         model.addAttribute("post", post);
         return "post/single";
     }
     
-    @GetMapping("/users/{id}/posts")
-    public String showUserPost(@PathVariable("id") Long id, Model model) {
+    @GetMapping("/users/{id}-{slug}/posts")
+    public String showUserPost(@PathVariable("id") Long id, Model model,
+        @PathVariable(value = "slug", required = false) String slug) {
         List<Post> posts = postService.findByUser(id);
         model.addAttribute("posts", posts);
         return "user/display_post";
     }
     
-    @GetMapping("/subjects/{id}")
-    public String showSubjectDetail(@PathVariable("id") Long id, Model model) {
+    @GetMapping("/subjects/{id}-{slug}")
+    public String showSubjectDetail(@PathVariable("id") Long id, Model model,
+        @PathVariable(value = "slug", required = false) String slug) {
         Subject subject = subjectService.find(id);
         model.addAttribute("subject", subject);
         return "subject/display";

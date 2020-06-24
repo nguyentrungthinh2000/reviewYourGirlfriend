@@ -25,7 +25,7 @@ public class Formatter {
         return builder.toString();
     }
     
-    public static String convertStrToHashtag(String value) {
+    public static String convertStrToSlug(String value) {
         try {
             String temp = Normalizer.normalize(value, Normalizer.Form.NFD);
             Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
@@ -38,7 +38,7 @@ public class Formatter {
                 .map(word ->
                     word.substring(0, 1).toUpperCase() + word.substring(1))
                 .collect(Collectors.toList());
-            words.add(0, "#");
+//            words.add(0, "#");
             return String.join("", words);
         } catch (Exception ex) {
             ex.printStackTrace();

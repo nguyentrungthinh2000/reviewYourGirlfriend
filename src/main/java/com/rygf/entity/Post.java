@@ -65,7 +65,7 @@ public class Post {
     }
     
     public String selfLinkDetail() {
-        return GetLink.getPostDetailUri(id);
+        return GetLink.getPostDetailUri(id, Formatter.convertStrToSlug(title));
     }
     
     public String selfLinkThumbUri() {
@@ -73,7 +73,7 @@ public class Post {
     }
     
     public String getHashTag() {
-        return Formatter.convertStrToHashtag(this.title);
+        return "#" + Formatter.convertStrToSlug(this.title);
     }
     
     public String selfLinkUpdate() {

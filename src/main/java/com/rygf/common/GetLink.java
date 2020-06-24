@@ -83,9 +83,9 @@ public class GetLink {
     /*
      *   DYNAMIC LINK
      * */
-    static final String USER_POST_URI = "/users/%s/posts";
-    static final String SUBJECT_DETAIL_URI = "/subjects/%s";
-    static final String POST_DETAIL_URI = "/posts/%s";
+    static final String USER_POST_URI = "/users/%s-%s/posts";
+    static final String SUBJECT_DETAIL_URI = "/subjects/%s-%s";
+    static final String POST_DETAIL_URI = "/posts/%s-%s";
     
     /*
      *   THUMBNAIL LINK
@@ -94,16 +94,16 @@ public class GetLink {
     static final String POST_THUMB_URI = "/img/post_thumb/%s";
     static final String SUBJECT_THUMB_URI = "/img/post_thumb/%s";
     
-    public static String getUserPostsUri(Long userId) {
-        return String.format(USER_POST_URI, userId.toString());
+    public static String getUserPostsUri(Long userId, String slug) {
+        return String.format(USER_POST_URI, userId.toString(), slug);
     }
     
-    public static String getSubjectDetailUri(Long subjectId) {
-        return String.format(SUBJECT_DETAIL_URI, subjectId.toString());
+    public static String getSubjectDetailUri(Long subjectId, String slug) {
+        return String.format(SUBJECT_DETAIL_URI, subjectId.toString(), slug);
     }
     
-    public static String getPostDetailUri(Long postId) {
-        return String.format(POST_DETAIL_URI, postId.toString());
+    public static String getPostDetailUri(Long postId, String slug) {
+        return String.format(POST_DETAIL_URI, postId.toString(), slug);
     }
     
     public static String getUserProfileThumbUri(String filename) {

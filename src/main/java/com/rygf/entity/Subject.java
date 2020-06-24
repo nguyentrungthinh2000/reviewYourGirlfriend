@@ -66,7 +66,7 @@ public class Subject {
     }
     
     public String selfLinkDetail() {
-        return GetLink.getSubjectDetailUri(id);
+        return GetLink.getSubjectDetailUri(id, Formatter.convertStrToSlug(title));
     }
     
     public String selfLinkThumbUri() {

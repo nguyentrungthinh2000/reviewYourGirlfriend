@@ -1,5 +1,6 @@
 package com.rygf.entity;
 
+import com.rygf.common.Formatter;
 import com.rygf.common.GetLink;
 import java.time.LocalDate;
 import javax.persistence.Column;
@@ -65,7 +66,7 @@ public class User {
     private LocalDate updatedDate;
     
     public String selfLinkPosts() {
-        return GetLink.getUserPostsUri(id);
+        return GetLink.getUserPostsUri(id, Formatter.convertStrToSlug(getDisplayName()));
     }
     
     public String selfLinkThumbUri() {
