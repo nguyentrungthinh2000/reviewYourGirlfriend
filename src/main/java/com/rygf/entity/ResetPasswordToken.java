@@ -4,12 +4,12 @@ import java.time.LocalDate;
 import javax.persistence.Entity;
 
 @Entity
-public class ChangePasswordToken extends VerificationToken {
+public class ResetPasswordToken extends VerificationToken {
     
-    public ChangePasswordToken(String token, User user) {
+    public ResetPasswordToken(String token, User user) {
         super(token, user, LocalDate.now().plusDays(3));
     }
     
-    public ChangePasswordToken() {
+    public ResetPasswordToken() {
     }
 }

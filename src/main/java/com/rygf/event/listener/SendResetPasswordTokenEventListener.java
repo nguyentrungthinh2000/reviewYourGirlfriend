@@ -1,9 +1,9 @@
 package com.rygf.event.listener;
 
 import com.rygf.common.GetLink;
-import com.rygf.entity.RegisterToken;
+import com.rygf.entity.ResetPasswordToken;
 import com.rygf.entity.User;
-import com.rygf.event.SendRegistrationTokenEvent;
+import com.rygf.event.SendResetPasswordTokenEvent;
 import com.rygf.service.VerificationTokenService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -17,21 +17,21 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class SendRegistrationTokenEventListener implements ApplicationListener<SendRegistrationTokenEvent> {
+public class SendResetPasswordTokenEventListener implements ApplicationListener<SendResetPasswordTokenEvent> {
     
     private final VerificationTokenService tokenService;
     private final MailSender mailSender;
-    private SendRegistrationTokenEvent event;
+    private SendResetPasswordTokenEvent event;
     
     @Value("${support.mail}")
     private String supportMail;
     
     @Async // muốn catch Exception --> tắt Async
     @Override
-    public void onApplicationEvent(SendRegistrationTokenEvent event) throws MailException {
+    public void onApplicationEvent(SendResetPasswordTokenEvent event) throws MailException {
         this.event = event;
         final String token = UUID.randomUUID().toString();
-        tokenService.saveToken(new RegisterToken(token, event.getUser()));
+        tokenService.saveToken(new ResetPasswordToken(token, event.getUser()));
         sendConfirmationMail(token);
     }
     
@@ -42,8 +42,8 @@ public class SendRegistrationTokenEventListener implements ApplicationListener<S
         
         mail.setFrom(supportMail);
         mail.setTo(user.getEmail());
-        mail.setSubject("Review Your Girl Friend | Verification Token for : " + user.getEmail());
-        mail.setText("Here is your verification token : " + event.getServerUrl() + GetLink.CONFIRM_REGISTRATION_TOKEN_URI + "?token=" + token);
+        mail.setSubject("Review Your Girl Friend | Reset Password Token for : " + user.getEmail());
+        mail.setText("Here is your verification token : " + event.getServerUrl() + GetLink.CONFIRM_RESET_PASSWORD_TOKEN_URI + "?token=" + token);
         mailSender.send(mail);
     }
 }

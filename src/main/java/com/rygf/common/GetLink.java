@@ -76,9 +76,15 @@ public class GetLink {
     public static final String DASHBOARD_URI = "/dashboard";
     public static final String LOGIN_URI = "/login";
     public static final String REGISTER_URI = "/register";
+    public static final String FORGET_PASSWORD_URI = "/forgetPassword";
+    public static final String CONFIRM_REGISTRATION_TOKEN_URI = "/registrationConfirm";
+    public static final String CONFIRM_RESET_PASSWORD_TOKEN_URI = "/resetPasswordConfirm";
     public static final String LOGOUT_URI = "/logout";
     public static final String SETTING_PROFILE_URI = "/settings/profile";
     public static final String SETTING_PASSWORD_URI = "/settings/password";
+    
+    public static final String FORGET_PASSWORD_PROCESS_URI = "/forgetPassword";
+    public static final String RESET_PASSWORD_PROCESS_URI = "/resetPassword";
     
     /*
      *   DYNAMIC LINK

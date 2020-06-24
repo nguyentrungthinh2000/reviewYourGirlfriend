@@ -1,15 +1,17 @@
 package com.rygf.service;
 
-import com.rygf.dao.ChangePasswordTokenRepository;
 import com.rygf.dao.RegisterTokenRepository;
+import com.rygf.dao.ResetPasswordTokenRepository;
 import com.rygf.dao.UserRepository;
 import com.rygf.dto.RegisterDTO;
 import com.rygf.dto.UserDTO;
 import com.rygf.dto.UserPasswordDTO;
 import com.rygf.dto.UserProfileDTO;
 import com.rygf.entity.RegisterToken;
+import com.rygf.entity.ResetPasswordToken;
 import com.rygf.entity.User;
 import com.rygf.event.SendRegistrationTokenEvent;
+import com.rygf.event.SendResetPasswordTokenEvent;
 import com.rygf.exception.DuplicateEntityException;
 import com.rygf.exception.EntityNotFoundException;
 import com.rygf.exception.InvalidTokenException;
@@ -57,7 +59,7 @@ public class UserService {
     private final CustomUserDetailsService userDetailsService;
     private final ApplicationEventPublisher eventPublisher;
     private final RegisterTokenRepository registerTokenRepository;
-    private final ChangePasswordTokenRepository changePasswordTokenRepository;
+    private final ResetPasswordTokenRepository resetPasswordTokenRepository;
     
     @Autowired
     protected AuthenticationManager authenticationManager;
@@ -123,6 +125,13 @@ public class UserService {
         Optional<User> opt = userRepository.findById(id);
         opt.orElseThrow(() -> new EntityNotFoundException("User with id : " + id + " is not exists !"));
 
+        return opt.get();
+    }
+    
+    public User findByEmail(String email) {
+        Optional<User> opt = userRepository.findByEmail(email);
+        opt.orElseThrow(() -> new EntityNotFoundException("Email : " + email + " is not exists !"));
+        
         return opt.get();
     }
     
@@ -239,6 +248,45 @@ public class UserService {
         registerTokenRepository.delete(tokenEntity);
         user.setEnabled(true); // active User
         
+        userRepository.save(user);
+    }
+    
+    public void sendResetPasswordToken(String email, String serverURL) {
+        try {
+            User user = findByEmail(email);
+            if(user.getVerificationToken() != null)
+                if(user.getVerificationToken().getExpirationDate().compareTo(user.getVerificationToken().getCreatedDate()) > 0)
+                    throw new InvalidTokenException("Token is already sent !");
+                
+            eventPublisher.publishEvent(new SendResetPasswordTokenEvent(this, user, serverURL));
+        } catch (MailException e) {
+            throw new MailSendingException("Mail sending has been interrupted");
+        }
+    }
+    
+    public void verifyResetPasswordToken(String token) {
+        Optional<ResetPasswordToken> opt = resetPasswordTokenRepository.findByToken(token);
+        opt.orElseThrow(() -> new InvalidTokenException("Why are you sending us invalid token ?"));
+    
+        final ResetPasswordToken tokenEntity = opt.get();
+        User user = tokenEntity.getUser();
+    
+        if(tokenEntity.getExpirationDate().compareTo(tokenEntity.getCreatedDate()) <= 0)
+            throw new InvalidTokenException("Your token has expired !");
+    
+        resetPasswordTokenRepository.delete(tokenEntity);
+    
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+        SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, (Object) null, userDetails.getAuthorities()));
+    }
+    
+    public void resetPassword(String password) {
+        SecurityContext context = SecurityContextHolder.getContext();
+        CustomUserDetails principal = (CustomUserDetails) context.getAuthentication().getPrincipal();
+        User user = find(principal.getId());
+        // change password in db
+        user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
     }
 
