@@ -39,7 +39,7 @@
                                 <div class="card-body">
                                     <!--  BEGIN FORM-->
                                     <!--th:action="@{'/dashboard/subject/submit?' + ${_csrf.parameterName}+'='+${_csrf.token}}"-->
-                                    <form th:action="@{'/dashboard/subject/submit'}" method="post"
+                                    <form th:action="@{${T(com.rygf.common.GetLink).DASHBOARD_SUBJECT_PROCESS_URI}}" method="post"
                                           enctype="multipart/form-data"
                                           th:object="${subject}">
                                       <!-- ID -->

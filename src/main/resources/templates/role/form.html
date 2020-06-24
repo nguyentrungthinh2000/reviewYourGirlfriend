@@ -30,7 +30,7 @@
               <div class="card">
                 <div class="card-body">
                   <!--  BEGIN FORM-->
-                  <form th:action="@{'/dashboard/role/submit'}" method="post"
+                  <form th:action="@{${T(com.rygf.common.GetLink).DASHBOARD_ROLE_PROCESS_URI}}" method="post"
                         th:object="${role}">
                     <!-- ID -->
                     <input type="hidden" th:field="*{id}">

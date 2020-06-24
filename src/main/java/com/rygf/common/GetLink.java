@@ -9,21 +9,27 @@ public class GetLink {
     public static final String DASHBOARD_USER_CREATE_URI = "/dashboard/users/create";
     public static final String DASHBOARD_USER_UPDATE_URI = "/dashboard/users/%s/update";
     public static final String DASHBOARD_USER_DELETE_URI = "/dashboard/users/%s/delete";
+    public static final String DASHBOARD_USER_PROCESS_URI = "/dashboard/users/submit";
+    public static final String DASHBOARD_USER_PROFILE_PROCESS_URI = "/dashboard/users/profile/submit";
+    public static final String DASHBOARD_USER_CHANGE_PASSWORD_PROCESS_URI = "/dashboard/users/password/submit";
     
     public static final String DASHBOARD_POST_READ_URI = "/dashboard/posts";
     public static final String DASHBOARD_POST_CREATE_URI = "/dashboard/posts/create";
     public static final String DASHBOARD_POST_UPDATE_URI = "/dashboard/posts/%s/update";
     public static final String DASHBOARD_POST_DELETE_URI = "/dashboard/posts/%s/delete";
+    public static final String DASHBOARD_POST_PROCESS_URI = "/dashboard/posts/submit";
     
     public static final String DASHBOARD_SUBJECT_READ_URI = "/dashboard/subjects";
     public static final String DASHBOARD_SUBJECT_CREATE_URI = "/dashboard/subjects/create";
     public static final String DASHBOARD_SUBJECT_UPDATE_URI = "/dashboard/subjects/%s/update";
     public static final String DASHBOARD_SUBJECT_DELETE_URI = "/dashboard/subjects/%s/delete";
+    public static final String DASHBOARD_SUBJECT_PROCESS_URI = "/dashboard/subjects/submit";
     
     public static final String DASHBOARD_ROLE_READ_URI = "/dashboard/roles";
     public static final String DASHBOARD_ROLE_CREATE_URI = "/dashboard/roles/create";
     public static final String DASHBOARD_ROLE_UPDATE_URI = "/dashboard/roles/%s/update";
     public static final String DASHBOARD_ROLE_DELETE_URI = "/dashboard/roles/%s/delete";
+    public static final String DASHBOARD_ROLE_PROCESS_URI = "/dashboard/roles/submit";
     
     
     // User

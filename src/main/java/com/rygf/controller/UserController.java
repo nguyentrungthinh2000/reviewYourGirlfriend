@@ -110,7 +110,7 @@ public class UserController {
     *   Settings
     * */
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/processProfile")
+    @PostMapping("/profile/submit")
     public String showChangeInfoForm(@Valid @ModelAttribute("profile") UserProfileDTO profile,
         BindingResult rs) {
         if(rs.hasErrors())
@@ -135,7 +135,7 @@ public class UserController {
     }
     
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/changePasswordProcess")
+    @PostMapping("/password/submit")
     public String showChangeInfoForm(@Valid @ModelAttribute("profile") UserPasswordDTO profile,
         BindingResult rs) {
         if(rs.hasErrors())

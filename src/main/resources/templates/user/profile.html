@@ -67,7 +67,7 @@
 <div class="container-login100">
    <div class="wrap-login100 p-l-55 p-r-55 p-t-80 p-b-30">
       <form class="login100-form" id="form"
-            th:action="@{/dashboard/user/processProfile}" method="post"
+            th:action="@{${T(com.rygf.common.GetLink).DASHBOARD_USER_PROFILE_PROCESS_URI}}" method="post"
             enctype="multipart/form-data"
             th:object="${profile}"
       >
@@ -92,7 +92,7 @@
          </div>
 
          <img id="form-thumbnail"
-              th:src="@{${thumbnailUri} ?: 'null'}">
+              th:src="@{${profile.thumbnailUri} ?: 'null'}">
 
          <div class="wrap-input100 m-b-20">
             <input class="input100" type="text" th:field="*{displayName}"
