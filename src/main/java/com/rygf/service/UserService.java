@@ -121,6 +121,10 @@ public class UserService {
         }
     }
     
+    public boolean isUserExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
+    
     public User find(Long id) {
         Optional<User> opt = userRepository.findById(id);
         opt.orElseThrow(() -> new EntityNotFoundException("User with id : " + id + " is not exists !"));

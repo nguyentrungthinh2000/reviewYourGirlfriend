@@ -48,6 +48,16 @@
                                       <!-- Thumbnail-->
                                       <div class="form-group">
                                         <label>Thumbnail</label>
+                                        <div class="custom-control custom-switch d-inline ml-3">
+                                          <input type="checkbox" class="custom-control-input" id="thumbnail-switch">
+                                          <label class="custom-control-label" for="thumbnail-switch" id="thumbnail-switch-label"/>
+                                        </div>
+
+                                        <input type="text" class="form-control"
+                                               th:field="*{embedThumbnailUri}"
+                                               th:errorclass="is-invalid"
+                                               placeholder="Embed Thumnail URI">
+
                                         <input type="file" class="form-control"
                                                th:field="*{thumbnail}"
                                                th:errorclass="is-invalid">
@@ -113,17 +123,71 @@
 -->
 <th:block th:replace="~{fragment/foot :: scripts(~{::script})}">
   <script th:src="@{'/elit/js/jquery-3.3.1.min.js'}"></script>
+  <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"
+          type="text/javascript"></script>
   <script>
     var thumb = $("#form-thumbnail");
     $(document).ready(function () {
-      if(thumb.attr("data-src") == "null") {
+      if(thumb.attr("src") == "null") {
         thumb.hide();
       }
 
       $("input[name='thumbnail']").change(function() {
         changeImageFile(this);
       });
+
+      var switchToggler = $("#thumbnail-switch");
+      var switchLabel = $("#thumbnail-switch-label");
+      var uriThumbnail = $("#embedThumbnailUri");
+      var fileThumbnail = $("#thumbnail");
+
+      switchLabel.html("Switch to use <b>Embed Uri Thumbnail</b>");
+      uriThumbnail.hide();
+      fileThumbnail.show();
+
+      switchToggler.change(function() {
+        switchToggle(this);
+      });
+
+      $("form").validate({
+        onfocusout: false,
+        onkeyup: false,
+        onclick: false,
+        rules: {
+          "embedThumbnailUri": {
+            required: true,
+          },
+        },
+        messages: {
+          "embedThumbnailUri": {
+            required: "Thumbnail Uri can't leave blank"
+          }
+        }
+      });
+
     });
+
+    // Functions
+    function switchToggle(toggler) {
+      var switchLabel = $("#thumbnail-switch-label");
+      var uriThumbnail = $("#embedThumbnailUri");
+      var fileThumbnail = $("#thumbnail");
+
+      if($(toggler).is(':checked')) { // Embed
+        thumb.fadeOut("100");
+        switchLabel.html("Switch to use <b>Upload File Thumbnail</b>");
+        fileThumbnail.fadeOut("300", function() {
+          uriThumbnail.show();
+        });
+
+      } else { // File
+        uriThumbnail.val(""); // clear text
+        switchLabel.html("Switch to use <b>Embed Uri Thumbnail</b>");
+        uriThumbnail.fadeOut("300", function () {
+          fileThumbnail.show();
+        });
+      }
+    }
 
     function changeImageFile(fileInput) {
       file = fileInput.files[0];

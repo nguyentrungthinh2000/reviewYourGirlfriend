@@ -4,13 +4,13 @@ import com.rygf.common.Formatter;
 import com.rygf.common.GetLink;
 import java.time.LocalDate;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +20,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @ToString(of = {"id", "title"})
@@ -33,7 +32,8 @@ public class Post {
     private Long id;
     
     @Column(nullable = false)
-    private String thumbnail;
+    @Embedded
+    private Thumbnail thumbnail = new Thumbnail();
     
     @Column(nullable = false, unique = true)
     private String title;
@@ -69,7 +69,10 @@ public class Post {
     }
     
     public String selfLinkThumbUri() {
-        return GetLink.getPostThumbUri(thumbnail);
+        if(thumbnail.isEmbedded())
+            return GetLink.getEmbedThumbUri(thumbnail.getUri());
+        
+        return GetLink.getPostThumbUri(thumbnail.getUri());
     }
     
     public String getHashTag() {

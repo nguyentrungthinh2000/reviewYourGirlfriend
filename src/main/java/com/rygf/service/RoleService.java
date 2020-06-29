@@ -23,7 +23,7 @@ public class RoleService {
     
     private final RoleRepository roleRepository;
     
-    public void createOrUpdate(RoleDTO roleDTO) {
+    public Role createOrUpdate(RoleDTO roleDTO) {
         Role temp;
 
         if(roleDTO.getId() != null) { // UPDATE POST
@@ -42,10 +42,21 @@ public class RoleService {
         }
 
         try {
-            roleRepository.save(temp);
+            return roleRepository.save(temp);
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
             throw new DuplicateEntityException("Duplicated Role\n" + e.getMessage());
         }
+    }
+    
+    public Role findByName(String name) {
+        Optional<Role> opt = roleRepository.findByName(name);
+        opt.orElseThrow(() -> new EntityNotFoundException("Role with name : " + name + " is not exists !"));
+    
+        return opt.get();
+    }
+    
+    public boolean isRoleExists(String name) {
+        return roleRepository.existsByName(name);
     }
     
     public Role find(Long id) {

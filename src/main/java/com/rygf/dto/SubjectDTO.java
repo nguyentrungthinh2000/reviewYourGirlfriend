@@ -14,6 +14,8 @@ public class SubjectDTO {
     
     private MultipartFile thumbnail;
     
+    private String embedThumbnailUri;
+    
     @NotBlank
     private String title;
     
