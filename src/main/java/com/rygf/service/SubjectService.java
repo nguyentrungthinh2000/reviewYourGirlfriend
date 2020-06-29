@@ -1,10 +1,12 @@
 package com.rygf.service;
 
+import com.rygf.common.ImageUploader;
 import com.rygf.dao.SubjectRepository;
 import com.rygf.dto.SubjectDTO;
 import com.rygf.entity.Subject;
 import com.rygf.exception.DuplicateEntityException;
 import com.rygf.exception.EntityNotFoundException;
+import com.rygf.exception.ImageException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -31,6 +34,7 @@ public class SubjectService implements ISubjectService {
     
     private final SubjectRepository subjectRepository;
     private final ServletContext servletContext;
+    private final ImageUploader imageUploader;
     
     @Value("${post_thumb.upload.path}")
     private String uploadPath;
@@ -48,15 +52,29 @@ public class SubjectService implements ISubjectService {
             temp = opt.get();
             temp.setTitle(subjectDTO.getTitle());
             temp.setAbout(subjectDTO.getAbout());
+    
+            deleteExistThumbnail(subjectDTO.getId());
             if(subjectDTO.getFinalDesFileName() != null) {
-                deleteExistThumbnail(subjectDTO.getId());
-                temp.setThumbnail(subjectDTO.getFinalDesFileName());
+                //Thumbnail
+                temp.getThumbnail().setUri(subjectDTO.getFinalDesFileName());
+                temp.getThumbnail().setEmbedded(false); // not embed link
+            } else {
+                temp.getThumbnail().setUri(subjectDTO.getEmbedThumbnailUri());
+                temp.getThumbnail().setEmbedded(true); // embed link
             }
         } else { // CREATE NEW SUBJECT
             temp = new Subject();
             temp.setTitle(subjectDTO.getTitle());
             temp.setAbout(subjectDTO.getAbout());
-            temp.setThumbnail(subjectDTO.getFinalDesFileName());
+            //Thumbnail
+            if(subjectDTO.getFinalDesFileName() != null) {
+                //Thumbnail
+                temp.getThumbnail().setUri(subjectDTO.getFinalDesFileName());
+                temp.getThumbnail().setEmbedded(false); // not embed link
+            } else {
+                temp.getThumbnail().setUri(subjectDTO.getEmbedThumbnailUri());
+                temp.getThumbnail().setEmbedded(true); // embed link
+            }
         }
 
         try {
@@ -109,8 +127,21 @@ public class SubjectService implements ISubjectService {
         dto.setId(subject.getId());
         dto.setTitle(subject.getTitle());
         dto.setAbout(subject.getAbout());
-        dto.setThumbnailUri(subject.getThumbnail());
+        dto.setThumbnailUri(subject.selfLinkThumbUri());
         return dto;
+    }
+    
+    public void uploadFile(SubjectDTO subjectDTO, MultipartFile source) throws ImageException {
+        if(subjectDTO.getId() == null && (source == null || source.isEmpty()))
+            throw new ImageException("ERR_UPLOAD_IMAGE_NULL");
+        else if(subjectDTO.getId() != null && (source == null || source.isEmpty())) {
+            // là trường hợp update nhưng không update Thumbnail
+        } else {
+            if(subjectDTO.getId() != null) // Xóa exists thumbnail
+                deleteExistThumbnail(subjectDTO.getId());
+            String finalDesFileName = imageUploader.uploadFile(source, uploadPath);
+            subjectDTO.setFinalDesFileName(finalDesFileName);
+        }
     }
     
     public void deleteExistThumbnail(Long subjectId) {
@@ -118,7 +149,9 @@ public class SubjectService implements ISubjectService {
         opt.orElseThrow(() -> new EntityNotFoundException("Subject with id : " + subjectId + " is not exists !"));
 
         Subject subject = opt.get();
-        String filePath = servletContext.getRealPath("") + uploadPath.concat(subject.getThumbnail());
+        if(subject.getThumbnail().isEmbedded()) // Sử dụng Embedded --> không phải xóa
+            return;
+        String filePath = servletContext.getRealPath("") + uploadPath.concat(subject.getThumbnail().getUri());
         try {
             Files.deleteIfExists(Paths.get(filePath));
         } catch(IOException e) {

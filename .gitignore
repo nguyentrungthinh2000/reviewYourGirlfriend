@@ -1,6 +1,5 @@
 HELP.md
 target/
-!src/main/webapp/
 src/main/webapp/**
 
 !.mvn/wrapper/maven-wrapper.jar

@@ -6,13 +6,13 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.PreRemove;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @ToString(of = {"id", "title"})
@@ -41,7 +40,8 @@ public class Subject {
     private String about;
     
     @Column(nullable = false)
-    private String thumbnail;
+    @Embedded
+    private Thumbnail thumbnail = new Thumbnail();
     
     @OneToMany(mappedBy = "subject")
     private Collection<Post> posts = new HashSet<>();
@@ -70,7 +70,10 @@ public class Subject {
     }
     
     public String selfLinkThumbUri() {
-        return GetLink.getSubjectThumbUri(thumbnail);
+        if(thumbnail.isEmbedded())
+            return GetLink.getEmbedThumbUri(thumbnail.getUri());
+        
+        return GetLink.getSubjectThumbUri(thumbnail.getUri());
     }
     
     public String selfLinkUpdate() {

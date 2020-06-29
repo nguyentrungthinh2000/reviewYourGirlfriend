@@ -99,6 +99,7 @@ public class GetLink {
     static final String USER_PROFILE_THUMB_URI = "/img/profile_thumb/%s";
     static final String POST_THUMB_URI = "/img/post_thumb/%s";
     static final String SUBJECT_THUMB_URI = "/img/post_thumb/%s";
+    static final String EMBED_THUMB_URI = "%s";
     
     public static String getUserPostsUri(Long userId, String slug) {
         return String.format(USER_POST_URI, userId.toString(), slug);
@@ -122,6 +123,10 @@ public class GetLink {
     
     public static String getSubjectThumbUri(String filename) {
         return String.format(SUBJECT_THUMB_URI, filename);
+    }
+    
+    public static String getEmbedThumbUri(String uri) {
+        return String.format(EMBED_THUMB_URI, uri);
     }
     
 }

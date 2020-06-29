@@ -1,6 +1,5 @@
 package com.rygf.controller;
 
-import com.rygf.common.ImageUploader;
 import com.rygf.dto.CrudStatus;
 import com.rygf.dto.CrudStatus.STATUS;
 import com.rygf.dto.PostDTO;
@@ -13,7 +12,6 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,10 +32,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class PostController {
     private final PostService postService;
     private final SubjectService subjectService;
-    private final ImageUploader imageUploader;
-    
-    @Value("${post_thumb.upload.path}")
-    private String uploadPath;
     
     @ModelAttribute("crudStatus")
     public CrudStatus getCrudStatus() {
@@ -74,22 +68,17 @@ public class PostController {
             return "post/form";
     
         MultipartFile source = postDTO.getThumbnail();
-        try {
-            if(postDTO.getId() == null && (source == null || source.isEmpty()))
-                throw new ImageException("ERR_UPLOAD_IMAGE_NULL");
-            else if(postDTO.getId() != null && (source == null || source.isEmpty())) {
-                // là trường hợp update nhưng không update Thumbnail
-            } else {
-                if(postDTO.getId() != null) // Xóa exists thumbnail
-                    postService.deleteExistThumbnail(postDTO.getId());
-                String finalDesFileName = imageUploader.uploadFile(source, uploadPath);
-                postDTO.setFinalDesFileName(finalDesFileName);
+        if(postDTO.getEmbedThumbnailUri() == null || postDTO.getEmbedThumbnailUri().isBlank()) {
+            try {
+                postService.uploadFile(postDTO, source);
+            } catch (ImageException e) {
+                rs.rejectValue("thumbnail", null, e.getMessage());
+                return "post/form";
             }
-            
-        } catch (ImageException e) {
-            rs.rejectValue("thumbnail", null, e.getMessage());
-            return "post/form";
+        } else {
+            postDTO.setThumbnail(null); // only use URI THUMBNAIL
         }
+        
         
         postService.createOrUpdate(postDTO);
         if(postDTO.getId() == null)

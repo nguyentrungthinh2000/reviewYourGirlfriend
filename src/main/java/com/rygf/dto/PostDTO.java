@@ -16,6 +16,8 @@ public class PostDTO {
     
     private MultipartFile thumbnail;
     
+    private String embedThumbnailUri;
+    
     @NotBlank
     private String title;
     

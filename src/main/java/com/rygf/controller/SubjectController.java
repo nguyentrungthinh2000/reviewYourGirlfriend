@@ -68,21 +68,15 @@ public class SubjectController {
         }
 
         MultipartFile source = subjectDTO.getThumbnail();
-        try {
-            if(subjectDTO.getId() == null && (source == null || source.isEmpty()))
-                throw new ImageException("ERR_UPLOAD_IMAGE_NULL");
-            else if(subjectDTO.getId() != null && (source == null || source.isEmpty())) {
-                // là trường hợp update nhưng không update Thumbnail
-            } else {
-                if(subjectDTO.getId() != null) // Xóa exists thumbnail
-                    subjectService.deleteExistThumbnail(subjectDTO.getId());
-                String finalDesFileName = imageUploader.uploadFile(source, uploadPath);
-                subjectDTO.setFinalDesFileName(finalDesFileName);
+        if(subjectDTO.getEmbedThumbnailUri() == null || subjectDTO.getEmbedThumbnailUri().isBlank()) {
+            try {
+                subjectService.uploadFile(subjectDTO, source);
+            } catch (ImageException e) {
+                rs.rejectValue("thumbnail", null, e.getMessage());
+                return "post/form";
             }
-
-        } catch (ImageException e) {
-            rs.rejectValue("thumbnail", null, e.getMessage());
-            return "subject/form";
+        } else {
+            subjectDTO.setThumbnail(null); // only use URI THUMBNAIL
         }
 
         subjectService.createOrUpdate(subjectDTO);

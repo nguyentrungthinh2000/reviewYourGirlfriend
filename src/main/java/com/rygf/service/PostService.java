@@ -1,5 +1,6 @@
 package com.rygf.service;
 
+import com.rygf.common.ImageUploader;
 import com.rygf.dao.PostRepository;
 import com.rygf.dao.UserRepository;
 import com.rygf.dto.PostDTO;
@@ -7,6 +8,7 @@ import com.rygf.entity.Post;
 import com.rygf.entity.User;
 import com.rygf.exception.DuplicateEntityException;
 import com.rygf.exception.EntityNotFoundException;
+import com.rygf.exception.ImageException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -27,6 +29,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -38,12 +41,10 @@ public class PostService implements IPostService {
     private final ServletContext servletContext;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final ImageUploader imageUploader;
     
     @Value("${post_thumb.upload.path}")
     private String uploadPath;
-    
-    @Value("${image.upload.maxSize}")
-    private int uploadMaxSize;
     
     @Value("${post.page.size}")
     private int pageSize;
@@ -62,9 +63,15 @@ public class PostService implements IPostService {
             temp.setDescription(postDTO.getDescription());
             temp.setContent(postDTO.getContent());
             temp.setSubject(postDTO.getSubject());
+            
+            deleteExistThumbnail(postDTO.getId());
             if(postDTO.getFinalDesFileName() != null) {
-                deleteExistThumbnail(postDTO.getId());
-                temp.setThumbnail(postDTO.getFinalDesFileName());
+                //Thumbnail
+                temp.getThumbnail().setUri(postDTO.getFinalDesFileName());
+                temp.getThumbnail().setEmbedded(false); // not embed link
+            } else {
+                temp.getThumbnail().setUri(postDTO.getEmbedThumbnailUri());
+                temp.getThumbnail().setEmbedded(true); // embed link
             }
         } else { // CREATE NEW POST
             temp = new Post();
@@ -73,7 +80,16 @@ public class PostService implements IPostService {
             temp.setContent(postDTO.getContent());
             temp.setAuthor(postDTO.getAuthor());
             temp.setSubject(postDTO.getSubject());
-            temp.setThumbnail(postDTO.getFinalDesFileName());
+            
+            //Thumbnail
+            if(postDTO.getFinalDesFileName() != null) {
+                //Thumbnail
+                temp.getThumbnail().setUri(postDTO.getFinalDesFileName());
+                temp.getThumbnail().setEmbedded(false); // not embed link
+            } else {
+                temp.getThumbnail().setUri(postDTO.getEmbedThumbnailUri());
+                temp.getThumbnail().setEmbedded(true); // embed link
+            }
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             Optional<User> optUser = userRepository.findByEmail(auth.getName());
             optUser.orElseThrow(() -> new EntityNotFoundException("User with email : " + auth.getName() + " is not exists !"));
@@ -134,9 +150,22 @@ public class PostService implements IPostService {
         dto.setTitle(post.getTitle());
         dto.setDescription(post.getDescription());
         dto.setContent(post.getContent());
-        dto.setThumbnailUri(post.getThumbnail());
+        dto.setThumbnailUri(post.selfLinkThumbUri());
         dto.setSubject(post.getSubject());
         return dto;
+    }
+    
+    public void uploadFile(PostDTO postDTO, MultipartFile source) throws ImageException {
+        if(postDTO.getId() == null && (source == null || source.isEmpty()))
+            throw new ImageException("ERR_UPLOAD_IMAGE_NULL");
+        else if(postDTO.getId() != null && (source == null || source.isEmpty())) {
+            // là trường hợp update nhưng không update Thumbnail
+        } else {
+            if(postDTO.getId() != null) // Xóa exists thumbnail
+                deleteExistThumbnail(postDTO.getId());
+            String finalDesFileName = imageUploader.uploadFile(source, uploadPath);
+            postDTO.setFinalDesFileName(finalDesFileName);
+        }
     }
     
     public void deleteExistThumbnail(Long postId) {
@@ -144,7 +173,10 @@ public class PostService implements IPostService {
         opt.orElseThrow(() -> new EntityNotFoundException("Post with id : " + postId + " is not exists !"));
         
         Post post = opt.get();
-        String filePath = servletContext.getRealPath("") + uploadPath.concat(post.getThumbnail());
+        
+        if(post.getThumbnail().isEmbedded()) // Sử dụng Embedded --> không phải xóa
+            return;
+        String filePath = servletContext.getRealPath("") + uploadPath.concat(post.getThumbnail().getUri());
         try {
             Files.deleteIfExists(Paths.get(filePath));
         } catch(IOException e) {
