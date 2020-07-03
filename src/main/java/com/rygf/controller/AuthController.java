@@ -1,11 +1,16 @@
 package com.rygf.controller;
 
+import com.rygf.common.ImageUploader;
 import com.rygf.dto.RegisterDTO;
 import com.rygf.dto.UserPasswordDTO;
+import com.rygf.dto.UserProfileDTO;
+import com.rygf.exception.ImageException;
+import com.rygf.exception.UserSettingException;
 import com.rygf.service.UserService;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,12 +19,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Controller
 public class AuthController {
     
     private final UserService userService;
+    private final ImageUploader imageUploader;
+    
+    @Value("${profile_thumb.upload.path}")
+    private String uploadPath;
     
     private static String generateServerURL(HttpServletRequest request) {
         StringBuilder builder = new StringBuilder();
@@ -29,6 +39,10 @@ public class AuthController {
         return builder.toString();
     }
     
+    /*
+     *   REGISTER
+     * */
+    
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
         model.addAttribute("register", new RegisterDTO());
@@ -37,12 +51,13 @@ public class AuthController {
     
     @PostMapping("/register")
     public String processRegisterForm(@Valid @ModelAttribute("register") RegisterDTO registerDTO,
-            BindingResult rs,
-            HttpServletRequest request,
-            Model model) {
-        if(rs.hasErrors())
+        BindingResult rs,
+        HttpServletRequest request,
+        Model model) {
+        if (rs.hasErrors()) {
             return "register";
-    
+        }
+        
         String serverURL = generateServerURL(request);
         userService.register(registerDTO, serverURL);
         
@@ -59,40 +74,35 @@ public class AuthController {
     }
     
     @GetMapping("/registrationConfirm")
-    public String confirmVerificationToken(@RequestParam(value = "token") String token, Model model) {
+    public String confirmVerificationToken(@RequestParam(value = "token") String token,
+        Model model) {
         userService.verifyRegistrationToken(token);
         
         model.addAttribute("heading", "Account Confirmation");
-        model.addAttribute("content", "Your account has been activated!\n</br>Welcome to our family <3");
+        model.addAttribute("content",
+            "Your account has been activated!\n</br>Welcome to our family <3");
         return "account_announce";
     }
     
+    
+    /*
+     *   LOGIN
+     * */
     @GetMapping("/login")
     public String showLoginForm() {
         return "login";
     }
     
-    @GetMapping("/settings/profile")
-    @PreAuthorize("isAuthenticated()")
-    public String showChangeInfoForm(Model model) {
-        model.addAttribute("profile", userService.findProfileDto());
-        return "user/profile";
-    }
-    
-    @GetMapping("/settings/password")
-    @PreAuthorize("isAuthenticated()")
-    public String showChangePasswordForm(Model model) {
-        model.addAttribute("profile", new UserPasswordDTO());
-        return "user/change_password";
-    }
-    
+    /*
+     *   FORGET PASSWORD
+     * */
     @GetMapping("/forgetPassword")
     public String showRepasswordForm() {
         return "forget-password";
     }
     
     @PostMapping("/forgetPassword")
-    public String processSendResetPasswordToken(@RequestParam("email")String email,
+    public String processSendResetPasswordToken(@RequestParam("email") String email,
         HttpServletRequest request, Model model) {
         userService.findByEmail(email);
         
@@ -105,15 +115,82 @@ public class AuthController {
     }
     
     @GetMapping("/resetPasswordConfirm")
-    public String confirmResetPasswordToken(@RequestParam(value = "token") String token, Model model) {
+    public String confirmResetPasswordToken(@RequestParam(value = "token") String token,
+        Model model) {
         userService.verifyResetPasswordToken(token);
         return "reset-password";
     }
     
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/resetPassword")
-    public String resetPasswordProcess(@RequestParam("password")String password) {
+    public String resetPasswordProcess(@RequestParam("password") String password) {
         userService.resetPassword(password);
+        return "redirect:/";
+    }
+    
+    /*
+     ************************************
+     *   SETTINGS
+     ************************************
+     */
+    
+    // settings PROFILE
+    @GetMapping("/settings/profile")
+    @PreAuthorize("isAuthenticated()")
+    public String showChangeInfoForm(Model model) {
+        model.addAttribute("profile", userService.findProfileDto());
+        return "user/setting/profile";
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/settings/profile/submit")
+    public String showChangeInfoForm(@Valid @ModelAttribute("profile") UserProfileDTO profile,
+        BindingResult rs) {
+        if (rs.hasErrors()) {
+            return "user/setting/profile";
+        }
+        
+        MultipartFile source = profile.getThumbnail();
+        if (source == null || source.isEmpty() || source.getOriginalFilename().isBlank()) {
+            userService.updateProfile(profile);
+            return "redirect:/";
+        }
+        try {
+            userService.deleteExistThumbnail();
+            String finalDesFileName = imageUploader.uploadFile(source, uploadPath);
+            profile.setFinalDesFileName(finalDesFileName);
+        } catch (ImageException e) {
+            rs.rejectValue("thumbnail", null, e.getMessage());
+            return "user/setting/profile";
+        }
+        
+        userService.updateProfile(profile);
+        return "redirect:/";
+    }
+    
+    // Settings PASSWORD
+    @GetMapping("/settings/password")
+    @PreAuthorize("isAuthenticated()")
+    public String showChangePasswordForm(Model model) {
+        model.addAttribute("profile", new UserPasswordDTO());
+        return "user/setting/change_password";
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/settings/password/submit")
+    public String showChangeInfoForm(@Valid @ModelAttribute("profile") UserPasswordDTO profile,
+        BindingResult rs) {
+        if (rs.hasErrors()) {
+            return "user/setting/change_password";
+        }
+        
+        try {
+            userService.changePassword(profile);
+        } catch (UserSettingException e) {
+            rs.rejectValue("oldPassword", null, e.getMessage());
+            return "user/setting/change_password";
+        }
+        
         return "redirect:/";
     }
     

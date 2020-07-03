@@ -5,6 +5,7 @@ import com.rygf.common.GetLink;
 import java.time.LocalDate;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -52,7 +53,9 @@ public class User {
         return displayName != null ? displayName : email;
     }
     
-    private String thumbnail;
+    @Column(nullable = false)
+    @Embedded
+    private Thumbnail thumbnail = new Thumbnail();
     
     private LocalDate birthdate;
     
@@ -73,7 +76,13 @@ public class User {
     }
     
     public String selfLinkThumbUri() {
-        return GetLink.getUserProfileThumbUri(thumbnail);
+        if(thumbnail.getUri() == null)
+            return null;
+    
+        if(thumbnail.isEmbedded())
+            return GetLink.getEmbedThumbUri(thumbnail.getUri());
+    
+        return GetLink.getUserProfileThumbUri(thumbnail.getUri());
     }
     
     public String selfLinkUpdate() {

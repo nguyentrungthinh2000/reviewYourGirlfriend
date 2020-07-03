@@ -8,7 +8,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,7 +49,7 @@ public class HomeController {
     }
     
     
-    @PreAuthorize("hasAuthority('POST_READ')")
+//    @PreAuthorize("hasAuthority('POST_READ')")
     @GetMapping("/posts/{id}-{slug}")
     public String showPostDetail(@PathVariable("id") Long id, Model model,
             @PathVariable(value = "slug", required = false) String slug) {

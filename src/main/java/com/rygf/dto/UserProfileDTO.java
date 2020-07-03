@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserProfileDTO {
     private String displayName;
     private MultipartFile thumbnail;
+    private String embedThumbnailUri;
     
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthdate;

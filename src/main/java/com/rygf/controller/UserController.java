@@ -1,22 +1,16 @@
 package com.rygf.controller;
 
-import com.rygf.common.ImageUploader;
 import com.rygf.dto.CrudStatus;
 import com.rygf.dto.CrudStatus.STATUS;
 import com.rygf.dto.UserDTO;
-import com.rygf.dto.UserPasswordDTO;
-import com.rygf.dto.UserProfileDTO;
 import com.rygf.entity.Role;
 import com.rygf.entity.User;
-import com.rygf.exception.ImageException;
-import com.rygf.exception.UserSettingException;
 import com.rygf.service.RoleService;
 import com.rygf.service.UserService;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +20,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequiredArgsConstructor
@@ -38,10 +31,6 @@ public class UserController {
     
     private final UserService userService;
     private final RoleService roleService;
-    private final ImageUploader imageUploader;
-    
-    @Value("${profile_thumb.upload.path}")
-    private String uploadPath;
     
     @ModelAttribute("crudStatus")
     public CrudStatus getCrudStatus() {
@@ -104,51 +93,4 @@ public class UserController {
         ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.DELETE_SUCCESS));
         return "redirect:/dashboard/users";
     }
-    
-    
-    /*
-    *   Settings
-    * */
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/profile/submit")
-    public String showChangeInfoForm(@Valid @ModelAttribute("profile") UserProfileDTO profile,
-        BindingResult rs) {
-        if(rs.hasErrors())
-            return "user/profile";
-    
-        MultipartFile source = profile.getThumbnail();
-        if(source == null || source.isEmpty() || source.getOriginalFilename().isBlank()) {
-            userService.updateProfile(profile);
-            return "redirect:/";
-        }
-        try {
-            userService.deleteExistThumbnail();
-            String finalDesFileName = imageUploader.uploadFile(source, uploadPath);
-            profile.setFinalDesFileName(finalDesFileName);
-        } catch (ImageException e) {
-            rs.rejectValue("thumbnail", null, e.getMessage());
-            return "user/profile";
-        }
-    
-        userService.updateProfile(profile);
-        return "redirect:/";
-    }
-    
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/password/submit")
-    public String showChangeInfoForm(@Valid @ModelAttribute("profile") UserPasswordDTO profile,
-        BindingResult rs) {
-        if(rs.hasErrors())
-            return "user/change_password";
-        
-        try {
-            userService.changePassword(profile);
-        } catch (UserSettingException e) {
-            rs.rejectValue("oldPassword", null, e.getMessage());
-            return "user/change_password";
-        }
-        
-        return "redirect:/";
-    }
-    
 }

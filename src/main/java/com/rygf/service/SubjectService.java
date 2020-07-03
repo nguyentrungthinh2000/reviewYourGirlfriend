@@ -41,42 +41,33 @@ public class SubjectService implements ISubjectService {
     
     
     @Override
-    public void createOrUpdate(SubjectDTO subjectDTO) {
+    public void createOrUpdate(SubjectDTO dto) {
         Subject temp;
 
-        if(subjectDTO.getId() != null) { // UPDATE SUBJECT
-            Optional<Subject> opt = subjectRepository.findById(subjectDTO.getId());
-            final var subjectId = subjectDTO.getId();
+        if(dto.getId() != null) { // UPDATE SUBJECT
+            Optional<Subject> opt = subjectRepository.findById(dto.getId());
+            final var subjectId = dto.getId();
             opt.orElseThrow(() -> new EntityNotFoundException("Subject with id : " + subjectId + " is not exists !"));
 
             temp = opt.get();
-            temp.setTitle(subjectDTO.getTitle());
-            temp.setAbout(subjectDTO.getAbout());
-    
-            deleteExistThumbnail(subjectDTO.getId());
-            if(subjectDTO.getFinalDesFileName() != null) {
-                //Thumbnail
-                temp.getThumbnail().setUri(subjectDTO.getFinalDesFileName());
-                temp.getThumbnail().setEmbedded(false); // not embed link
-            } else {
-                temp.getThumbnail().setUri(subjectDTO.getEmbedThumbnailUri());
-                temp.getThumbnail().setEmbedded(true); // embed link
-            }
+            temp.setTitle(dto.getTitle());
+            temp.setAbout(dto.getAbout());
         } else { // CREATE NEW SUBJECT
             temp = new Subject();
-            temp.setTitle(subjectDTO.getTitle());
-            temp.setAbout(subjectDTO.getAbout());
-            //Thumbnail
-            if(subjectDTO.getFinalDesFileName() != null) {
-                //Thumbnail
-                temp.getThumbnail().setUri(subjectDTO.getFinalDesFileName());
-                temp.getThumbnail().setEmbedded(false); // not embed link
-            } else {
-                temp.getThumbnail().setUri(subjectDTO.getEmbedThumbnailUri());
-                temp.getThumbnail().setEmbedded(true); // embed link
-            }
+            temp.setTitle(dto.getTitle());
+            temp.setAbout(dto.getAbout());
         }
-
+        
+        // Thumbnail
+        deleteExistThumbnail(dto.getId());
+        if(dto.getFinalDesFileName() != null) {
+            temp.getThumbnail().setUri(dto.getFinalDesFileName());
+            temp.getThumbnail().setEmbedded(false); // not embed link
+        } else if(dto.getFinalDesFileName() == null && dto.getEmbedThumbnailUri() != null) {
+            temp.getThumbnail().setUri(dto.getEmbedThumbnailUri());
+            temp.getThumbnail().setEmbedded(true); // embed link
+        }
+        
         try {
             subjectRepository.save(temp);
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
@@ -149,6 +140,10 @@ public class SubjectService implements ISubjectService {
         opt.orElseThrow(() -> new EntityNotFoundException("Subject with id : " + subjectId + " is not exists !"));
 
         Subject subject = opt.get();
+        final String thumbUri = subject.getThumbnail().getUri();
+        if(thumbUri == null || thumbUri.isBlank())
+            return;
+        
         if(subject.getThumbnail().isEmbedded()) // Sử dụng Embedded --> không phải xóa
             return;
         String filePath = servletContext.getRealPath("") + uploadPath.concat(subject.getThumbnail().getUri());

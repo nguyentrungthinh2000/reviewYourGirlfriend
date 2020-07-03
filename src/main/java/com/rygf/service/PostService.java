@@ -50,51 +50,42 @@ public class PostService implements IPostService {
     private int pageSize;
     
     @Override
-    public void createOrUpdate(PostDTO postDTO) {
+    public void createOrUpdate(PostDTO dto) {
         Post temp;
         
-        if(postDTO.getId() != null) { // UPDATE POST
-            Optional<Post> opt = postRepository.findById(postDTO.getId());
-            final var postId = postDTO.getId();
+        if(dto.getId() != null) { // UPDATE POST
+            Optional<Post> opt = postRepository.findById(dto.getId());
+            final var postId = dto.getId();
             opt.orElseThrow(() -> new EntityNotFoundException("Post with id : " + postId + " is not exists !"));
     
             temp = opt.get();
-            temp.setTitle(postDTO.getTitle());
-            temp.setDescription(postDTO.getDescription());
-            temp.setContent(postDTO.getContent());
-            temp.setSubject(postDTO.getSubject());
-            
-            deleteExistThumbnail(postDTO.getId());
-            if(postDTO.getFinalDesFileName() != null) {
-                //Thumbnail
-                temp.getThumbnail().setUri(postDTO.getFinalDesFileName());
-                temp.getThumbnail().setEmbedded(false); // not embed link
-            } else {
-                temp.getThumbnail().setUri(postDTO.getEmbedThumbnailUri());
-                temp.getThumbnail().setEmbedded(true); // embed link
-            }
+            temp.setTitle(dto.getTitle());
+            temp.setDescription(dto.getDescription());
+            temp.setContent(dto.getContent());
+            temp.setSubject(dto.getSubject());
         } else { // CREATE NEW POST
             temp = new Post();
-            temp.setTitle(postDTO.getTitle());
-            temp.setDescription(postDTO.getDescription());
-            temp.setContent(postDTO.getContent());
-            temp.setAuthor(postDTO.getAuthor());
-            temp.setSubject(postDTO.getSubject());
-            
-            //Thumbnail
-            if(postDTO.getFinalDesFileName() != null) {
-                //Thumbnail
-                temp.getThumbnail().setUri(postDTO.getFinalDesFileName());
-                temp.getThumbnail().setEmbedded(false); // not embed link
-            } else {
-                temp.getThumbnail().setUri(postDTO.getEmbedThumbnailUri());
-                temp.getThumbnail().setEmbedded(true); // embed link
-            }
+            temp.setTitle(dto.getTitle());
+            temp.setDescription(dto.getDescription());
+            temp.setContent(dto.getContent());
+            temp.setAuthor(dto.getAuthor());
+            temp.setSubject(dto.getSubject());
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             Optional<User> optUser = userRepository.findByEmail(auth.getName());
             optUser.orElseThrow(() -> new EntityNotFoundException("User with email : " + auth.getName() + " is not exists !"));
     
             temp.setAuthor(optUser.get());
+        }
+        
+        // Thumbnail
+        deleteExistThumbnail(dto.getId());
+        if(dto.getFinalDesFileName() != null) {
+            //Thumbnail
+            temp.getThumbnail().setUri(dto.getFinalDesFileName());
+            temp.getThumbnail().setEmbedded(false); // not embed link
+        } else if(dto.getFinalDesFileName() == null && dto.getEmbedThumbnailUri() != null) {
+            temp.getThumbnail().setUri(dto.getEmbedThumbnailUri());
+            temp.getThumbnail().setEmbedded(true); // embed link
         }
         
         try {
@@ -173,6 +164,9 @@ public class PostService implements IPostService {
         opt.orElseThrow(() -> new EntityNotFoundException("Post with id : " + postId + " is not exists !"));
         
         Post post = opt.get();
+        final String thumbUri = post.getThumbnail().getUri();
+        if(thumbUri == null || thumbUri.isBlank())
+            return;
         
         if(post.getThumbnail().isEmbedded()) // Sử dụng Embedded --> không phải xóa
             return;

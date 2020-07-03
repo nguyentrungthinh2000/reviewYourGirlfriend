@@ -69,6 +69,9 @@ public class Post {
     }
     
     public String selfLinkThumbUri() {
+        if(thumbnail.getUri() == null)
+            return null;
+        
         if(thumbnail.isEmbedded())
             return GetLink.getEmbedThumbUri(thumbnail.getUri());
         

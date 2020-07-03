@@ -174,13 +174,15 @@ public class UserService {
     
     @PreAuthorize("isAuthenticated()")
     public UserProfileDTO findProfileDto() {
-        CustomUserDetails principal = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CustomUserDetails principal =
+            (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<User> opt = userRepository.findById(principal.getId());
         opt.orElseThrow(() -> new EntityNotFoundException("Fail in update profile dou to not found entity!"));
         UserProfileDTO dto = new UserProfileDTO();
         User user = opt.get();
     
-        dto.setThumbnailUri(user.selfLinkThumbUri());
+        if(user.selfLinkThumbUri() != null)
+            dto.setThumbnailUri(user.selfLinkThumbUri());
         dto.setDisplayName(user.getDisplayName());
         dto.setBirthdate(user.getBirthdate());
         dto.setBio(user.getBio());
@@ -188,28 +190,40 @@ public class UserService {
     }
     
     @PreAuthorize("isAuthenticated()")
-    public void updateProfile(UserProfileDTO profile) {
-        CustomUserDetails principal = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public void updateProfile(UserProfileDTO dto) {
+        CustomUserDetails principal =
+            (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<User> opt = userRepository.findById(principal.getId());
-        opt.orElseThrow(() -> new EntityNotFoundException("Fail in update profile dou to not found entity!"));
+        opt.orElseThrow(() -> new EntityNotFoundException("Fail in update profile due to not found entity!"));
     
         User user = opt.get();
-        user.setDisplayName(profile.getDisplayName());
-        user.setBirthdate(profile.getBirthdate());
-        user.setBio(profile.getBio());
+        user.setDisplayName(dto.getDisplayName());
+        user.setBirthdate(dto.getBirthdate());
+        user.setBio(dto.getBio());
         
-        if(profile.getFinalDesFileName() != null)
-            user.setThumbnail(profile.getFinalDesFileName());
+        deleteExistThumbnail();
+        if(dto.getFinalDesFileName() != null) {
+            //Thumbnail
+            user.getThumbnail().setUri(dto.getFinalDesFileName());
+            user.getThumbnail().setEmbedded(false); // not embed link
+        } else if(dto.getFinalDesFileName() == null && dto.getEmbedThumbnailUri() != null) {
+            user.getThumbnail().setUri(dto.getEmbedThumbnailUri());
+            user.getThumbnail().setEmbedded(true); // embed link
+        }
         userRepository.save(user);
     }
     
     public void deleteExistThumbnail() {
-        CustomUserDetails principal = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CustomUserDetails principal =
+            (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = find(principal.getId());
-        if(user.getThumbnail() == null)
+        final String thumbUri = user.getThumbnail().getUri();
+        if(thumbUri == null || thumbUri.isBlank())
             return;
     
-        String filePath = servletContext.getRealPath("") + uploadPath.concat(user.getThumbnail());
+        if(user.getThumbnail().isEmbedded()) // Sử dụng Embedded --> không phải xóa
+            return;
+        String filePath = servletContext.getRealPath("") + uploadPath.concat(user.getThumbnail().getUri());
         try {
             Files.deleteIfExists(Paths.get(filePath));
         } catch(IOException e) {
