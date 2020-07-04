@@ -71,6 +71,10 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
     private VerificationToken verificationToken;
     
+    /*
+    *  Methods
+    * */
+    
     public String selfLinkPosts() {
         return GetLink.getUserPostsUri(id, Formatter.convertStrToUrl(getDisplayName()));
     }

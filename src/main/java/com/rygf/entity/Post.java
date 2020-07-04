@@ -56,6 +56,10 @@ public class Post {
     @OneToOne
     private User author;
     
+    /*
+    *   Methods
+    * */
+    
     public String getFormatTitle(int maxWord) {
         return Formatter.formatString(this.title, maxWord);
     }

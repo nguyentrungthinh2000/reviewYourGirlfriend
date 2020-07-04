@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragment/head :: html-head}"/>
+<head th:replace="~{fragment/head :: html_head}"/>
 <body class="c-app">
     <th:block th:replace="~{fragment/nav :: sidebar}"></th:block>
 
-    <th:block th:replace="~{fragment/body :: mainbody(_, _)}"></th:block>
+    <th:block th:replace="~{fragment/body :: main_body(_, _)}"></th:block>
 
     <th:block th:replace="~{fragment/foot :: scripts}"></th:block>
 </body>

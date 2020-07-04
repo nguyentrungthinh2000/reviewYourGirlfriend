@@ -50,7 +50,7 @@ public class Formatter {
         try {
             String temp = Normalizer.normalize(value, Normalizer.Form.NFD);
             Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-            return pattern.matcher(temp).replaceAll("").toLowerCase().replaceAll(" ", "-").replaceAll("đ", "d");
+            return pattern.matcher(temp).replaceAll("").toLowerCase().replaceAll(" ", "_").replaceAll("đ", "d");
         } catch (Exception ex) {
             ex.printStackTrace();
         }

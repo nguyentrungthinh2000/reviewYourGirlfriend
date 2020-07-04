@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragment/head :: html-head(_)}"/>
+<head th:replace="~{fragment/head :: html_head}"/>
 <body class="c-app">
 <th:block th:replace="~{fragment/nav :: sidebar}"></th:block>
 
@@ -8,10 +8,10 @@
     WRAPPER
 -->
 <div class="c-wrapper c-fixed-components"
-     th:replace="~{fragment/body :: mainbody(~{:: #page-body}, ~{:: #body-nav})}">
+     th:replace="~{fragment/body :: main_body(~{:: #page-body}, ~{:: #body-nav})}">
   <ul class="c-header-nav d-md-down-none" id="body-nav">
-    <li class="c-header-nav-item px-3"><a class="c-header-nav-link"
-                                          th:href="@{'/dashboard/user/create'}">Create</a></li>
+    <li class="c-header-nav-item px-3">
+      <a class="c-header-nav-link" th:href="@{${T(com.rygf.common.GetLink).DASHBOARD_URI}}">Dashboard</a>
     </li>
   </ul>
 
@@ -107,7 +107,7 @@
 <!--
     END BODY
 -->
-<th:block th:replace="~{fragment/foot :: scripts(_)}">
+<th:block th:replace="~{fragment/foot :: dashboard_script}">
 </th:block>
 </body>
 </html>

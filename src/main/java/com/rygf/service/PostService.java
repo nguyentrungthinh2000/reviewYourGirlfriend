@@ -86,7 +86,8 @@ public class PostService implements IPostService {
         try {
             postRepository.save(temp);
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
-            throw new DuplicateEntityException("Duplicated Post\n" + e.getMessage());
+            throw new DuplicateEntityException("Duplicated Post Title\n"
+                + "Title : " + temp.getTitle() + " has been taken !");
         }
     }
     

@@ -83,5 +83,35 @@
         </select>
     </div>
 
+    <th:block th:fragment="form_thumbnail(thumbnailUri)">
+        <div class="form-group">
+            <label id="form-thumbnail-label">Thumbnail</label>
+            <div class="custom-control custom-switch d-inline ml-3">
+                <input type="checkbox" class="custom-control-input" id="thumbnail-switch" th:field="*{thumbnail.embedded}">
+                <label class="custom-control-label" for="thumbnail-switch"
+                       id="thumbnail-switch-label"/>
+            </div>
+
+            <input type="text" class="form-control"
+                   th:id="${'thumbnailEmbed'}"
+                   th:field="*{thumbnail.uri}"
+                   th:errorclass="is-invalid"
+                   placeholder="Embed Thumbnail URI">
+
+            <input type="file" class="form-control"
+                   th:field="*{thumbnailFile}"
+                   th:errorclass="is-invalid">
+            <th:block th:if="${#fields.hasErrors('thumbnailFile')}">
+                <div class="valid-feedback" style="display: block; color: red;"
+                     th:each="err : ${#fields.errors('thumbnailFile')}" th:text="${err}"/>
+            </th:block>
+        </div>
+
+        <img id="form-thumbnail"
+             th:src="@{${thumbnailUri}}">
+    </th:block>
+
+
+
 </body>
 </html>

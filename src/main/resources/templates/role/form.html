@@ -2,7 +2,7 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
 >
-<head th:replace="~{fragment/head :: html-head(_)}"/>
+<head th:replace="~{fragment/head :: html_head}"/>
 <body class="c-app">
 <th:block th:replace="~{fragment/nav :: sidebar}"></th:block>
 
@@ -10,10 +10,10 @@
     WRAPPER
 -->
 <div class="c-wrapper c-fixed-components"
-     th:replace="~{fragment/body :: mainbody(~{:: #page-body}, ~{:: #body-nav})}">
+     th:replace="~{fragment/body :: main_body(~{:: #page-body}, ~{:: #body-nav})}">
   <ul class="c-header-nav d-md-down-none" id="body-nav">
-    <li class="c-header-nav-item px-3"><a class="c-header-nav-link"
-                                          th:href="@{'/dashboard/role'}">Dashboard</a>
+    <li class="c-header-nav-item px-3">
+      <a class="c-header-nav-link" th:href="@{${T(com.rygf.common.GetLink).DASHBOARD_URI}}">Dashboard</a>
     </li>
   </ul>
 
@@ -30,7 +30,8 @@
               <div class="card">
                 <div class="card-body">
                   <!--  BEGIN FORM-->
-                  <form th:action="@{${T(com.rygf.common.GetLink).DASHBOARD_ROLE_PROCESS_URI}}" method="post"
+                  <form th:action="@{${T(com.rygf.common.GetLink).DASHBOARD_ROLE_PROCESS_URI}}"
+                        method="post"
                         th:object="${role}">
                     <!-- ID -->
                     <input type="hidden" th:field="*{id}">
@@ -50,7 +51,8 @@
 
                     <div class="form-group">
                       <label>Privileges</label>
-                      <div class="alert alert-light" role="alert" th:if="${#lists.size(privileges)} == 0">
+                      <div class="alert alert-light" role="alert"
+                           th:if="${#lists.size(privileges)} == 0">
                         There is no privilege !
                       </div>
                       <input type="text"
@@ -91,35 +93,34 @@
 <!--
     END BODY
 -->
-<th:block th:replace="~{fragment/foot :: scripts(~{::script})}">
-  <script th:src="@{'/elit/js/jquery-3.3.1.min.js'}"></script>
-  <script>
-    function delay(callback, ms) {
-      var timer = 0;
-      return function() {
-        var context = this, args = arguments;
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-          callback.apply(context, args);
-        }, ms || 0);
-      };
-    }
+<th:block th:replace="~{fragment/foot :: dashboard_script}"/>
+<script th:src="@{'/elit/js/jquery-3.3.1.min.js'}"></script>
+<script>
+  function delay(callback, ms) {
+    var timer = 0;
+    return function () {
+      var context = this, args = arguments;
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        callback.apply(context, args);
+      }, ms || 0);
+    };
+  }
 
-    $(document).ready(function() {
-      var find = $("#find-privilege");
-      find.keyup(delay(function (e) {
-        filterPrivileges($(this).val());
-      }, 50));
+  $(document).ready(function () {
+    var find = $("#find-privilege");
+    find.keyup(delay(function (e) {
+      filterPrivileges($(this).val());
+    }, 50));
+  });
+
+  function filterPrivileges(value) {
+    value = value.toLowerCase();
+    $(".form-check-label").filter(function () {
+      var checkbox = $(this);
+      checkbox.closest(".form-check").toggle(checkbox.text().toLowerCase().indexOf(value) > -1);
     });
-
-    function filterPrivileges(value) {
-      value = value.toLowerCase();
-      $(".form-check-label").filter(function() {
-        var checkbox = $(this);
-        checkbox.closest(".form-check").toggle(checkbox.text().toLowerCase().indexOf(value) > -1);
-      });
-    }
-  </script>
-</th:block>
+  }
+</script>
 </body>
 </html>

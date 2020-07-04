@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
 >
-<head th:replace="~{fragment/head :: html-head(_)}"/>
+<head th:replace="~{fragment/head :: html_head}"/>
 <body class="c-app">
 <th:block th:replace="~{fragment/nav :: sidebar}"></th:block>
 
@@ -11,15 +11,10 @@
     WRAPPER
 -->
 <div class="c-wrapper c-fixed-components"
-     th:replace="~{fragment/body :: mainbody(~{:: #page-body}, ~{:: #body-nav})}">
+     th:replace="~{fragment/body :: main_body(~{:: #page-body}, ~{:: #body-nav})}">
 
-  <ul class="c-header-nav d-md-down-none" id="body-nav">
-    <li class="c-header-nav-item px-3"
-        sec:authorize="hasAuthority('POST_CREATE')"
-    ><a class="c-header-nav-link btn btn-success text-white"
-        th:href="@{${T(com.rygf.common.GetLink).DASHBOARD_POST_CREATE_URI}}">Create</a>
-    </li>
-    </li>
+  <ul class="c-header-nav" id="body-nav">
+
   </ul>
   <!--
       BODY
@@ -37,7 +32,11 @@
           <div class="row">
             <div class="col-md-12">
               <div class="card">
-                <div class="card-header">Posts</div>
+                <div class="card-header d-flex align-items-center">
+                  <span>Posts</span>
+                  <a class="btn btn-success text-white ml-4"
+                     th:href="@{${T(com.rygf.common.GetLink).DASHBOARD_POST_CREATE_URI}}">Create</a>
+                </div>
                 <div class="card-body">
                   <div class="alert alert-light" role="alert" th:if="${#lists.size(posts)} == 0">
                     There is no post !
@@ -132,7 +131,7 @@
 <!-- Modal -->
 <th:block th:replace="~{fragment/layout :: del_modal}"></th:block>
 
-<th:block th:replace="~{fragment/foot :: scripts(_)}"></th:block>
+<th:block th:replace="~{fragment/foot :: dashboard_script}"></th:block>
 <th:block th:replace="~{fragment/layout :: del_modal_script}"></th:block>
 </body>
 </html>

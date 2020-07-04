@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragment/head :: elit-head}"></head>
+<head th:replace="~{fragment/head :: elit_head}"></head>
 <body data-spy="scroll" data-target=".site-navbar-target" data-offset="200">
 
 
 <div class="site-wrap">
 
-  <th:block th:replace="~{fragment/nav :: elit-nav-sidebar}"></th:block>
+  <th:block th:replace="~{fragment/nav :: elit_nav_sidebar}"></th:block>
 
   <main class="main-content">
 
@@ -126,33 +126,32 @@
 
 </div> <!-- .site-wrap -->
 
-<th:block th:replace="~{fragment/foot :: elit-script(~{::script})}">
-  <script>
-    $(document).ready(function() {
+<th:block th:replace="~{fragment/foot :: elit_script}"/>
+<script>
+  $(document).ready(function() {
+    $(".nav-link").removeClass("active");
+    $(".nav-link").click(function() {
       $(".nav-link").removeClass("active");
-      $(".nav-link").click(function() {
-        $(".nav-link").removeClass("active");
-        $(this).addClass("active");
-      });
+      $(this).addClass("active");
     });
+  });
 
-    $('[data-fancybox]').fancybox({
-      caption : function( instance, item ) {
-        var title = $(this).data("obj-title");
-        var about = $(this).data("obj-about");
-        var url = $(this).data("obj-url");
-        if(title === null || about === null || url === null)
-          return "Sorry for this ! Caption can\'t be shown";
+  $('[data-fancybox]').fancybox({
+    caption : function( instance, item ) {
+      var title = $(this).data("obj-title");
+      var about = $(this).data("obj-about");
+      var url = $(this).data("obj-url");
+      if(title === null || about === null || url === null)
+        return "Sorry for this ! Caption can\'t be shown";
 
-        var caption =
-            "<p>Name : <span id='caption-title'>" + title + "</span></p>" +
-            "<p>About : <span id='caption-about'>" + about + "</span></p>" +
-            "<p><a id='caption-url' href='" + url + "'>Checkout more</a></p>";
+      var caption =
+          "<p>Name : <span id='caption-title'>" + title + "</span></p>" +
+          "<p>About : <span id='caption-about'>" + about + "</span></p>" +
+          "<p><a id='caption-url' href='" + url + "'>Checkout more</a></p>";
 
-        return caption;
-      }
-    });
-  </script>
-</th:block>
+      return caption;
+    }
+  });
+</script>
 </body>
 </html>

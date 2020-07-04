@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragment/head :: elit-head}"/>
+<head th:replace="~{fragment/head :: elit_head}"/>
 
 <body data-spy="scroll" data-target=".site-navbar-target" data-offset="200">
 
 <div class="site-wrap">
 
-  <th:block th:replace="~{fragment/nav :: elit-nav-sidebar}"></th:block>
+  <th:block th:replace="~{fragment/nav :: elit_nav_sidebar}"></th:block>
   <main class="main-content">
 
 <!--    <section class="site-section-hero bg-image"-->
@@ -191,8 +191,8 @@
 
             </div>
             <div class="col-md-4 sidebar">
-              <th:block th:replace="~{fragment/nav :: sidebar-search}"></th:block>
-              <th:block th:replace="~{fragment/nav :: sidebar-subjects}"></th:block>
+              <th:block th:replace="~{fragment/nav :: sidebar_search}"></th:block>
+              <th:block th:replace="~{fragment/nav :: sidebar_subjects}"></th:block>
             </div>
           </div>
         </div>
@@ -216,7 +216,7 @@
 
 </div> <!-- .site-wrap -->
 
-<th:block th:replace="~{fragment/foot :: elit-script(_)}"/>
+<th:block th:replace="~{fragment/foot :: elit_script}"/>
 
 </body>
 </html>

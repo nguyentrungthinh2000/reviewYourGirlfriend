@@ -52,17 +52,21 @@ public class Subject {
     @UpdateTimestamp
     private LocalDate updatedDate;
     
+    
+    /*
+    *   Methods
+    * */
+    @PreRemove
+    public void preRemove() {
+        posts.stream().forEach(post -> post.setSubject(null));
+    }
+    
     public String getFormatTitle(int maxWord) {
         return Formatter.formatString(this.title, maxWord);
     }
     
     public String getFormatAbout(int maxWord) {
         return Formatter.formatString(this.about, maxWord);
-    }
-    
-    @PreRemove
-    public void preRemove() {
-        posts.stream().forEach(post -> post.setSubject(null));
     }
     
     public String selfLinkDetail() {
