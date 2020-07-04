@@ -88,7 +88,7 @@ public class UserService {
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
             throw new DuplicateEntityException("Email : " + registerDTO.getEmail() + " is already taken");
         } catch (MailException e) {
-            throw new MailSendingException("Mail sending has been interrupted");
+            throw new MailSendingException("Mail sending has been interrupted\n" + e.getMessage());
         }
     }
     

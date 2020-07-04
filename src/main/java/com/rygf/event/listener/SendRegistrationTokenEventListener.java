@@ -12,7 +12,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -26,7 +25,7 @@ public class SendRegistrationTokenEventListener implements ApplicationListener<S
     @Value("${support.mail}")
     private String supportMail;
     
-    @Async // muốn catch Exception --> tắt Async
+//    @Async // muốn catch Exception --> tắt Async
     @Override
     public void onApplicationEvent(SendRegistrationTokenEvent event) throws MailException {
         this.event = event;
@@ -35,7 +34,7 @@ public class SendRegistrationTokenEventListener implements ApplicationListener<S
         sendConfirmationMail(token);
     }
     
-    @Async // muốn catch Exception --> tắt Async
+//    @Async // muốn catch Exception --> tắt Async
     public void sendConfirmationMail(String token) throws MailException {
         SimpleMailMessage mail = new SimpleMailMessage();
         User user = event.getUser();

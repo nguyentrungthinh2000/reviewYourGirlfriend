@@ -1,5 +1,8 @@
 package com.rygf.controller;
 
+import static com.rygf.common.ViewName.SUBJECT_DASHBOARD_VIEW;
+import static com.rygf.common.ViewName.SUBJECT_FORM_VIEW;
+
 import com.rygf.common.ImageUploader;
 import com.rygf.dto.CrudStatus;
 import com.rygf.dto.CrudStatus.STATUS;
@@ -48,13 +51,13 @@ public class SubjectController {
         List<Subject> subjects = subjectService.findAll();
         model.addAttribute("subjects", subjects);
         
-        return "subject/dashboard";
+        return SUBJECT_DASHBOARD_VIEW;
     }
     
     @PreAuthorize("hasAuthority('SUBJECT_CREATE')")
     @GetMapping("/create")
     public String showSubjectForm(@ModelAttribute("subject") SubjectDTO subjectDTO) {
-        return "subject/form";
+        return SUBJECT_FORM_VIEW;
     }
     
     @PreAuthorize("hasAnyAuthority('SUBJECT_CREATE', 'SUBJECT_UPDATE')")
@@ -64,7 +67,7 @@ public class SubjectController {
         RedirectAttributes ra
     ) {
         if(rs.hasErrors()) {
-            return "subject/form";
+            return SUBJECT_FORM_VIEW;
         }
 
         MultipartFile source = subjectDTO.getThumbnail();
@@ -73,7 +76,7 @@ public class SubjectController {
                 subjectService.uploadFile(subjectDTO, source);
             } catch (ImageException e) {
                 rs.rejectValue("thumbnail", null, e.getMessage());
-                return "post/form";
+                return SUBJECT_FORM_VIEW;
             }
         } else {
             subjectDTO.setThumbnail(null); // only use URI THUMBNAIL
@@ -94,7 +97,7 @@ public class SubjectController {
         ) {
         SubjectDTO subject = subjectService.findDto(id);
         model.addAttribute("subject", subject);
-        return "subject/form";
+        return SUBJECT_FORM_VIEW;
     }
     
     @PreAuthorize("hasAuthority('SUBJECT_DELETE')")

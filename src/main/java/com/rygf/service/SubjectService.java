@@ -52,6 +52,7 @@ public class SubjectService implements ISubjectService {
             temp = opt.get();
             temp.setTitle(dto.getTitle());
             temp.setAbout(dto.getAbout());
+            deleteExistThumbnail(dto.getId()); // Chỉ khi nào update --> mới delete
         } else { // CREATE NEW SUBJECT
             temp = new Subject();
             temp.setTitle(dto.getTitle());
@@ -59,7 +60,6 @@ public class SubjectService implements ISubjectService {
         }
         
         // Thumbnail
-        deleteExistThumbnail(dto.getId());
         if(dto.getFinalDesFileName() != null) {
             temp.getThumbnail().setUri(dto.getFinalDesFileName());
             temp.getThumbnail().setEmbedded(false); // not embed link

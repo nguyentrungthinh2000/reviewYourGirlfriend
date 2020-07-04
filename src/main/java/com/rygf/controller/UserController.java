@@ -1,5 +1,8 @@
 package com.rygf.controller;
 
+import static com.rygf.common.ViewName.USER_DASHBOARD_VIEW;
+import static com.rygf.common.ViewName.USER_FORM_VIEW;
+
 import com.rygf.dto.CrudStatus;
 import com.rygf.dto.CrudStatus.STATUS;
 import com.rygf.dto.UserDTO;
@@ -48,13 +51,13 @@ public class UserController {
         List<User> users = userService.findAll();
         model.addAttribute("users", users);
         
-        return "user/dashboard";
+        return USER_DASHBOARD_VIEW;
     }
     
     @PreAuthorize("hasAuthority('USER_CREATE')")
     @GetMapping("/create")
     public String showUserForm(@ModelAttribute("user") UserDTO userDTO) {
-        return "user/form";
+        return USER_FORM_VIEW;
     }
     
     @PreAuthorize("hasAnyAuthority('USER_CREATE', 'USER_UPDATE')")
@@ -64,7 +67,7 @@ public class UserController {
         RedirectAttributes ra
     ) {
         if(rs.hasErrors()) {
-            return "user/form";
+            return USER_FORM_VIEW;
         }
 
         userService.createOrUpdate(userDTO);
@@ -82,7 +85,7 @@ public class UserController {
         ) {
         UserDTO user = userService.findDto(id);
         model.addAttribute("user", user);
-        return "user/form";
+        return USER_FORM_VIEW;
     }
     
     @PreAuthorize("hasAuthority('USER_DELETE')")

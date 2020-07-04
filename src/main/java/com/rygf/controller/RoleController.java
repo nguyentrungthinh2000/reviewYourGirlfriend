@@ -1,5 +1,8 @@
 package com.rygf.controller;
 
+import static com.rygf.common.ViewName.ROLE_DASHBOARD_VIEW;
+import static com.rygf.common.ViewName.ROLE_FORM_VIEW;
+
 import com.rygf.dto.CrudStatus;
 import com.rygf.dto.CrudStatus.STATUS;
 import com.rygf.dto.RoleDTO;
@@ -47,13 +50,13 @@ public class RoleController {
         List<Role> roles = roleService.findAll();
         model.addAttribute("roles", roles);
         
-        return "role/dashboard";
+        return ROLE_DASHBOARD_VIEW;
     }
     
     @PreAuthorize("hasAuthority('ROLE_CREATE')")
     @GetMapping("/create")
     public String showRoleForm(@ModelAttribute("role") RoleDTO roleDTO) {
-        return "role/form";
+        return ROLE_FORM_VIEW;
     }
     
     @PreAuthorize("hasAnyAuthority('ROLE_CREATE', 'ROLE_UPDATE')")
@@ -63,7 +66,7 @@ public class RoleController {
         RedirectAttributes ra
     ) {
         if(rs.hasErrors()) {
-            return "role/form";
+            return ROLE_FORM_VIEW;
         }
 
         roleService.createOrUpdate(roleDTO);
@@ -81,7 +84,7 @@ public class RoleController {
         ) {
         RoleDTO role = roleService.findDto(id);
         model.addAttribute("role", role);
-        return "role/form";
+        return ROLE_FORM_VIEW;
     }
     
     @PreAuthorize("hasAuthority('ROLE_DELETE')")

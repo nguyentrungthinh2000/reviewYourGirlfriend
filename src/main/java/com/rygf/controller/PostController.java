@@ -1,5 +1,8 @@
 package com.rygf.controller;
 
+import static com.rygf.common.ViewName.POST_DASHBOARD_VIEW;
+import static com.rygf.common.ViewName.POST_FORM_VIEW;
+
 import com.rygf.dto.CrudStatus;
 import com.rygf.dto.CrudStatus.STATUS;
 import com.rygf.dto.PostDTO;
@@ -30,6 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/dashboard/posts")
 @Controller
 public class PostController {
+    
     private final PostService postService;
     private final SubjectService subjectService;
     
@@ -49,13 +53,13 @@ public class PostController {
         List<Post> posts = postService.findAll();
         model.addAttribute("posts", posts);
         
-        return "post/dashboard";
+        return POST_DASHBOARD_VIEW;
     }
     
     @PreAuthorize("hasAuthority('POST_CREATE')")
     @GetMapping("/create")
     public String showPostForm(@ModelAttribute("post")PostDTO postDTO) {
-        return "post/form";
+        return POST_FORM_VIEW;
     }
     
     @PreAuthorize("hasAnyAuthority('POST_CREATE', 'POST_UDPATE')")
@@ -65,21 +69,22 @@ public class PostController {
         RedirectAttributes ra
     ) {
         if(rs.hasErrors())
-            return "post/form";
+            return POST_FORM_VIEW;
     
-        MultipartFile source = postDTO.getThumbnail();
-        if(postDTO.getEmbedThumbnailUri() == null || postDTO.getEmbedThumbnailUri().isBlank()) {
+        MultipartFile source = postDTO.getThumbnailFile();
+        if(!postDTO.getThumbnail().isEmbedded()) {
+            // Trường hợp select file
             try {
                 postService.uploadFile(postDTO, source);
             } catch (ImageException e) {
                 rs.rejectValue("thumbnail", null, e.getMessage());
-                return "post/form";
+                return POST_FORM_VIEW;
             }
         } else {
-            postDTO.setThumbnail(null); // only use URI THUMBNAIL
+            // Trường hợp select uri
+            postDTO.setThumbnailFile(null); // only use URI THUMBNAIL
         }
-        
-        
+    
         postService.createOrUpdate(postDTO);
         if(postDTO.getId() == null)
             ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.CREATE_SUCCESS));
@@ -95,7 +100,7 @@ public class PostController {
         ) {
         PostDTO post = postService.findDto(id);
         model.addAttribute("post", post);
-        return "post/form";
+        return POST_FORM_VIEW;
     }
     
     @PreAuthorize("hasAuthority('POST_DELETE')")

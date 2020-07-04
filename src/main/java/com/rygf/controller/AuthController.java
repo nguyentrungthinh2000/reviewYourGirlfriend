@@ -1,5 +1,13 @@
 package com.rygf.controller;
 
+import static com.rygf.common.ViewName.ACCOUNT_ANNOUNCE_VIEW;
+import static com.rygf.common.ViewName.FORGET_PASSWORD_VIEW;
+import static com.rygf.common.ViewName.LOGIN_VIEW;
+import static com.rygf.common.ViewName.REGISTER;
+import static com.rygf.common.ViewName.RESET_PASSWORD_VIEW;
+import static com.rygf.common.ViewName.USER_SETTING_CHANGE_PASSWORD_VIEW;
+import static com.rygf.common.ViewName.USER_SETTING_PROFILE;
+
 import com.rygf.common.ImageUploader;
 import com.rygf.dto.RegisterDTO;
 import com.rygf.dto.UserPasswordDTO;
@@ -46,7 +54,7 @@ public class AuthController {
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
         model.addAttribute("register", new RegisterDTO());
-        return "register";
+        return REGISTER;
     }
     
     @PostMapping("/register")
@@ -55,7 +63,7 @@ public class AuthController {
         HttpServletRequest request,
         Model model) {
         if (rs.hasErrors()) {
-            return "register";
+            return REGISTER;
         }
         
         String serverURL = generateServerURL(request);
@@ -70,7 +78,7 @@ public class AuthController {
         builder.append(registerDTO.getEmail());
         builder.append("</u>");
         model.addAttribute("content", builder.toString());
-        return "account_announce";
+        return ACCOUNT_ANNOUNCE_VIEW;
     }
     
     @GetMapping("/registrationConfirm")
@@ -81,7 +89,7 @@ public class AuthController {
         model.addAttribute("heading", "Account Confirmation");
         model.addAttribute("content",
             "Your account has been activated!\n</br>Welcome to our family <3");
-        return "account_announce";
+        return ACCOUNT_ANNOUNCE_VIEW;
     }
     
     
@@ -90,7 +98,7 @@ public class AuthController {
      * */
     @GetMapping("/login")
     public String showLoginForm() {
-        return "login";
+        return LOGIN_VIEW;
     }
     
     /*
@@ -98,7 +106,7 @@ public class AuthController {
      * */
     @GetMapping("/forgetPassword")
     public String showRepasswordForm() {
-        return "forget-password";
+        return FORGET_PASSWORD_VIEW;
     }
     
     @PostMapping("/forgetPassword")
@@ -111,14 +119,14 @@ public class AuthController {
         
         model.addAttribute("heading", "Send Token Success");
         model.addAttribute("content", "ResetToken has been sent to email : " + email);
-        return "account_announce";
+        return ACCOUNT_ANNOUNCE_VIEW;
     }
     
     @GetMapping("/resetPasswordConfirm")
     public String confirmResetPasswordToken(@RequestParam(value = "token") String token,
         Model model) {
         userService.verifyResetPasswordToken(token);
-        return "reset-password";
+        return RESET_PASSWORD_VIEW;
     }
     
     @PreAuthorize("isAuthenticated()")
@@ -139,7 +147,7 @@ public class AuthController {
     @PreAuthorize("isAuthenticated()")
     public String showChangeInfoForm(Model model) {
         model.addAttribute("profile", userService.findProfileDto());
-        return "user/setting/profile";
+        return USER_SETTING_PROFILE;
     }
     
     @PreAuthorize("isAuthenticated()")
@@ -147,7 +155,7 @@ public class AuthController {
     public String showChangeInfoForm(@Valid @ModelAttribute("profile") UserProfileDTO profile,
         BindingResult rs) {
         if (rs.hasErrors()) {
-            return "user/setting/profile";
+            return USER_SETTING_PROFILE;
         }
         
         MultipartFile source = profile.getThumbnail();
@@ -161,7 +169,7 @@ public class AuthController {
             profile.setFinalDesFileName(finalDesFileName);
         } catch (ImageException e) {
             rs.rejectValue("thumbnail", null, e.getMessage());
-            return "user/setting/profile";
+            return USER_SETTING_PROFILE;
         }
         
         userService.updateProfile(profile);
@@ -173,7 +181,7 @@ public class AuthController {
     @PreAuthorize("isAuthenticated()")
     public String showChangePasswordForm(Model model) {
         model.addAttribute("profile", new UserPasswordDTO());
-        return "user/setting/change_password";
+        return USER_SETTING_CHANGE_PASSWORD_VIEW;
     }
     
     @PreAuthorize("isAuthenticated()")
@@ -181,14 +189,14 @@ public class AuthController {
     public String showChangeInfoForm(@Valid @ModelAttribute("profile") UserPasswordDTO profile,
         BindingResult rs) {
         if (rs.hasErrors()) {
-            return "user/setting/change_password";
+            return USER_SETTING_CHANGE_PASSWORD_VIEW;
         }
         
         try {
             userService.changePassword(profile);
         } catch (UserSettingException e) {
             rs.rejectValue("oldPassword", null, e.getMessage());
-            return "user/setting/change_password";
+            return USER_SETTING_CHANGE_PASSWORD_VIEW;
         }
         
         return "redirect:/";

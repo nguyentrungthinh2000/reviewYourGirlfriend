@@ -1,5 +1,10 @@
 package com.rygf.controller;
 
+import static com.rygf.common.ViewName.MAIN_VIEW;
+import static com.rygf.common.ViewName.POST_SINGLE_VIEW;
+import static com.rygf.common.ViewName.SUBJECT_DISPLAY_VIEW;
+import static com.rygf.common.ViewName.USER_DISPLAY_POST_VIEW;
+
 import com.rygf.entity.Post;
 import com.rygf.entity.Subject;
 import com.rygf.service.PostService;
@@ -24,7 +29,7 @@ public class HomeController {
     private final SubjectService subjectService;
     
     @GetMapping("/")
-    public String showHomePage(Model model) {
+    public String showHomePage() {
         return "redirect:/1";
     }
     
@@ -45,7 +50,7 @@ public class HomeController {
         model.addAttribute("totalItems", postsPaginated.getTotalElements());
         model.addAttribute("orderBy", orderBy);
         model.addAttribute("orderDir", orderDir);
-        return "main";
+        return MAIN_VIEW;
     }
     
     
@@ -55,7 +60,7 @@ public class HomeController {
             @PathVariable(value = "slug", required = false) String slug) {
         Post post = postService.find(id);
         model.addAttribute("post", post);
-        return "post/single";
+        return POST_SINGLE_VIEW;
     }
     
     @GetMapping("/users/{id}-{slug}/posts")
@@ -63,7 +68,7 @@ public class HomeController {
         @PathVariable(value = "slug", required = false) String slug) {
         List<Post> posts = postService.findByUser(id);
         model.addAttribute("posts", posts);
-        return "user/display_post";
+        return USER_DISPLAY_POST_VIEW;
     }
     
     @GetMapping("/subjects/{id}-{slug}")
@@ -71,7 +76,7 @@ public class HomeController {
         @PathVariable(value = "slug", required = false) String slug) {
         Subject subject = subjectService.find(id);
         model.addAttribute("subject", subject);
-        return "subject/display";
+        return SUBJECT_DISPLAY_VIEW;
     }
     
 }

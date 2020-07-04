@@ -52,17 +52,18 @@ public class PostService implements IPostService {
     @Override
     public void createOrUpdate(PostDTO dto) {
         Post temp;
-        
-        if(dto.getId() != null) { // UPDATE POST
-            Optional<Post> opt = postRepository.findById(dto.getId());
-            final var postId = dto.getId();
-            opt.orElseThrow(() -> new EntityNotFoundException("Post with id : " + postId + " is not exists !"));
+    
+        final Long id = dto.getId();
+        if(id != null) { // UPDATE POST
+            Optional<Post> opt = postRepository.findById(id);
+            opt.orElseThrow(() -> new EntityNotFoundException("Post with id : " + id + " is not exists !"));
     
             temp = opt.get();
             temp.setTitle(dto.getTitle());
             temp.setDescription(dto.getDescription());
             temp.setContent(dto.getContent());
             temp.setSubject(dto.getSubject());
+            deleteExistThumbnail(id); // Chỉ khi nào update --> mới delete
         } else { // CREATE NEW POST
             temp = new Post();
             temp.setTitle(dto.getTitle());
@@ -77,17 +78,14 @@ public class PostService implements IPostService {
             temp.setAuthor(optUser.get());
         }
         
+        log.info("laksjd : {}", dto.getThumbnail());
         // Thumbnail
-        deleteExistThumbnail(dto.getId());
-        if(dto.getFinalDesFileName() != null) {
-            //Thumbnail
-            temp.getThumbnail().setUri(dto.getFinalDesFileName());
-            temp.getThumbnail().setEmbedded(false); // not embed link
-        } else if(dto.getFinalDesFileName() == null && dto.getEmbedThumbnailUri() != null) {
-            temp.getThumbnail().setUri(dto.getEmbedThumbnailUri());
-            temp.getThumbnail().setEmbedded(true); // embed link
+        if(dto.getThumbnail() != null) {
+            System.out.println("Đây nè");
+            temp.setThumbnail(dto.getThumbnail());
         }
-        
+    
+        System.out.println(temp.getThumbnail());
         try {
             postRepository.save(temp);
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
@@ -141,7 +139,13 @@ public class PostService implements IPostService {
         dto.setTitle(post.getTitle());
         dto.setDescription(post.getDescription());
         dto.setContent(post.getContent());
-        dto.setThumbnailUri(post.selfLinkThumbUri());
+    
+        /*
+        *   Chú ý Transaction, Dirty check nhé
+        * */
+        dto.getThumbnail().setUri(post.selfLinkThumbUri());
+        dto.getThumbnail().setEmbedded(post.getThumbnail().isEmbedded());
+        
         dto.setSubject(post.getSubject());
         return dto;
     }
@@ -151,11 +155,13 @@ public class PostService implements IPostService {
             throw new ImageException("ERR_UPLOAD_IMAGE_NULL");
         else if(postDTO.getId() != null && (source == null || source.isEmpty())) {
             // là trường hợp update nhưng không update Thumbnail
+            postDTO.setThumbnail(null);
         } else {
             if(postDTO.getId() != null) // Xóa exists thumbnail
                 deleteExistThumbnail(postDTO.getId());
             String finalDesFileName = imageUploader.uploadFile(source, uploadPath);
-            postDTO.setFinalDesFileName(finalDesFileName);
+            postDTO.getThumbnail().setEmbedded(false);
+            postDTO.getThumbnail().setUri(finalDesFileName);
         }
     }
     

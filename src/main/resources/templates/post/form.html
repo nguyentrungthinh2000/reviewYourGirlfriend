@@ -51,30 +51,31 @@
 
                     <!-- Thumbnail-->
                     <div class="form-group">
-                      <label>Thumbnail</label>
+                      <label id="form-thumbnail-label">Thumbnail</label>
                       <div class="custom-control custom-switch d-inline ml-3">
-                        <input type="checkbox" class="custom-control-input" id="thumbnail-switch">
+                        <input type="checkbox" class="custom-control-input" id="thumbnail-switch" th:field="*{thumbnail.embedded}">
                         <label class="custom-control-label" for="thumbnail-switch"
                                id="thumbnail-switch-label"/>
                       </div>
 
                       <input type="text" class="form-control"
-                             th:field="*{embedThumbnailUri}"
+                             th:id="${'thumbnailEmbed'}"
+                             th:field="*{thumbnail.uri}"
                              th:errorclass="is-invalid"
-                             placeholder="Embed Thumnail URI">
+                             placeholder="Embed Thumbnail URI">
 
                       <input type="file" class="form-control"
-                             th:field="*{thumbnail}"
+                             th:field="*{thumbnailFile}"
                              th:errorclass="is-invalid">
-                      <th:block th:if="${#fields.hasErrors('thumbnail')}">
+                      <th:block th:if="${#fields.hasErrors('thumbnailFile')}">
                         <div class="valid-feedback" style="display: block; color: red;"
-                             th:each="err : ${#fields.errors('thumbnail')}" th:text="${err}"/>
+                             th:each="err : ${#fields.errors('thumbnailFile')}" th:text="${err}"/>
                       </th:block>
                     </div>
 
                     <img id="form-thumbnail"
-                         th:with="thumbnailUri = (${post.thumbnailUri != null}
-                                                   ? ${post.thumbnailUri}
+                         th:with="thumbnailUri = (${post.thumbnail.getUri() != null}
+                                                   ? ${post.thumbnail.getUri()}
                                                    : 'null')"
                          th:src="@{${thumbnailUri}}">
 
@@ -161,24 +162,41 @@
   <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"
           type="text/javascript"></script>
   <script>
-    var thumb = $("#form-thumbnail");
+    var thumbDisplay = $("#form-thumbnail");
+    var switchLabel = $("#thumbnail-switch-label");
+    var embedThumbnail = $("#thumbnailEmbed");
+    var fileThumbnail = $("#thumbnailFile");
+    var thumbLabel = $("#form-thumbnail-label");
+    var switchToggler = $("#thumbnail-switch");
+
     $(document).ready(function () {
-      if (thumb.attr("src") == "null") {
-        thumb.hide();
+      if (thumbDisplay.attr("src") == "null") {
+        thumbDisplay.hide();
       }
 
-      $("input[name='thumbnail']").change(function () {
+      $("#thumbnailFile").change(function () {
         changeImageFile(this);
       });
 
-      var switchToggler = $("#thumbnail-switch");
-      var switchLabel = $("#thumbnail-switch-label");
-      var uriThumbnail = $("#embedThumbnailUri");
-      var fileThumbnail = $("#thumbnail");
 
-      switchLabel.html("Switch to use <b>Embed Uri Thumbnail</b>");
-      uriThumbnail.hide();
-      fileThumbnail.show();
+      if (switchToggler.is(':checked')) {
+        // Embed
+        switchLabel.html("Switch to use <b>Upload File Thumbnail</b>");
+        thumbLabel.html("Embed Thumbnail");
+
+        thumbDisplay.hide();
+        embedThumbnail.show();
+        fileThumbnail.hide();
+      }
+      else {
+        // File
+        switchLabel.html("Switch to use <b>Embed Uri Thumbnail</b>");
+        thumbLabel.html("File Thumbnail");
+
+        thumbDisplay.show();
+        fileThumbnail.show();
+        embedThumbnail.hide();
+      }
 
       switchToggler.change(function () {
         switchToggle(this);
@@ -204,21 +222,20 @@
 
     // Functions
     function switchToggle(toggler) {
-      var switchLabel = $("#thumbnail-switch-label");
-      var uriThumbnail = $("#embedThumbnailUri");
-      var fileThumbnail = $("#thumbnail");
-
       if ($(toggler).is(':checked')) { // Embed
-        thumb.fadeOut("100");
+        thumbDisplay.fadeOut("100");
         switchLabel.html("Switch to use <b>Upload File Thumbnail</b>");
+        thumbLabel.html("Embed Thumbnail");
         fileThumbnail.fadeOut("300", function () {
-          uriThumbnail.show();
+          embedThumbnail.show();
         });
 
       } else { // File
-        uriThumbnail.val(""); // clear text
+        if(thumbDisplay.attr("src") != "null")
+          thumbDisplay.fadeIn("100");
         switchLabel.html("Switch to use <b>Embed Uri Thumbnail</b>");
-        uriThumbnail.fadeOut("300", function () {
+        thumbLabel.html("File Thumbnail");
+        embedThumbnail.fadeOut("300", function () {
           fileThumbnail.show();
         });
       }
@@ -229,10 +246,10 @@
 
       reader = new FileReader();
       reader.onload = function (e) {
-        thumb.attr("src", e.target.result);
+        thumbDisplay.attr("src", e.target.result);
       }
       reader.readAsDataURL(file);
-      thumb.show();
+      thumbDisplay.show();
     }
   </script>
 </th:block>
