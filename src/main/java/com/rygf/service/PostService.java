@@ -78,14 +78,11 @@ public class PostService implements IPostService {
             temp.setAuthor(optUser.get());
         }
         
-        log.info("laksjd : {}", dto.getThumbnail());
         // Thumbnail
         if(dto.getThumbnail() != null) {
-            System.out.println("Đây nè");
             temp.setThumbnail(dto.getThumbnail());
         }
     
-        System.out.println(temp.getThumbnail());
         try {
             postRepository.save(temp);
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
@@ -139,29 +136,29 @@ public class PostService implements IPostService {
         dto.setTitle(post.getTitle());
         dto.setDescription(post.getDescription());
         dto.setContent(post.getContent());
+        dto.setSubject(post.getSubject());
     
         /*
-        *   Chú ý Transaction, Dirty check nhé
-        * */
+         *   Chú ý Transaction, Dirty check nhé
+         * */
         dto.getThumbnail().setUri(post.selfLinkThumbUri());
         dto.getThumbnail().setEmbedded(post.getThumbnail().isEmbedded());
         
-        dto.setSubject(post.getSubject());
         return dto;
     }
     
-    public void uploadFile(PostDTO postDTO, MultipartFile source) throws ImageException {
-        if(postDTO.getId() == null && (source == null || source.isEmpty()))
+    public void uploadFile(PostDTO dto, MultipartFile source) throws ImageException {
+        if(dto.getId() == null && (source == null || source.isEmpty()))
             throw new ImageException("ERR_UPLOAD_IMAGE_NULL");
-        else if(postDTO.getId() != null && (source == null || source.isEmpty())) {
+        else if(dto.getId() != null && (source == null || source.isEmpty())) {
             // là trường hợp update nhưng không update Thumbnail
-            postDTO.setThumbnail(null);
+            dto.setThumbnail(null);
         } else {
-            if(postDTO.getId() != null) // Xóa exists thumbnail
-                deleteExistThumbnail(postDTO.getId());
+            if(dto.getId() != null) // Xóa exists thumbnail
+                deleteExistThumbnail(dto.getId());
             String finalDesFileName = imageUploader.uploadFile(source, uploadPath);
-            postDTO.getThumbnail().setEmbedded(false);
-            postDTO.getThumbnail().setUri(finalDesFileName);
+            dto.getThumbnail().setEmbedded(false);
+            dto.getThumbnail().setUri(finalDesFileName);
         }
     }
     

@@ -25,7 +25,7 @@ public class Formatter {
         return builder.toString();
     }
     
-    public static String convertStrToSlug(String value) {
+    public static String convertStrToHashtag(String value) {
         try {
             String temp = Normalizer.normalize(value, Normalizer.Form.NFD);
             Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");

@@ -1,5 +1,6 @@
 package com.rygf.dto;
 
+import com.rygf.entity.Thumbnail;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,18 +13,14 @@ import org.springframework.web.multipart.MultipartFile;
 public class SubjectDTO {
     private Long id;
     
-    private MultipartFile thumbnail;
+    private MultipartFile thumbnailFile;
     
-    private String embedThumbnailUri;
+    private Thumbnail thumbnail = new Thumbnail();
     
     @NotBlank
     private String title;
     
     @NotBlank
     private String about;
-    
-    private String finalDesFileName;
-    
-    private String thumbnailUri;
     
 }

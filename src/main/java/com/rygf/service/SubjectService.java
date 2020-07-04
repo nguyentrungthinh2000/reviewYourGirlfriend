@@ -60,12 +60,8 @@ public class SubjectService implements ISubjectService {
         }
         
         // Thumbnail
-        if(dto.getFinalDesFileName() != null) {
-            temp.getThumbnail().setUri(dto.getFinalDesFileName());
-            temp.getThumbnail().setEmbedded(false); // not embed link
-        } else if(dto.getFinalDesFileName() == null && dto.getEmbedThumbnailUri() != null) {
-            temp.getThumbnail().setUri(dto.getEmbedThumbnailUri());
-            temp.getThumbnail().setEmbedded(true); // embed link
+        if(dto.getThumbnail() != null) {
+            temp.setThumbnail(dto.getThumbnail());
         }
         
         try {
@@ -118,20 +114,27 @@ public class SubjectService implements ISubjectService {
         dto.setId(subject.getId());
         dto.setTitle(subject.getTitle());
         dto.setAbout(subject.getAbout());
-        dto.setThumbnailUri(subject.selfLinkThumbUri());
+    
+        /*
+         *   Chú ý Transaction, Dirty check nhé
+         * */
+        dto.getThumbnail().setUri(subject.selfLinkThumbUri());
+        dto.getThumbnail().setEmbedded(subject.getThumbnail().isEmbedded());
+        
         return dto;
     }
     
-    public void uploadFile(SubjectDTO subjectDTO, MultipartFile source) throws ImageException {
-        if(subjectDTO.getId() == null && (source == null || source.isEmpty()))
+    public void uploadFile(SubjectDTO dto, MultipartFile source) throws ImageException {
+        if(dto.getId() == null && (source == null || source.isEmpty()))
             throw new ImageException("ERR_UPLOAD_IMAGE_NULL");
-        else if(subjectDTO.getId() != null && (source == null || source.isEmpty())) {
+        else if(dto.getId() != null && (source == null || source.isEmpty())) {
             // là trường hợp update nhưng không update Thumbnail
         } else {
-            if(subjectDTO.getId() != null) // Xóa exists thumbnail
-                deleteExistThumbnail(subjectDTO.getId());
+            if(dto.getId() != null) // Xóa exists thumbnail
+                deleteExistThumbnail(dto.getId());
             String finalDesFileName = imageUploader.uploadFile(source, uploadPath);
-            subjectDTO.setFinalDesFileName(finalDesFileName);
+            dto.getThumbnail().setEmbedded(false);
+            dto.getThumbnail().setUri(finalDesFileName);
         }
     }
     
@@ -159,27 +162,4 @@ public class SubjectService implements ISubjectService {
         return subjectRepository.findAll(pageable);
     }
     
-
-//    public Page<Subject> findAllPaginated(int curPage, String orderBy, String orderDir) {
-//        Sort orders;
-//        Pageable pageable;
-//        pageable = PageRequest.of(curPage - 1, pageSize);
-//        if(orderBy != null) {
-//            orders = Sort.by(orderBy);
-//            if(orderDir != null) {
-//                switch (orderDir) {
-//                    case "asc":
-//                        orders = orders.ascending();
-//                        break;
-//                    case "desc":
-//                        orders = orders.descending();
-//                        break;
-//                    default:
-//                        orders = orders.ascending();
-//                }
-//            }
-//            pageable = PageRequest.of(curPage, pageSize, orders);
-//        }
-//        return subjectRepository.findAll(pageable);
-//    }
 }

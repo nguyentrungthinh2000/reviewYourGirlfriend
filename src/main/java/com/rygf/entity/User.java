@@ -72,7 +72,7 @@ public class User {
     private VerificationToken verificationToken;
     
     public String selfLinkPosts() {
-        return GetLink.getUserPostsUri(id, Formatter.convertStrToSlug(getDisplayName()));
+        return GetLink.getUserPostsUri(id, Formatter.convertStrToUrl(getDisplayName()));
     }
     
     public String selfLinkThumbUri() {
