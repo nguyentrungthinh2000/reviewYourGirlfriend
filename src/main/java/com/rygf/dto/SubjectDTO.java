@@ -1,5 +1,6 @@
 package com.rygf.dto;
 
+import com.rygf.entity.Image;
 import com.rygf.entity.Thumbnail;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ public class SubjectDTO {
     private MultipartFile thumbnailFile;
     
     private Thumbnail thumbnail = new Thumbnail();
+    private Image image = new Image();
     
     @NotBlank
     private String title;

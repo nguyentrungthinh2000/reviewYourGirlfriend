@@ -39,9 +39,13 @@ public class Subject {
     @Column(nullable = false)
     private String about;
     
+//    @Column(nullable = false)
+//    @Embedded
+//    private Thumbnail thumbnail = new Thumbnail();
+    
     @Column(nullable = false)
     @Embedded
-    private Thumbnail thumbnail = new Thumbnail();
+    private Image image = new Image();
     
     @OneToMany(mappedBy = "subject")
     private Collection<Post> posts = new HashSet<>();
@@ -74,13 +78,7 @@ public class Subject {
     }
     
     public String selfLinkThumbUri() {
-        if(thumbnail.getUri() == null)
-            return null;
-        
-        if(thumbnail.isEmbedded())
-            return GetLink.getEmbedThumbUri(thumbnail.getUri());
-        
-        return GetLink.getSubjectThumbUri(thumbnail.getUri());
+        return image.getUrl();
     }
     
     public String selfLinkUpdate() {

@@ -23,15 +23,14 @@ public class DataInitAppRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
     
-        final String roleName = "ADMIN";
         Role revRole;
-        if(!roleService.isRoleExists(roleName)) {
+        if(!roleService.isRoleExists("ADMIN")) {
             RoleDTO roleDTO = new RoleDTO();
-            roleDTO.setName(roleName);
+            roleDTO.setName("ADMIN");
             roleDTO.setPrivileges(Set.of(PRIVILEGE.values()));
             revRole = roleService.createOrUpdate(roleDTO);
         } else {
-            revRole = roleService.findByName(roleName);
+            revRole = roleService.findByName("ADMIN");
         }
     
         final String userEmail = "admin@test.com";
@@ -42,6 +41,17 @@ public class DataInitAppRunner implements ApplicationRunner {
             userDTO.setEnabled(true);
             userDTO.setRole(revRole);
             userService.createOrUpdate(userDTO);
+        }
+    
+        if(!roleService.isRoleExists("USER")) {
+            RoleDTO roleDTO = new RoleDTO();
+            roleDTO.setName("USER");
+            roleDTO.setPrivileges(Set.of(
+                PRIVILEGE.POST_CREATE,
+                PRIVILEGE.POST_READ,
+                PRIVILEGE.SUBJECT_READ
+            ));
+            roleService.createOrUpdate(roleDTO);
         }
     }
 }

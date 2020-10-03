@@ -19,8 +19,8 @@
 	-->
 
 	<baseDir>img/post/</baseDir>
-<!--    <baseURL>/img/post</baseURL>-->
-    <baseURL>/rygf/img/post</baseURL>
+    <baseURL>/img/post</baseURL>
+<!--    <baseURL>/rygf/img/post</baseURL>-->
 
 
 	<licenseKey></licenseKey>

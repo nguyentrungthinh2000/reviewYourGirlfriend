@@ -6,8 +6,10 @@ import static com.rygf.common.ViewName.SUBJECT_FORM_VIEW;
 import com.rygf.dto.CrudStatus;
 import com.rygf.dto.CrudStatus.STATUS;
 import com.rygf.dto.SubjectDTO;
+import com.rygf.entity.Image;
 import com.rygf.entity.Subject;
 import com.rygf.exception.ImageException;
+import com.rygf.image.ImageService;
 import com.rygf.service.SubjectService;
 import java.util.List;
 import javax.validation.Valid;
@@ -33,6 +35,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class SubjectController {
     
     private final SubjectService subjectService;
+    private final ImageService imageService;
     
     @ModelAttribute("crudStatus")
     public CrudStatus getCrudStatus() {
@@ -54,6 +57,36 @@ public class SubjectController {
         return SUBJECT_FORM_VIEW;
     }
     
+//    @PreAuthorize("hasAnyAuthority('SUBJECT_CREATE', 'SUBJECT_UPDATE')")
+//    @PostMapping("/submit")
+//    public String processForm(@Valid @ModelAttribute("subject")SubjectDTO subjectDTO,
+//        BindingResult rs,
+//        RedirectAttributes ra
+//    ) {
+//        if(rs.hasErrors()) {
+//            return SUBJECT_FORM_VIEW;
+//        }
+//
+//        MultipartFile source = subjectDTO.getThumbnailFile();
+//        if(!subjectDTO.getThumbnail().isEmbedded()) {
+//            try {
+//                subjectService.uploadFile(subjectDTO, source);
+//            } catch (ImageException e) {
+//                rs.rejectValue("thumbnail", null, e.getMessage());
+//                return SUBJECT_FORM_VIEW;
+//            }
+//        } else {
+//            subjectDTO.setThumbnailFile(null); // only use URI THUMBNAIL
+//        }
+//
+//        subjectService.createOrUpdate(subjectDTO);
+//        if(subjectDTO.getId() == null)
+//            ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.CREATE_SUCCESS));
+//        else if(subjectDTO.getId() != null)
+//            ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.UPDATE_SUCCESS));
+//        return "redirect:/dashboard/subjects";
+//    }
+    
     @PreAuthorize("hasAnyAuthority('SUBJECT_CREATE', 'SUBJECT_UPDATE')")
     @PostMapping("/submit")
     public String processForm(@Valid @ModelAttribute("subject")SubjectDTO subjectDTO,
@@ -63,19 +96,22 @@ public class SubjectController {
         if(rs.hasErrors()) {
             return SUBJECT_FORM_VIEW;
         }
-    
+        
         MultipartFile source = subjectDTO.getThumbnailFile();
-        if(!subjectDTO.getThumbnail().isEmbedded()) {
-            try {
-                subjectService.uploadFile(subjectDTO, source);
-            } catch (ImageException e) {
-                rs.rejectValue("thumbnail", null, e.getMessage());
-                return SUBJECT_FORM_VIEW;
+        Image uploadedImage = null;
+        try {
+            if(!subjectDTO.getThumbnail().isEmbedded()) {
+                uploadedImage = imageService.uploadFile(source);
+            } else {
+                uploadedImage = imageService.uploadFileFromUrl(subjectDTO.getThumbnail().getUri());
             }
-        } else {
-            subjectDTO.setThumbnailFile(null); // only use URI THUMBNAIL
+        } catch (ImageException e) {
+            rs.rejectValue("thumbnail", null, e.getMessage());
+            return SUBJECT_FORM_VIEW;
         }
-
+    
+        log.info("Upload Image : {}", uploadedImage);
+        subjectDTO.setImage(uploadedImage);
         subjectService.createOrUpdate(subjectDTO);
         if(subjectDTO.getId() == null)
             ra.addFlashAttribute("crudStatus", new CrudStatus(STATUS.CREATE_SUCCESS));

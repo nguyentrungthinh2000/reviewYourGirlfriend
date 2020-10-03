@@ -2,6 +2,7 @@ package com.rygf.service;
 
 import com.rygf.dao.RegisterTokenRepository;
 import com.rygf.dao.ResetPasswordTokenRepository;
+import com.rygf.dao.RoleRepository;
 import com.rygf.dao.UserRepository;
 import com.rygf.dto.RegisterDTO;
 import com.rygf.dto.UserDTO;
@@ -9,6 +10,7 @@ import com.rygf.dto.UserPasswordDTO;
 import com.rygf.dto.UserProfileDTO;
 import com.rygf.entity.RegisterToken;
 import com.rygf.entity.ResetPasswordToken;
+import com.rygf.entity.Role;
 import com.rygf.entity.User;
 import com.rygf.event.SendRegistrationTokenEvent;
 import com.rygf.event.SendResetPasswordTokenEvent;
@@ -38,7 +40,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -55,6 +56,7 @@ public class UserService {
     
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final ServletContext servletContext;
     private final CustomUserDetailsService userDetailsService;
     private final ApplicationEventPublisher eventPublisher;
@@ -77,12 +79,17 @@ public class UserService {
         temp.setEnabled(false); // Chờ confirm mới kích hoạt
     
         try {
+            final Optional<Role> roleOpt = roleRepository.findByName("USER");
+            if(roleOpt.isPresent())
+                temp.setRole(roleOpt.get());
+            
             userRepository.save(temp);
-            SecurityContextHolder.getContext().setAuthentication(
+            /*SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(
                     temp.getEmail(),
                     temp.getPassword(),
-                    new ArrayList<GrantedAuthority>()));
+                    new ArrayList<GrantedAuthority>()));*/
+            // Auto login after register
     
             eventPublisher.publishEvent(new SendRegistrationTokenEvent(this, temp, serverURL));
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {

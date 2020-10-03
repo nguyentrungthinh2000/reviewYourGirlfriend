@@ -72,6 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests().antMatchers("/h2-console/**").permitAll();
         http.csrf().disable();
         http.headers().frameOptions().disable();
         
@@ -94,7 +95,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
             .antMatchers("/register").permitAll()
             .antMatchers("/login").permitAll()
-            .antMatchers("/dashboard/**").hasAnyRole("ADMIN", "MANAGER")
+            .antMatchers("/logout").permitAll()
+            .antMatchers("/dashboard/**").hasAnyRole("ADMIN", "MANAGER", "USER")
             .anyRequest().permitAll();
     }
 }

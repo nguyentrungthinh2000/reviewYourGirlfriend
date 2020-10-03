@@ -6,10 +6,7 @@ import com.rygf.dto.SubjectDTO;
 import com.rygf.entity.Subject;
 import com.rygf.exception.DuplicateEntityException;
 import com.rygf.exception.EntityNotFoundException;
-import com.rygf.exception.ImageException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import com.rygf.image.ImageService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -35,6 +31,7 @@ public class SubjectService implements ISubjectService {
     private final SubjectRepository subjectRepository;
     private final ServletContext servletContext;
     private final ImageUploader imageUploader;
+    private final ImageService imageService;
     
     @Value("${post_thumb.upload.path}")
     private String uploadPath;
@@ -60,9 +57,13 @@ public class SubjectService implements ISubjectService {
         }
         
         // Thumbnail
-        if(dto.getThumbnail() != null) {
-            temp.setThumbnail(dto.getThumbnail());
+        if(dto.getImage() != null) {
+            temp.setImage(dto.getImage());
         }
+    
+        log.info("Subject name : {}", temp.getTitle());
+        log.info("Subject about : {}", temp.getAbout());
+        log.info("Subject image : {}", temp.getImage());
         
         try {
             subjectRepository.save(temp);
@@ -118,43 +119,24 @@ public class SubjectService implements ISubjectService {
         /*
          *   Chú ý Transaction, Dirty check nhé
          * */
-        dto.getThumbnail().setUri(subject.selfLinkThumbUri());
-        dto.getThumbnail().setEmbedded(subject.getThumbnail().isEmbedded());
+//        dto.getThumbnail().setUri(subject.selfLinkThumbUri());
+//        dto.getThumbnail().setEmbedded(subject.getThumbnail().isEmbedded());
+        dto.setImage(subject.getImage());
+        
         
         return dto;
-    }
-    
-    public void uploadFile(SubjectDTO dto, MultipartFile source) throws ImageException {
-        if(dto.getId() == null && (source == null || source.isEmpty()))
-            throw new ImageException("ERR_UPLOAD_IMAGE_NULL");
-        else if(dto.getId() != null && (source == null || source.isEmpty())) {
-            // là trường hợp update nhưng không update Thumbnail
-        } else {
-            if(dto.getId() != null) // Xóa exists thumbnail
-                deleteExistThumbnail(dto.getId());
-            String finalDesFileName = imageUploader.uploadFile(source, uploadPath);
-            dto.getThumbnail().setEmbedded(false);
-            dto.getThumbnail().setUri(finalDesFileName);
-        }
     }
     
     public void deleteExistThumbnail(Long subjectId) {
         Optional<Subject> opt = subjectRepository.findById(subjectId);
         opt.orElseThrow(() -> new EntityNotFoundException("Subject with id : " + subjectId + " is not exists !"));
-
+        
         Subject subject = opt.get();
-        final String thumbUri = subject.getThumbnail().getUri();
-        if(thumbUri == null || thumbUri.isBlank())
+        final String filename = subject.getImage().getFilename();
+        if(filename == null || filename.isBlank())
             return;
         
-        if(subject.getThumbnail().isEmbedded()) // Sử dụng Embedded --> không phải xóa
-            return;
-        String filePath = servletContext.getRealPath("") + uploadPath.concat(subject.getThumbnail().getUri());
-        try {
-            Files.deleteIfExists(Paths.get(filePath));
-        } catch(IOException e) {
-            log.warn("IOException : {}", e.getMessage());
-        }
+        imageService.deleteImage(filename);
     }
     
     public Page<Subject> findAllLimitTo(int limit) {

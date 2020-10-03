@@ -159,21 +159,19 @@
 
     //  Show Thumbnail Effect
     var thumb = $("#form-thumbnail");
-    $(document).ready(function () {
-      if(thumb.attr("src") == "null") {
-        thumb.hide();
-      }
+    if (thumb.attr("src") == "null") {
+      thumb.hide();
+    }
 
-      $("input[name='thumbnail']").change(function() {
-        changeImageFile(this);
-      });
+    $("input[name='thumbnail']").change(function () {
+      changeImageFile(this);
     });
 
     function changeImageFile(fileInput) {
       file = fileInput.files[0];
 
       reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         thumb.attr("src", e.target.result);
       }
       reader.readAsDataURL(file);

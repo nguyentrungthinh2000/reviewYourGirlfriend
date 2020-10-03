@@ -86,7 +86,7 @@
                         <li><a href="#section-blog" class="nav-link">Blog</a></li>
                     </th:block>
                     <hr>
-                    <li sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
+                    <li sec:authorize="hasAnyRole('ADMIN', 'MANAGER', 'USER')">
                         <a th:href="@{${T(com.rygf.common.GetLink).DASHBOARD_URI}}"
                            class="nav-link">Dashboard</a></li>
                 </ul>
